@@ -1,0 +1,209 @@
+<?php
+/* ============================================
+   PCFORGE — Newsletter Subscriber System
+   Real Functionality with OTP Verification
+   SendLayer Compatible
+   ============================================ */
+
+// AJAX: Send OTP to email
+add_action('wp_ajax_pcf_send_otp', 'pcf_send_otp_handler');
+add_action('wp_ajax_nopriv_pcf_send_otp', 'pcf_send_otp_handler');
+
+function pcf_send_otp_handler() {
+    $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+
+    if (!is_email($email)) {
+        wp_send_json_error(['message' => 'Invalid email address']);
+    }
+
+    // Check if already subscribed
+    $subscribers = get_option('pcf_subscribers', []);
+    if (isset($subscribers[$email])) {
+        wp_send_json_error(['message' => 'You are already in the Forge!']);
+    }
+
+    // Generate 6-digit OTP
+    $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+    // Store OTP for 10 minutes
+    set_transient('pcf_otp_' . md5($email), $otp, 10 * MINUTE_IN_SECONDS);
+
+    // ==========================================
+    // SENDLAYER CONFIGURATION
+    // ==========================================
+    $from_email = 'siyandeveloper@c6e60a9b.slmailrelay.com';
+    $from_name  = 'PCFORGE';
+
+    // Email to User
+    $subject = 'PCFORGE — Your Verification Code';
+    $message  = "Hi,\n\n";
+    $message .= "Your PCFORGE verification code is:\n\n";
+    $message .= "    {$otp}\n\n";
+    $message .= "This code will expire in 10 minutes.\n\n";
+    $message .= "If you didn't request this, ignore this email.\n\n";
+    $message .= "— The PCFORGE Team\n";
+    $message .= "Build Beyond Limits\n";
+
+    $headers = [
+        'Content-Type: text/plain; charset=UTF-8',
+        "From: {$from_name} <{$from_email}>"
+    ];
+
+    $sent = wp_mail($email, $subject, $message, $headers);
+
+    if ($sent) {
+        wp_send_json_success(['message' => 'Code sent to your email']);
+    } else {
+        wp_send_json_error(['message' => 'Failed to send email. Check SMTP settings.']);
+    }
+}
+
+// AJAX: Verify OTP + Save Subscriber
+add_action('wp_ajax_pcf_verify_otp', 'pcf_verify_otp_handler');
+add_action('wp_ajax_nopriv_pcf_verify_otp', 'pcf_verify_otp_handler');
+
+function pcf_verify_otp_handler() {
+    $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
+    $otp = isset($_POST['otp']) ? sanitize_text_field($_POST['otp']) : '';
+
+    if (!is_email($email) || empty($otp)) {
+        wp_send_json_error(['message' => 'Missing data']);
+    }
+
+    $stored = get_transient('pcf_otp_' . md5($email));
+
+    if (!$stored) {
+        wp_send_json_error(['message' => 'Code expired — please resend']);
+    }
+
+    if ($stored !== $otp) {
+        wp_send_json_error(['message' => 'Wrong code']);
+    }
+
+    // Save subscriber to database
+    $subscribers = get_option('pcf_subscribers', []);
+    $subscribers[$email] = [
+        'email' => $email,
+        'subscribed' => current_time('mysql'),
+        'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+    ];
+    update_option('pcf_subscribers', $subscribers);
+
+    // Delete used OTP
+    delete_transient('pcf_otp_' . md5($email));
+
+    // ==========================================
+    // SENDLAYER CONFIGURATION
+    // ==========================================
+    $from_email = 'siyandeveloper@c6e60a9b.slmailrelay.com';
+    $from_name  = 'PCFORGE';
+
+    // Send welcome email to subscriber
+    $welcome_subject = "Welcome to PCFORGE — You're In the Forge";
+    $welcome_msg  = "Welcome to the Forge!\n\n";
+    $welcome_msg .= "You're now part of PCFORGE — the custom PC building platform.\n\n";
+    $welcome_msg .= "Here's what you'll get:\n";
+    $welcome_msg .= "→ Weekly build guides\n";
+    $welcome_msg .= "→ Exclusive hardware deals\n";
+    $welcome_msg .= "→ Price drop alerts\n";
+    $welcome_msg .= "→ Early access to new features\n\n";
+    $welcome_msg .= "Build your next machine: " . home_url('/build-lab/') . "\n\n";
+    $welcome_msg .= "— The PCFORGE Team\n";
+    $welcome_msg .= "Build Beyond Limits\n";
+
+    $welcome_headers = [
+        'Content-Type: text/plain; charset=UTF-8',
+        "From: {$from_name} <{$from_email}>"
+    ];
+
+    wp_mail($email, $welcome_subject, $welcome_msg, $welcome_headers);
+
+    // Notify admin
+    wp_mail(
+        get_option('admin_email'),
+        'New PCFORGE Subscriber',
+        "New subscriber: {$email}\nTotal subscribers: " . count($subscribers) . "\nTime: " . current_time('mysql'),
+        ['Content-Type: text/plain; charset=UTF-8', "From: {$from_name} <{$from_email}>"]
+    );
+
+    wp_send_json_success(['message' => 'Subscribed successfully']);
+}
+
+/* ============================================
+   Admin Menu: View Subscribers
+   Location: WP Dashboard → Subscribers
+   ============================================ */
+add_action('admin_menu', 'pcf_subscribers_menu');
+function pcf_subscribers_menu() {
+    add_menu_page(
+        'PCFORGE Subscribers',
+        'Subscribers',
+        'manage_options',
+        'pcf-subscribers',
+        'pcf_subscribers_page',
+        'dashicons-email-alt',
+        30
+    );
+}
+
+function pcf_subscribers_page() {
+    $subscribers = get_option('pcf_subscribers', []);
+    ?>
+    <div class="wrap">
+        <h1>PCFORGE Subscribers (<?php echo count($subscribers); ?>)</h1>
+
+        <?php if (empty($subscribers)): ?>
+            <p style="margin-top: 20px;">No subscribers yet.</p>
+        <?php else: ?>
+            <table class="widefat" style="margin-top: 20px;">
+                <thead>
+                    <tr>
+                        <th style="padding: 10px;">#</th>
+                        <th style="padding: 10px;">Email</th>
+                        <th style="padding: 10px;">Subscribed</th>
+                        <th style="padding: 10px;">IP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php $i = 1; foreach (array_reverse($subscribers, true) as $sub): ?>
+                        <tr>
+                            <td style="padding: 10px;"><?php echo $i++; ?></td>
+                            <td style="padding: 10px;"><strong><?php echo esc_html($sub['email'] ?? ''); ?></strong></td>
+                            <td style="padding: 10px;"><?php echo esc_html($sub['subscribed'] ?? ''); ?></td>
+                            <td style="padding: 10px;"><?php echo esc_html($sub['ip'] ?? ''); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+
+            <p style="margin-top: 20px;">
+                <a href="<?php echo admin_url('admin-ajax.php?action=pcf_export_csv&_wpnonce=' . wp_create_nonce('pcf_export')); ?>" class="button button-primary">
+                    Download CSV
+                </a>
+            </p>
+        <?php endif; ?>
+    </div>
+    <?php
+}
+
+/* ============================================
+   CSV Export
+   ============================================ */
+add_action('wp_ajax_pcf_export_csv', 'pcf_export_csv_handler');
+function pcf_export_csv_handler() {
+    if (!current_user_can('manage_options')) wp_die('Unauthorized');
+    if (!wp_verify_nonce($_GET['_wpnonce'] ?? '', 'pcf_export')) wp_die('Bad nonce');
+
+    $subscribers = get_option('pcf_subscribers', []);
+
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="pcforge-subscribers-' . date('Y-m-d') . '.csv"');
+
+    $out = fopen('php://output', 'w');
+    fputcsv($out, ['Email', 'Subscribed', 'IP']);
+    foreach ($subscribers as $sub) {
+        fputcsv($out, [$sub['email'] ?? '', $sub['subscribed'] ?? '', $sub['ip'] ?? '']);
+    }
+    fclose($out);
+    exit;
+}

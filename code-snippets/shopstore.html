@@ -1,0 +1,1163 @@
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+.pcf-shop, .pcf-shop * { box-sizing: border-box !important; margin: 0; padding: 0; }
+.pcf-shop {
+    position: relative; background: #080A0A;
+    min-height: 100vh; padding: 40px 30px 80px;
+    font-family: 'Inter', sans-serif;
+    color: #E8F0ED; overflow: hidden;
+}
+.pcf-shop::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(85, 230, 181, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85, 230, 181, 0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at top, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at top, black 30%, transparent 80%);
+    pointer-events: none; z-index: 0;
+}
+.pcf-shop-inner { max-width: 1500px; margin: 0 auto; position: relative; z-index: 2; }
+
+/* Header */
+.pcf-shop-header { text-align: center; margin-bottom: 40px; padding-top: 20px; }
+.pcf-shop-label {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 4px; color: #9DAAA6;
+    text-transform: uppercase; margin-bottom: 20px;
+    padding: 6px 16px; border: 1px solid rgba(85, 230, 181, 0.25);
+    border-radius: 3px; background: rgba(85, 230, 181, 0.03);
+}
+.pcf-shop-label::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: #55E6B5; box-shadow: 0 0 10px #55E6B5;
+    animation: pcfBlink 1.5s ease-in-out infinite;
+}
+@keyframes pcfBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.pcf-shop-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 62px; font-weight: 800; letter-spacing: -3px;
+    line-height: 1; color: #E8F0ED; margin: 0 0 18px;
+}
+.pcf-shop-title .mint {
+    color: #55E6B5; text-shadow: 0 0 50px rgba(85, 230, 181, 0.4);
+    position: relative; display: inline-block;
+}
+.pcf-shop-title .mint::after {
+    content: ''; position: absolute; bottom: 4px; left: 0; right: 0;
+    height: 4px; background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    box-shadow: 0 0 20px #55E6B5;
+    animation: pcfLinePulse 2.5s ease-in-out infinite;
+}
+@keyframes pcfLinePulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.pcf-shop-sub {
+    font-size: 15px; color: #9DAAA6; max-width: 640px;
+    margin: 0 auto; line-height: 1.7; font-weight: 300;
+}
+
+/* Stats */
+.pcf-stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 14px; margin-bottom: 26px;
+}
+.pcf-stat {
+    background: linear-gradient(145deg, #12181B, #0E1212);
+    border: 1px solid #1F2626; border-radius: 10px;
+    padding: 18px 20px; position: relative;
+    overflow: hidden; transition: all 0.3s ease;
+}
+.pcf-stat::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    opacity: 0.4;
+}
+.pcf-stat:hover {
+    border-color: rgba(85, 230, 181, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+}
+.pcf-stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 26px; font-weight: 700; color: #55E6B5;
+    line-height: 1; letter-spacing: -1px;
+    text-shadow: 0 0 20px rgba(85, 230, 181, 0.4);
+    display: block;
+}
+.pcf-stat-lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 2px; color: #6A7570;
+    text-transform: uppercase; margin-top: 6px; display: block;
+}
+
+/* Toolbar */
+.pcf-toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 20px; padding: 16px 22px;
+    background: linear-gradient(180deg, #0E1212, #0A0D0D);
+    border: 1px solid #1F2626; border-radius: 12px;
+    margin-bottom: 24px; flex-wrap: wrap;
+}
+.pcf-toolbar-left {
+    display: flex; align-items: center; gap: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 2px;
+    color: #9DAAA6; text-transform: uppercase;
+}
+.pcf-toolbar-left::before { content: '◆'; color: #55E6B5; font-size: 8px; }
+.pcf-toolbar-left strong { color: #55E6B5; font-weight: 700; font-size: 14px; }
+.pcf-toolbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.pcf-search { position: relative; min-width: 260px; }
+.pcf-search input {
+    width: 100%; padding: 12px 42px 12px 16px;
+    background: rgba(24, 30, 29, 0.6);
+    border: 1px solid #283130; border-radius: 8px;
+    color: #E8F0ED;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; outline: none;
+    transition: all 0.3s ease;
+}
+.pcf-search input::placeholder {
+    color: #6A7570; letter-spacing: 1.5px;
+    text-transform: uppercase; font-size: 10px;
+}
+.pcf-search input:focus {
+    border-color: #55E6B5;
+    box-shadow: 0 0 0 3px rgba(85, 230, 181, 0.12);
+}
+.pcf-search svg {
+    position: absolute; right: 14px; top: 50%;
+    transform: translateY(-50%); width: 16px; height: 16px;
+    stroke: #55E6B5; stroke-width: 2; fill: none; pointer-events: none;
+}
+.pcf-sort {
+    padding: 12px 16px;
+    background: rgba(24, 30, 29, 0.6);
+    border: 1px solid #283130; border-radius: 8px;
+    color: #E8F0ED;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 1px;
+    text-transform: uppercase; outline: none;
+    cursor: pointer; transition: all 0.3s ease;
+}
+.pcf-sort:focus { border-color: #55E6B5; }
+.pcf-sort option { background: #0E1212; color: #E8F0ED; }
+
+/* Active filters bar */
+.pcf-active-bar { display: none; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+.pcf-active-bar.show { display: flex; }
+.pcf-active-lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: #6A7570; text-transform: uppercase;
+    margin-right: 4px;
+}
+.pcf-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px;
+    background: rgba(85, 230, 181, 0.1);
+    border: 1px solid rgba(85, 230, 181, 0.3);
+    border-radius: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 1.5px;
+    color: #55E6B5; text-transform: uppercase;
+    transition: all 0.25s ease; cursor: pointer;
+}
+.pcf-tag:hover {
+    background: rgba(239, 107, 107, 0.1);
+    border-color: rgba(239, 107, 107, 0.4);
+    color: #EF6B6B;
+}
+.pcf-tag::after { content: '×'; font-size: 14px; line-height: 1; }
+
+/* Layout */
+.pcf-layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; align-items: start; }
+
+/* Sidebar */
+.pcf-sidebar {
+    background: linear-gradient(180deg, #0E1212, #0A0D0D);
+    border: 1px solid #1F2626; border-radius: 12px;
+    padding: 22px; position: sticky; top: 90px;
+    max-height: calc(100vh - 110px); overflow-y: auto;
+}
+.pcf-sidebar::-webkit-scrollbar { width: 3px; }
+.pcf-sidebar::-webkit-scrollbar-thumb { background: rgba(85, 230, 181, 0.2); border-radius: 2px; }
+
+.pcf-fgroup {
+    padding-bottom: 20px; margin-bottom: 20px;
+    border-bottom: 1px dashed rgba(85, 230, 181, 0.15);
+}
+.pcf-fgroup:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+.pcf-ftitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px; color: #55E6B5;
+    text-transform: uppercase; margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.pcf-ftitle::after { content: '▣'; color: #55E6B5; opacity: 0.6; font-size: 11px; }
+.pcf-flist { display: flex; flex-direction: column; gap: 4px; }
+.pcf-fitem {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 6px;
+    cursor: pointer; transition: all 0.25s ease;
+    font-size: 12px; color: #9DAAA6;
+    border: 1px solid transparent; user-select: none;
+}
+.pcf-fitem:hover { background: rgba(85, 230, 181, 0.05); color: #E8F0ED; }
+.pcf-fitem.active {
+    background: rgba(85, 230, 181, 0.08);
+    border-color: rgba(85, 230, 181, 0.3);
+    color: #55E6B5;
+}
+.pcf-fcheck {
+    width: 14px; height: 14px;
+    border: 1.5px solid #283130; border-radius: 3px;
+    flex-shrink: 0; position: relative;
+    transition: all 0.25s ease;
+}
+.pcf-fitem.active .pcf-fcheck { border-color: #55E6B5; background: #55E6B5; }
+.pcf-fitem.active .pcf-fcheck::after {
+    content: ''; position: absolute;
+    left: 3px; top: 0; width: 5px; height: 9px;
+    border: solid #080A0A; border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+.pcf-fcount {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: #6A7570;
+}
+.pcf-prow { display: flex; align-items: center; gap: 8px; }
+.pcf-pinput {
+    flex: 1; min-width: 0; padding: 10px 12px;
+    background: rgba(24, 30, 29, 0.6);
+    border: 1px solid #283130; border-radius: 6px;
+    color: #E8F0ED;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; outline: none;
+    transition: all 0.3s ease;
+}
+.pcf-pinput:focus { border-color: #55E6B5; }
+.pcf-pinput::placeholder { color: #6A7570; font-size: 10px; }
+.pcf-psep { color: #6A7570; }
+.pcf-clear {
+    width: 100%; margin-top: 10px; padding: 10px;
+    background: transparent;
+    border: 1px solid #283130; border-radius: 6px;
+    color: #9DAAA6;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 1.5px;
+    text-transform: uppercase; cursor: pointer;
+    transition: all 0.3s ease;
+}
+.pcf-clear:hover {
+    border-color: #EF6B6B; color: #EF6B6B;
+    background: rgba(239, 107, 107, 0.05);
+}
+
+.pcf-stock-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 6px;
+    cursor: pointer; transition: all 0.25s ease;
+    font-size: 12px; color: #9DAAA6;
+    border: 1px solid transparent; user-select: none;
+}
+.pcf-stock-item:hover { background: rgba(85, 230, 181, 0.05); color: #E8F0ED; }
+.pcf-stock-item.active {
+    background: rgba(85, 230, 181, 0.08);
+    border-color: rgba(85, 230, 181, 0.3);
+    color: #55E6B5;
+}
+.pcf-stock-item .dot-green { width: 8px; height: 8px; border-radius: 50%; background: #55E6B5; box-shadow: 0 0 8px #55E6B5; }
+.pcf-stock-item .dot-yellow { width: 8px; height: 8px; border-radius: 50%; background: #E5C76B; box-shadow: 0 0 8px #E5C76B; }
+
+/* Products grid */
+.pcf-products { min-height: 400px; }
+.pcf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+
+.pcf-p {
+    position: relative;
+    background: linear-gradient(145deg, #12181B, #0E1212);
+    border: 1px solid #1F2626; border-radius: 12px;
+    overflow: hidden; text-decoration: none !important;
+    color: inherit; display: flex; flex-direction: column;
+    transition: all 0.4s ease;
+    opacity: 0; transform: translateY(20px);
+    cursor: pointer;
+}
+.pcf-p.shown { opacity: 1; transform: translateY(0); }
+.pcf-p::before {
+    content: ''; position: absolute;
+    top: 0; left: -100%; width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    transition: left 0.9s ease; z-index: 10;
+}
+.pcf-p:hover::before { left: 100%; }
+.pcf-p:hover {
+    border-color: rgba(85, 230, 181, 0.4);
+    transform: translateY(-6px);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.6), 0 0 60px rgba(85, 230, 181, 0.12);
+}
+.pcf-pimg {
+    position: relative; width: 100%; aspect-ratio: 1/1;
+    background: linear-gradient(135deg, rgba(85, 230, 181, 0.04), rgba(85, 230, 181, 0.01));
+    border-bottom: 1px solid #1F2626;
+    overflow: hidden; display: flex;
+    align-items: center; justify-content: center;
+}
+.pcf-pimg::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(85, 230, 181, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85, 230, 181, 0.05) 1px, transparent 1px);
+    background-size: 22px 22px; z-index: 0;
+}
+.pcf-pimg img {
+    width: 100%; height: 100%; object-fit: contain;
+    padding: 18px; transition: transform 0.5s ease;
+    position: relative; z-index: 2;
+}
+.pcf-p:hover .pcf-pimg img { transform: scale(1.08); }
+.pcf-pbadge {
+    position: absolute; top: 12px; left: 12px;
+    padding: 5px 10px; border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; letter-spacing: 1.5px;
+    text-transform: uppercase; z-index: 5; font-weight: 700;
+}
+.pcf-pbadge.sale { background: #EF6B6B; color: #080A0A; box-shadow: 0 0 15px rgba(239, 107, 107, 0.6); }
+.pcf-pbadge.new { background: #55E6B5; color: #080A0A; box-shadow: 0 0 15px rgba(85, 230, 181, 0.6); }
+.pcf-pbadge.hot { background: #E5C76B; color: #080A0A; box-shadow: 0 0 15px rgba(229, 199, 107, 0.6); }
+.pcf-pbadge.out { background: #4A5450; color: #080A0A; }
+
+.pcf-pactions {
+    position: absolute; top: 12px; right: 12px;
+    display: flex; flex-direction: column; gap: 6px;
+    z-index: 5; opacity: 0; transform: translateX(10px);
+    transition: all 0.3s ease;
+}
+.pcf-p:hover .pcf-pactions { opacity: 1; transform: translateX(0); }
+.pcf-pa {
+    width: 32px; height: 32px;
+    background: rgba(24, 30, 29, 0.9);
+    border: 1px solid rgba(85, 230, 181, 0.25);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.3s ease;
+}
+.pcf-pa:hover { background: #55E6B5; border-color: #55E6B5; }
+.pcf-pa svg {
+    width: 14px; height: 14px;
+    stroke: #55E6B5; stroke-width: 2; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+    transition: stroke 0.3s ease;
+}
+.pcf-pa:hover svg { stroke: #080A0A; }
+.pcf-pa.wish.active { background: #EF6B6B; border-color: #EF6B6B; }
+.pcf-pa.wish.active svg { fill: #fff; stroke: #fff; }
+
+.pcf-pbody {
+    padding: 16px; display: flex;
+    flex-direction: column; gap: 8px; flex: 1;
+}
+.pcf-pcat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; letter-spacing: 2px;
+    color: #6A7570; text-transform: uppercase;
+}
+.pcf-pname {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px; font-weight: 600;
+    color: #E8F0ED; line-height: 1.35;
+    transition: color 0.3s ease;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+    min-height: 38px;
+}
+.pcf-p:hover .pcf-pname { color: #55E6B5; }
+.pcf-prating {
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: #6A7570;
+}
+.pcf-pstars { color: #E5C76B; letter-spacing: 1px; font-size: 10px; }
+.pcf-pbottom {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: auto; padding-top: 12px;
+    border-top: 1px solid rgba(85, 230, 181, 0.1);
+    gap: 10px;
+}
+.pcf-pprice {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px; font-weight: 700;
+    color: #55E6B5; letter-spacing: -0.5px;
+    display: flex; align-items: baseline;
+    gap: 3px; line-height: 1;
+}
+.pcf-pprice .curr {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: #9DAAA6; font-weight: 500;
+}
+.pcf-pprice s {
+    font-size: 11px; color: #6A7570;
+    text-decoration: line-through;
+    font-weight: 400; margin-left: 4px;
+}
+.pcf-cart {
+    width: 34px; height: 34px;
+    background: rgba(85, 230, 181, 0.08);
+    border: 1px solid rgba(85, 230, 181, 0.25);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s ease; flex-shrink: 0; cursor: pointer;
+}
+.pcf-cart svg {
+    width: 15px; height: 15px;
+    stroke: #55E6B5; stroke-width: 2; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+    transition: stroke 0.3s ease;
+}
+.pcf-p:hover .pcf-cart {
+    background: #55E6B5; border-color: #55E6B5;
+    box-shadow: 0 0 15px rgba(85, 230, 181, 0.6);
+}
+.pcf-p:hover .pcf-cart svg { stroke: #080A0A; }
+.pcf-cart.loading { opacity: 0.5; cursor: wait; }
+.pcf-cart svg.spin { animation: pcfSpin 1s linear infinite; }
+@keyframes pcfSpin { to { transform: rotate(360deg); } }
+
+/* Empty + loading states */
+.pcf-loading, .pcf-empty {
+    grid-column: 1 / -1; text-align: center;
+    padding: 80px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; letter-spacing: 2px;
+    color: #9DAAA6; text-transform: uppercase;
+}
+.pcf-dots { display: inline-flex; gap: 4px; margin-left: 8px; }
+.pcf-dots span {
+    width: 6px; height: 6px; background: #55E6B5;
+    border-radius: 50%;
+    animation: pcfDot 1.4s ease-in-out infinite;
+}
+.pcf-dots span:nth-child(2) { animation-delay: 0.2s; }
+.pcf-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pcfDot {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+}
+.pcf-empty-icon { font-size: 60px; margin-bottom: 20px; opacity: 0.4; }
+.pcf-empty-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px; font-weight: 700;
+    color: #E8F0ED; margin-bottom: 10px;
+    letter-spacing: 0; text-transform: none;
+}
+.pcf-empty-msg {
+    color: #9DAAA6; font-size: 14px;
+    text-transform: none; letter-spacing: 0.5px;
+}
+
+/* Pagination */
+.pcf-pag {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; margin-top: 40px; padding-top: 30px;
+    border-top: 1px solid #1F2626;
+}
+.pcf-page {
+    min-width: 40px; height: 40px; padding: 0 14px;
+    background: rgba(24, 30, 29, 0.4);
+    border: 1px solid #283130; border-radius: 8px;
+    color: #9DAAA6;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.3s ease;
+    display: flex; align-items: center; justify-content: center;
+}
+.pcf-page:hover:not(:disabled):not(.active) {
+    border-color: #55E6B5; color: #55E6B5;
+    background: rgba(85, 230, 181, 0.05);
+}
+.pcf-page.active {
+    background: #55E6B5; border-color: #55E6B5;
+    color: #080A0A;
+    box-shadow: 0 0 20px rgba(85, 230, 181, 0.5);
+}
+.pcf-page:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* Toast */
+.pcf-toast {
+    position: fixed; bottom: 30px; right: 30px;
+    background: linear-gradient(135deg, #0E1212, #181E1D);
+    border: 1px solid #55E6B5;
+    border-left: 3px solid #55E6B5;
+    padding: 14px 20px; border-radius: 6px;
+    z-index: 99999;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.7), 0 0 40px rgba(85, 230, 181, 0.4);
+    transform: translateX(400px); opacity: 0;
+    transition: all 0.4s ease;
+    max-width: 320px;
+    font-family: 'JetBrains Mono', monospace;
+}
+.pcf-toast.show { transform: translateX(0); opacity: 1; }
+.pcf-toast-label {
+    font-size: 10px; letter-spacing: 2px;
+    color: #55E6B5; text-transform: uppercase;
+    display: block; margin-bottom: 4px;
+}
+.pcf-toast-val { font-size: 12px; color: #E8F0ED; font-weight: 600; }
+
+/* Quick view modal */
+.pcf-modal {
+    position: fixed; inset: 0; z-index: 999999;
+    background: rgba(8, 10, 10, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: none; align-items: center; justify-content: center;
+    padding: 20px;
+}
+.pcf-modal.show { display: flex; animation: pcfModalIn 0.4s ease; }
+@keyframes pcfModalIn { from { opacity: 0; } to { opacity: 1; } }
+.pcf-modal-inner {
+    background: linear-gradient(145deg, #12181B, #0A0D0D);
+    border: 1px solid rgba(85, 230, 181, 0.3);
+    border-radius: 16px;
+    max-width: 900px; width: 100%;
+    max-height: 90vh; overflow-y: auto;
+    position: relative; display: grid;
+    grid-template-columns: 1fr 1fr;
+    animation: pcfModalScale 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes pcfModalScale {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+.pcf-modal-img {
+    background: linear-gradient(135deg, rgba(85, 230, 181, 0.04), rgba(85, 230, 181, 0.01));
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px; position: relative;
+    border-right: 1px solid #1F2626;
+}
+.pcf-modal-img img {
+    width: 100%; height: auto;
+    max-height: 400px; object-fit: contain;
+}
+.pcf-modal-body {
+    padding: 40px; display: flex;
+    flex-direction: column; gap: 14px;
+}
+.pcf-modal-cat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 3px;
+    color: #6A7570; text-transform: uppercase;
+}
+.pcf-modal-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 26px; font-weight: 700;
+    color: #E8F0ED; line-height: 1.2;
+    letter-spacing: -0.5px;
+}
+.pcf-modal-price {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 32px; font-weight: 800;
+    color: #55E6B5; letter-spacing: -1px;
+    text-shadow: 0 0 30px rgba(85, 230, 181, 0.4);
+}
+.pcf-modal-price s {
+    font-size: 16px; color: #6A7570;
+    margin-left: 8px; font-weight: 400;
+}
+.pcf-modal-desc {
+    font-size: 14px; color: #9DAAA6;
+    line-height: 1.7;
+}
+.pcf-modal-btn {
+    padding: 16px 28px;
+    background: #55E6B5; color: #080A0A;
+    border: none; border-radius: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 12px;
+    letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: all 0.3s ease;
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 10px; text-decoration: none; margin-top: auto;
+}
+.pcf-modal-btn:hover {
+    background: #A8FFE3; transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(85, 230, 181, 0.5);
+}
+.pcf-modal-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 40px; height: 40px;
+    background: rgba(24, 30, 29, 0.9);
+    border: 1px solid rgba(85, 230, 181, 0.3);
+    border-radius: 50%; color: #55E6B5;
+    font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s ease; z-index: 10;
+}
+.pcf-modal-close:hover {
+    background: #EF6B6B; border-color: #EF6B6B;
+    color: #fff; transform: rotate(90deg);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .pcf-shop { padding: 30px 20px 60px; }
+    .pcf-grid { grid-template-columns: repeat(2, 1fr); }
+    .pcf-layout { grid-template-columns: 220px 1fr; gap: 18px; }
+    .pcf-shop-title { font-size: 48px; }
+    .pcf-stats { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+    .pcf-layout { grid-template-columns: 1fr; }
+    .pcf-sidebar { position: relative; top: 0; max-height: none; }
+    .pcf-shop-title { font-size: 38px; letter-spacing: -2px; }
+    .pcf-search { min-width: 100%; }
+    .pcf-stats { grid-template-columns: repeat(2, 1fr); }
+    .pcf-modal-inner { grid-template-columns: 1fr; }
+    .pcf-modal-img { padding: 30px; border-right: none; border-bottom: 1px solid #1F2626; }
+    .pcf-modal-body { padding: 30px; }
+}
+@media (max-width: 600px) {
+    .pcf-shop { padding: 20px 14px 50px; }
+    .pcf-shop-title { font-size: 28px; }
+    .pcf-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .pcf-pbody { padding: 12px; }
+    .pcf-pname { font-size: 12px; min-height: 32px; }
+    .pcf-pprice { font-size: 15px; }
+    .pcf-stats { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .pcf-stat { padding: 14px; }
+    .pcf-stat-num { font-size: 20px; }
+    .pcf-modal-name { font-size: 20px; }
+    .pcf-modal-price { font-size: 24px; }
+}
+</style>
+
+<div class="pcf-shop" id="pcfShop">
+    <div class="pcf-shop-inner">
+
+        <div class="pcf-shop-header">
+            <div class="pcf-shop-label">Product Catalog</div>
+            <h1 class="pcf-shop-title">ALL <span class="mint">HARDWARE.</span></h1>
+            <p class="pcf-shop-sub">
+                Browse our complete collection of PC components. Filter by category, price, and specs to find exactly what you need.
+            </p>
+        </div>
+
+        <div class="pcf-stats">
+            <div class="pcf-stat">
+                <span class="pcf-stat-num" id="statTotal">0</span>
+                <span class="pcf-stat-lbl">Total Products</span>
+            </div>
+            <div class="pcf-stat">
+                <span class="pcf-stat-num" id="statCategories">8</span>
+                <span class="pcf-stat-lbl">Categories</span>
+            </div>
+            <div class="pcf-stat">
+                <span class="pcf-stat-num" id="statFiltered">0</span>
+                <span class="pcf-stat-lbl">Showing Now</span>
+            </div>
+            <div class="pcf-stat">
+                <span class="pcf-stat-num">24<span style="font-size:14px;color:#55E6B5;">/7</span></span>
+                <span class="pcf-stat-lbl">Support</span>
+            </div>
+        </div>
+
+        <div class="pcf-toolbar">
+            <div class="pcf-toolbar-left">
+                Showing <strong id="pcfCount">0</strong> products
+            </div>
+            <div class="pcf-toolbar-right">
+                <div class="pcf-search">
+                    <input type="text" id="pcfSearch" placeholder="Search products...">
+                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </div>
+                <select class="pcf-sort" id="pcfSort">
+                    <option value="featured">Featured</option>
+                    <option value="price-asc">Price: Low → High</option>
+                    <option value="price-desc">Price: High → Low</option>
+                    <option value="name-asc">Name: A → Z</option>
+                    <option value="name-desc">Name: Z → A</option>
+                    <option value="rating">Top Rated</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="pcf-active-bar" id="pcfActiveBar">
+            <span class="pcf-active-lbl">Active Filters:</span>
+        </div>
+
+        <div class="pcf-layout">
+            <aside class="pcf-sidebar">
+                <div class="pcf-fgroup">
+                    <div class="pcf-ftitle">Categories</div>
+                    <div class="pcf-flist" id="pcfCats"></div>
+                </div>
+
+                <div class="pcf-fgroup">
+                    <div class="pcf-ftitle">Price Range</div>
+                    <div class="pcf-prow">
+                        <input type="number" class="pcf-pinput" id="pcfMin" placeholder="Min">
+                        <span class="pcf-psep">—</span>
+                        <input type="number" class="pcf-pinput" id="pcfMax" placeholder="Max">
+                    </div>
+                </div>
+
+                <div class="pcf-fgroup">
+                    <div class="pcf-ftitle">Availability</div>
+                    <div class="pcf-stock-item" data-stock="in">
+                        <span class="dot-green"></span>
+                        <span>In Stock</span>
+                    </div>
+                    <div class="pcf-stock-item" data-stock="sale">
+                        <span class="dot-yellow"></span>
+                        <span>On Sale</span>
+                    </div>
+                </div>
+
+                <div class="pcf-fgroup">
+                    <button class="pcf-clear" id="pcfClear">✕ Clear All Filters</button>
+                </div>
+            </aside>
+
+            <div class="pcf-products">
+                <div class="pcf-grid" id="pcfGrid">
+                    <div class="pcf-loading">
+                        Loading products<span class="pcf-dots"><span></span><span></span><span></span></span>
+                    </div>
+                </div>
+                <div class="pcf-pag" id="pcfPag"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="pcf-modal" id="pcfModal">
+    <div class="pcf-modal-inner">
+        <button class="pcf-modal-close" id="pcfModalClose">×</button>
+        <div class="pcf-modal-img" id="pcfModalImg"></div>
+        <div class="pcf-modal-body" id="pcfModalBody"></div>
+    </div>
+</div>
+
+<div class="pcf-toast" id="pcfToast">
+    <span class="pcf-toast-label" id="pcfToastLabel">ADDED</span>
+    <span class="pcf-toast-val" id="pcfToastVal"></span>
+</div>
+
+<script>
+(function() {
+    'use strict';
+    var root = document.getElementById('pcfShop');
+    if (!root || root.dataset.init) return;
+    root.dataset.init = '1';
+
+    var grid = document.getElementById('pcfGrid');
+    var countEl = document.getElementById('pcfCount');
+    var searchEl = document.getElementById('pcfSearch');
+    var sortEl = document.getElementById('pcfSort');
+    var catsEl = document.getElementById('pcfCats');
+    var minEl = document.getElementById('pcfMin');
+    var maxEl = document.getElementById('pcfMax');
+    var clearEl = document.getElementById('pcfClear');
+    var pagEl = document.getElementById('pcfPag');
+    var toast = document.getElementById('pcfToast');
+    var toastLabel = document.getElementById('pcfToastLabel');
+    var toastVal = document.getElementById('pcfToastVal');
+    var activeBar = document.getElementById('pcfActiveBar');
+    var statTotal = document.getElementById('statTotal');
+    var statFiltered = document.getElementById('statFiltered');
+    var modal = document.getElementById('pcfModal');
+    var modalClose = document.getElementById('pcfModalClose');
+    var modalImg = document.getElementById('pcfModalImg');
+    var modalBody = document.getElementById('pcfModalBody');
+
+    var toastTimer;
+    var state = {
+        all: [], filtered: [],
+        search: '', sort: 'featured',
+        min: null, max: null,
+        page: 1, perPage: 12,
+        stocks: []
+    };
+
+    function showToast(label, val) {
+        toastLabel.textContent = label;
+        toastVal.textContent = val;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function() { toast.classList.remove('show'); }, 2400);
+    }
+
+    function getPrice(p) {
+        if (!p.prices || !p.prices.price) return 0;
+        var minor = p.prices.currency_minor_unit != null ? p.prices.currency_minor_unit : 0;
+        return parseInt(p.prices.price) / Math.pow(10, minor);
+    }
+
+    // Load products via WooCommerce Store API
+    async function load() {
+        try {
+            var res = await Promise.all([
+                fetch('/wp-json/wc/store/v1/products?per_page=100', { credentials: 'same-origin' }),
+                fetch('/wp-json/wc/store/v1/products/categories?per_page=100', { credentials: 'same-origin' })
+            ]);
+            var products = await res[0].json();
+            var categories = await res[1].json();
+            if (!Array.isArray(products)) throw new Error('Invalid');
+            state.all = products;
+            state.filtered = products;
+            statTotal.textContent = products.length;
+            renderCats(Array.isArray(categories) ? categories : []);
+            apply();
+        } catch (e) {
+            grid.innerHTML = '<div class="pcf-empty"><div class="pcf-empty-icon">⚠️</div><h3 class="pcf-empty-title">Could Not Load Products</h3><p class="pcf-empty-msg">Please refresh or try again.</p></div>';
+        }
+    }
+
+    function renderCats(categories) {
+        var counts = {};
+        state.all.forEach(function(p) {
+            (p.categories || []).forEach(function(c) {
+                counts[c.id] = (counts[c.id] || 0) + 1;
+            });
+        });
+        catsEl.innerHTML = '';
+        categories.forEach(function(cat) {
+            var count = counts[cat.id] || 0;
+            if (count === 0) return;
+            var item = document.createElement('div');
+            item.className = 'pcf-fitem';
+            item.dataset.id = cat.id;
+            item.dataset.name = cat.name;
+            item.innerHTML = '<span class="pcf-fcheck"></span><span>' + cat.name + '</span><span class="pcf-fcount">' + count + '</span>';
+            item.addEventListener('click', function() {
+                item.classList.toggle('active');
+                state.page = 1;
+                apply();
+            });
+            catsEl.appendChild(item);
+        });
+    }
+
+    document.querySelectorAll('.pcf-stock-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+            item.classList.toggle('active');
+            state.stocks = Array.prototype.map.call(document.querySelectorAll('.pcf-stock-item.active'), function(i) { return i.dataset.stock; });
+            state.page = 1;
+            apply();
+        });
+    });
+
+    function apply() {
+        var list = state.all.slice();
+        var selectedCats = Array.prototype.slice.call(catsEl.querySelectorAll('.pcf-fitem.active'));
+
+        if (selectedCats.length) {
+            var ids = selectedCats.map(function(el) { return parseInt(el.dataset.id); });
+            list = list.filter(function(p) {
+                return (p.categories || []).some(function(c) { return ids.indexOf(c.id) !== -1; });
+            });
+        }
+
+        if (state.stocks.indexOf('in') !== -1) list = list.filter(function(p) { return p.is_in_stock !== false; });
+        if (state.stocks.indexOf('sale') !== -1) list = list.filter(function(p) { return p.on_sale; });
+
+        if (state.min != null) list = list.filter(function(p) { return getPrice(p) >= state.min; });
+        if (state.max != null) list = list.filter(function(p) { return getPrice(p) <= state.max; });
+
+        if (state.search) {
+            var q = state.search.toLowerCase();
+            list = list.filter(function(p) { return p.name.toLowerCase().indexOf(q) !== -1; });
+        }
+
+        switch (state.sort) {
+            case 'price-asc': list.sort(function(a, b) { return getPrice(a) - getPrice(b); }); break;
+            case 'price-desc': list.sort(function(a, b) { return getPrice(b) - getPrice(a); }); break;
+            case 'name-asc': list.sort(function(a, b) { return a.name.localeCompare(b.name); }); break;
+            case 'name-desc': list.sort(function(a, b) { return b.name.localeCompare(a.name); }); break;
+            case 'rating': list.sort(function(a, b) { return (parseFloat(b.average_rating) || 0) - (parseFloat(a.average_rating) || 0); }); break;
+        }
+
+        state.filtered = list;
+        statFiltered.textContent = list.length;
+        renderActiveBar();
+        render();
+    }
+
+    function renderActiveBar() {
+        var active = catsEl.querySelectorAll('.pcf-fitem.active');
+        var tags = [];
+        active.forEach(function(el) { tags.push({ type: 'cat', name: el.dataset.name, id: el.dataset.id }); });
+        if (state.min != null) tags.push({ type: 'min', name: 'Min Rs ' + state.min });
+        if (state.max != null) tags.push({ type: 'max', name: 'Max Rs ' + state.max });
+        if (state.search) tags.push({ type: 'search', name: 'Search: ' + state.search });
+        if (state.stocks.length) tags.push({ type: 'stock', name: 'Availability' });
+
+        activeBar.innerHTML = '<span class="pcf-active-lbl">Active Filters:</span>';
+        if (tags.length === 0) { activeBar.classList.remove('show'); return; }
+
+        tags.forEach(function(tag) {
+            var el = document.createElement('span');
+            el.className = 'pcf-tag';
+            el.textContent = tag.name;
+            el.addEventListener('click', function() {
+                if (tag.type === 'cat') {
+                    var catEl = catsEl.querySelector('.pcf-fitem[data-id="' + tag.id + '"]');
+                    if (catEl) catEl.classList.remove('active');
+                } else if (tag.type === 'min') { state.min = null; minEl.value = ''; }
+                else if (tag.type === 'max') { state.max = null; maxEl.value = ''; }
+                else if (tag.type === 'search') { state.search = ''; searchEl.value = ''; }
+                else if (tag.type === 'stock') {
+                    state.stocks = [];
+                    document.querySelectorAll('.pcf-stock-item').forEach(function(i) { i.classList.remove('active'); });
+                }
+                state.page = 1;
+                apply();
+            });
+            activeBar.appendChild(el);
+        });
+        activeBar.classList.add('show');
+    }
+
+    function render() {
+        var total = state.filtered.length;
+        countEl.textContent = total;
+        if (total === 0) {
+            grid.innerHTML = '<div class="pcf-empty"><div class="pcf-empty-icon">🔍</div><h3 class="pcf-empty-title">No Products Found</h3><p class="pcf-empty-msg">Try changing filters or search terms.</p></div>';
+            pagEl.innerHTML = '';
+            return;
+        }
+        var start = (state.page - 1) * state.perPage;
+        var items = state.filtered.slice(start, start + state.perPage);
+        grid.innerHTML = '';
+        items.forEach(function(p, i) { grid.appendChild(makeCard(p, i)); });
+        renderPag();
+    }
+
+    function makeCard(p, i) {
+        var card = document.createElement('a');
+        card.className = 'pcf-p';
+        card.href = p.permalink || '#';
+
+        var img = p.images && p.images[0] ? p.images[0].src : '';
+        var imgAlt = p.images && p.images[0] ? p.images[0].alt : p.name;
+        var catName = p.categories && p.categories[0] ? p.categories[0].name : 'Component';
+        var priceNum = getPrice(p);
+        var price = priceNum.toLocaleString('en-PK');
+        var minor = p.prices && p.prices.currency_minor_unit != null ? p.prices.currency_minor_unit : 0;
+        var regNum = p.prices && p.prices.regular_price ? parseInt(p.prices.regular_price) / Math.pow(10, minor) : 0;
+        var onSale = p.on_sale && regNum > priceNum;
+        var inStock = p.is_in_stock !== false;
+        var rating = p.average_rating ? parseFloat(p.average_rating) : 0;
+        var reviewCount = p.review_count || 0;
+        var stars = rating > 0 ? '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating)) : '';
+
+        var badge = '';
+        if (!inStock) badge = '<span class="pcf-pbadge out">OUT OF STOCK</span>';
+        else if (onSale) {
+            var d = Math.round((1 - priceNum / regNum) * 100);
+            badge = '<span class="pcf-pbadge sale">-' + d + '%</span>';
+        }
+        else if (i < 2) badge = '<span class="pcf-pbadge new">NEW</span>';
+        else if (i < 5) badge = '<span class="pcf-pbadge hot">HOT</span>';
+
+        var strike = onSale ? '<s>Rs ' + regNum.toLocaleString('en-PK') + '</s>' : '';
+
+        card.innerHTML =
+            '<div class="pcf-pimg">' +
+                badge +
+                '<div class="pcf-pactions">' +
+                    '<span class="pcf-pa wish" data-wish="' + p.id + '">' +
+                        '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
+                    '</span>' +
+                    '<span class="pcf-pa quick" data-quick="' + p.id + '">' +
+                        '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>' +
+                    '</span>' +
+                '</div>' +
+                (img ? '<img src="' + img + '" alt="' + imgAlt + '" loading="lazy">' : '<div style="color:#55E6B5;font-size:50px;position:relative;z-index:2;">⬢</div>') +
+            '</div>' +
+            '<div class="pcf-pbody">' +
+                '<span class="pcf-pcat">' + catName + '</span>' +
+                '<h3 class="pcf-pname">' + p.name + '</h3>' +
+                (stars ? '<div class="pcf-prating"><span class="pcf-pstars">' + stars + '</span><span>(' + reviewCount + ')</span></div>' : '') +
+                '<div class="pcf-pbottom">' +
+                    '<span class="pcf-pprice"><span class="curr">Rs</span>' + price + strike + '</span>' +
+                    '<span class="pcf-cart" data-id="' + p.id + '">' +
+                        '<svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>' +
+                    '</span>' +
+                '</div>' +
+            '</div>';
+
+        // Wishlist toggle
+        var wish = card.querySelector('.wish');
+        if (wish) {
+            wish.addEventListener('click', function(e) {
+                e.preventDefault(); e.stopPropagation();
+                wish.classList.toggle('active');
+                showToast(wish.classList.contains('active') ? 'ADDED TO WISHLIST' : 'REMOVED', p.name);
+            });
+        }
+
+        // Quick view
+        var quick = card.querySelector('.quick');
+        if (quick) {
+            quick.addEventListener('click', function(e) {
+                e.preventDefault(); e.stopPropagation();
+                openQuickView(p);
+            });
+        }
+
+        // Add to cart
+        var cartBtn = card.querySelector('.pcf-cart');
+        if (cartBtn) {
+            cartBtn.addEventListener('click', async function(e) {
+                e.preventDefault(); e.stopPropagation();
+                if (cartBtn.classList.contains('loading')) return;
+                cartBtn.classList.add('loading');
+                cartBtn.querySelector('svg').classList.add('spin');
+                try {
+                    var fd = new FormData();
+                    fd.append('product_id', p.id);
+                    fd.append('quantity', 1);
+                    var res = await fetch('/?wc-ajax=add_to_cart', { method: 'POST', body: fd, credentials: 'same-origin' });
+                    var data = await res.json();
+                    if (data && data.fragments) {
+                        cartBtn.style.background = '#55E6B5';
+                        cartBtn.querySelector('svg').style.stroke = '#080A0A';
+                        showToast('ADDED TO CART', p.name);
+                        document.body.dispatchEvent(new CustomEvent('added_to_cart'));
+                        setTimeout(function() {
+                            cartBtn.style.background = '';
+                            cartBtn.querySelector('svg').style.stroke = '';
+                        }, 900);
+                    } else {
+                        showToast('ERROR', 'Try again');
+                    }
+                } catch (err) {
+                    showToast('NETWORK ERROR', 'Try again');
+                } finally {
+                    cartBtn.classList.remove('loading');
+                    cartBtn.querySelector('svg').classList.remove('spin');
+                }
+            });
+        }
+
+        setTimeout(function() { card.classList.add('shown'); }, i * 50);
+        return card;
+    }
+
+    function openQuickView(p) {
+        var img = p.images && p.images[0] ? p.images[0].src : '';
+        var catName = p.categories && p.categories[0] ? p.categories[0].name : 'Component';
+        var priceNum = getPrice(p);
+        var minor = p.prices && p.prices.currency_minor_unit != null ? p.prices.currency_minor_unit : 0;
+        var regNum = p.prices && p.prices.regular_price ? parseInt(p.prices.regular_price) / Math.pow(10, minor) : 0;
+        var onSale = p.on_sale && regNum > priceNum;
+        var desc = (p.short_description || p.description || '').replace(/<[^>]*>/g, '').trim();
+
+        modalImg.innerHTML = img ? '<img src="' + img + '" alt="' + p.name + '">' : '<div style="color:#55E6B5;font-size:120px;">⬢</div>';
+        modalBody.innerHTML =
+            '<span class="pcf-modal-cat">' + catName + '</span>' +
+            '<h3 class="pcf-modal-name">' + p.name + '</h3>' +
+            '<div class="pcf-modal-price">Rs ' + priceNum.toLocaleString('en-PK') +
+                (onSale ? '<s>Rs ' + regNum.toLocaleString('en-PK') + '</s>' : '') +
+            '</div>' +
+            (desc ? '<p class="pcf-modal-desc">' + desc + '</p>' : '') +
+            '<a href="' + p.permalink + '" class="pcf-modal-btn">View Full Details →</a>';
+
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+
+    function renderPag() {
+        var totalPages = Math.ceil(state.filtered.length / state.perPage);
+        pagEl.innerHTML = '';
+        if (totalPages <= 1) return;
+
+        var prev = document.createElement('button');
+        prev.className = 'pcf-page';
+        prev.textContent = '←';
+        prev.disabled = state.page === 1;
+        prev.addEventListener('click', function() { state.page--; render(); scrollTop(); });
+        pagEl.appendChild(prev);
+
+        for (var i = 1; i <= totalPages; i++) {
+            (function(i) {
+                var btn = document.createElement('button');
+                btn.className = 'pcf-page' + (i === state.page ? ' active' : '');
+                btn.textContent = i;
+                btn.addEventListener('click', function() { state.page = i; render(); scrollTop(); });
+                pagEl.appendChild(btn);
+            })(i);
+        }
+
+        var next = document.createElement('button');
+        next.className = 'pcf-page';
+        next.textContent = '→';
+        next.disabled = state.page === totalPages;
+        next.addEventListener('click', function() { state.page++; render(); scrollTop(); });
+        pagEl.appendChild(next);
+    }
+
+    function scrollTop() {
+        var y = root.getBoundingClientRect().top + window.pageYOffset - 100;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+
+    var sTimer;
+    searchEl.addEventListener('input', function() {
+        clearTimeout(sTimer);
+        sTimer = setTimeout(function() {
+            state.search = searchEl.value.trim();
+            state.page = 1;
+            apply();
+        }, 250);
+    });
+
+    sortEl.addEventListener('change', function() {
+        state.sort = sortEl.value;
+        apply();
+    });
+
+    var pTimer;
+    function onPrice() {
+        clearTimeout(pTimer);
+        pTimer = setTimeout(function() {
+            state.min = minEl.value ? parseInt(minEl.value) : null;
+            state.max = maxEl.value ? parseInt(maxEl.value) : null;
+            state.page = 1;
+            apply();
+        }, 400);
+    }
+    minEl.addEventListener('input', onPrice);
+    maxEl.addEventListener('input', onPrice);
+
+    clearEl.addEventListener('click', function() {
+        searchEl.value = '';
+        minEl.value = '';
+        maxEl.value = '';
+        sortEl.value = 'featured';
+        state.search = ''; state.min = null; state.max = null;
+        state.sort = 'featured'; state.page = 1; state.stocks = [];
+        catsEl.querySelectorAll('.pcf-fitem').forEach(function(el) { el.classList.remove('active'); });
+        document.querySelectorAll('.pcf-stock-item').forEach(function(el) { el.classList.remove('active'); });
+        apply();
+    });
+
+    load();
+})();
+</script>

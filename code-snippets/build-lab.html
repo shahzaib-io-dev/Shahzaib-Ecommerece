@@ -1,0 +1,1313 @@
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+.bl-page, .bl-page * { box-sizing: border-box !important; }
+.bl-page {
+    background: #080A0A; min-height: 100vh;
+    font-family: 'Inter', sans-serif; color: #E8F0ED;
+    position: relative; overflow-x: hidden;
+}
+.bl-page::before {
+    content: ''; position: fixed; inset: 0;
+    background-image:
+        linear-gradient(rgba(85,230,181,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85,230,181,0.025) 1px, transparent 1px);
+    background-size: 50px 50px; pointer-events: none; z-index: 0;
+}
+.bl-hero {
+    position: relative; padding: 50px 40px 30px;
+    max-width: 1600px; margin: 0 auto; z-index: 2;
+}
+.bl-hero-top {
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px; color: #6A7570;
+    text-transform: uppercase; margin-bottom: 20px;
+}
+.bl-hero-top a { color: #9DAAA6; text-decoration: none; transition: color 0.3s ease; }
+.bl-hero-top a:hover { color: #55E6B5; }
+.bl-hero-top .active { color: #55E6B5; }
+.bl-hero-top .sep { color: #3A403E; }
+.bl-hero-grid { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: flex-end; }
+.bl-hero-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 68px; font-weight: 800; letter-spacing: -3px;
+    line-height: 1; margin: 0 0 16px;
+}
+.bl-hero-title .mint { color: #55E6B5; text-shadow: 0 0 50px rgba(85,230,181,0.4); display: inline-block; position: relative; }
+.bl-hero-title .mint::after {
+    content: ''; position: absolute; bottom: 6px; left: 0; right: 0;
+    height: 4px; background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    box-shadow: 0 0 20px #55E6B5; animation: blPulse 2.5s ease-in-out infinite;
+}
+@keyframes blPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.bl-hero-desc { font-size: 15px; color: #9DAAA6; max-width: 640px; line-height: 1.7; font-weight: 300; margin: 0; }
+.bl-hero-stats { display: flex; gap: 30px; align-items: flex-end; }
+.bl-hero-stat { text-align: right; }
+.bl-hero-stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 26px; font-weight: 700; color: #E8F0ED; line-height: 1; display: block;
+}
+.bl-hero-stat-num .mint { color: #55E6B5; }
+.bl-hero-stat-lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 2px; color: #6A7570;
+    text-transform: uppercase; margin-top: 6px; display: block;
+}
+.bl-steps { position: relative; z-index: 3; max-width: 1600px; margin: 0 auto 24px; padding: 0 40px; }
+.bl-steps-track {
+    display: flex; gap: 4px;
+    background: linear-gradient(180deg, rgba(24,30,29,0.6), rgba(14,18,18,0.8));
+    border: 1px solid #1F2626; border-radius: 10px; padding: 10px;
+    overflow-x: auto; scrollbar-width: none;
+}
+.bl-steps-track::-webkit-scrollbar { display: none; }
+.bl-step {
+    flex: 1; min-width: 130px; padding: 12px 14px;
+    background: transparent; border: 1px solid transparent;
+    border-radius: 6px; cursor: pointer; transition: all 0.3s ease;
+    display: flex; flex-direction: column; gap: 4px; text-align: left;
+}
+.bl-step:hover { background: rgba(85,230,181,0.04); border-color: rgba(85,230,181,0.15); }
+.bl-step.active { background: rgba(85,230,181,0.08); border-color: #55E6B5; box-shadow: 0 0 25px rgba(85,230,181,0.2); }
+.bl-step.completed { background: rgba(85,230,181,0.04); }
+.bl-step-top {
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 1.5px; color: #6A7570; text-transform: uppercase;
+}
+.bl-step-num { color: #55E6B5; font-weight: 600; }
+.bl-step-check { color: #55E6B5; opacity: 0; transition: opacity 0.3s ease; }
+.bl-step.completed .bl-step-check { opacity: 1; }
+.bl-step-name { font-family: 'Space Grotesk', sans-serif; font-size: 14px; font-weight: 600; color: #E8F0ED; letter-spacing: -0.2px; }
+.bl-step.active .bl-step-name { color: #55E6B5; }
+.bl-step-info {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: #6A7570; letter-spacing: 0.5px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.bl-main-grid {
+    position: relative; z-index: 2;
+    max-width: 1600px; margin: 0 auto; padding: 0 40px 40px;
+    display: grid; grid-template-columns: 1fr 400px;
+    gap: 24px; align-items: flex-start;
+}
+.bl-content {
+    background: linear-gradient(180deg, #0E1212 0%, #0A0D0D 100%);
+    border: 1px solid #1F2626; border-radius: 12px; padding: 28px;
+}
+.bl-content-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 20px; padding-bottom: 20px; border-bottom: 1px solid #1F2626;
+    margin-bottom: 24px; flex-wrap: wrap;
+}
+.bl-content-step {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px; color: #55E6B5;
+    text-transform: uppercase; margin-bottom: 8px;
+}
+.bl-content-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 30px; font-weight: 700; color: #E8F0ED;
+    letter-spacing: -1px; line-height: 1.1; margin: 0 0 8px;
+}
+.bl-content-desc { font-size: 13px; color: #9DAAA6; line-height: 1.6; margin: 0; max-width: 500px; }
+.bl-content-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 2px; color: #6A7570;
+    text-transform: uppercase; padding: 8px 14px;
+    border: 1px solid #1F2626; border-radius: 5px;
+    background: rgba(85,230,181,0.03); white-space: nowrap;
+}
+.bl-products { display: flex; flex-direction: column; gap: 12px; }
+.bl-product {
+    background: linear-gradient(145deg, #12181B 0%, #0E1212 100%);
+    border: 1px solid #1F2626; border-radius: 10px; padding: 20px;
+    display: grid; grid-template-columns: 100px 1fr auto;
+    gap: 20px; align-items: center; cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative; overflow: hidden;
+}
+.bl-product::before {
+    content: ''; position: absolute; top: 0; left: -100%;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    transition: left 0.8s ease;
+}
+.bl-product:hover::before { left: 100%; }
+.bl-product:hover { border-color: rgba(85,230,181,0.35); transform: translateX(4px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+.bl-product.selected {
+    border-color: #55E6B5;
+    background: linear-gradient(145deg, rgba(85,230,181,0.06), rgba(85,230,181,0.02));
+    box-shadow: 0 0 40px rgba(85,230,181,0.15);
+}
+.bl-product.selected::after {
+    content: ''; position: absolute; right: 0; top: 0; bottom: 0;
+    width: 3px; background: #55E6B5; box-shadow: 0 0 20px #55E6B5;
+}
+.bl-product-visual {
+    width: 100px; height: 100px;
+    background: linear-gradient(135deg, rgba(85,230,181,0.04), rgba(85,230,181,0.01));
+    border: 1px dashed rgba(85,230,181,0.2); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+}
+.bl-product-visual::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(85,230,181,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85,230,181,0.06) 1px, transparent 1px);
+    background-size: 10px 10px; opacity: 0.6;
+}
+.bl-product-visual svg {
+    width: 50px; height: 50px; stroke: #55E6B5;
+    stroke-width: 1.4; fill: none; position: relative; z-index: 2;
+    filter: drop-shadow(0 0 8px rgba(85,230,181,0.5));
+}
+.bl-product-badge-row { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+.bl-badge {
+    padding: 3px 8px; border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; letter-spacing: 1.5px;
+    text-transform: uppercase; border: 1px solid;
+}
+.bl-badge-best { color: #E5C76B; border-color: rgba(229,199,107,0.4); background: rgba(229,199,107,0.08); }
+.bl-badge-hot { color: #EF6B6B; border-color: rgba(239,107,107,0.4); background: rgba(239,107,107,0.08); }
+.bl-badge-value { color: #55E6B5; border-color: rgba(85,230,181,0.4); background: rgba(85,230,181,0.08); }
+.bl-badge-new { color: #A8FFE3; border-color: rgba(168,255,227,0.4); background: rgba(168,255,227,0.08); }
+.bl-product-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 17px; font-weight: 600; color: #E8F0ED;
+    margin: 0 0 6px; letter-spacing: -0.3px; line-height: 1.3;
+}
+.bl-product-desc { font-size: 12px; color: #6A7570; line-height: 1.5; margin: 0 0 10px; }
+.bl-product-specs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+.bl-spec-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 9px; background: rgba(85,230,181,0.05);
+    border: 1px solid rgba(85,230,181,0.15); border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 0.5px; color: #9DAAA6;
+}
+.bl-spec-chip strong { color: #55E6B5; font-weight: 600; }
+.bl-product-rating { display: flex; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6A7570; }
+.bl-stars { color: #E5C76B; letter-spacing: 1px; }
+.bl-rating-val { color: #9DAAA6; }
+.bl-product-action { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; min-width: 140px; }
+.bl-product-price {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px; font-weight: 700; color: #55E6B5;
+    letter-spacing: -0.5px; line-height: 1;
+    display: flex; align-items: baseline; gap: 4px;
+}
+.bl-product-price .currency { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9DAAA6; font-weight: 500; }
+.bl-product-stock {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 1.5px;
+    text-transform: uppercase; color: #55E6B5;
+    display: flex; align-items: center; gap: 5px;
+}
+.bl-product-stock::before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: #55E6B5; box-shadow: 0 0 8px #55E6B5;
+    animation: blPulse 2s ease-in-out infinite;
+}
+.bl-product-select-btn {
+    padding: 10px 18px; background: transparent;
+    border: 1px solid #55E6B5; border-radius: 5px;
+    color: #55E6B5; font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 10px; letter-spacing: 2px;
+    text-transform: uppercase; cursor: pointer;
+    transition: all 0.3s ease; white-space: nowrap;
+}
+.bl-product-select-btn:hover { background: #55E6B5; color: #080A0A; }
+.bl-product.selected .bl-product-select-btn { background: #55E6B5; color: #080A0A; }
+.bl-summary {
+    position: sticky; top: 20px;
+    background: linear-gradient(180deg, #0E1212 0%, #0A0D0D 100%);
+    border: 1px solid #1F2626; border-radius: 12px; padding: 22px;
+    display: flex; flex-direction: column; gap: 16px;
+    max-height: calc(100vh - 40px); overflow-y: auto;
+}
+.bl-summary::-webkit-scrollbar { width: 4px; }
+.bl-summary::-webkit-scrollbar-thumb { background: rgba(85,230,181,0.2); border-radius: 2px; }
+.bl-summary-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 14px; border-bottom: 1px dashed rgba(85,230,181,0.2);
+}
+.bl-summary-title { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 3px; color: #55E6B5; text-transform: uppercase; }
+.bl-summary-count { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6A7570; letter-spacing: 1.5px; }
+.bl-pc-view {
+    position: relative; height: 320px;
+    background:
+        radial-gradient(circle at 50% 55%, rgba(85,230,181,0.15), transparent 65%),
+        radial-gradient(circle at 50% 50%, #0E1212, #050707 80%);
+    border: 1px solid rgba(85,230,181,0.2);
+    border-radius: 10px; overflow: hidden;
+}
+.bl-pc-view::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(85,230,181,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85,230,181,0.06) 1px, transparent 1px);
+    background-size: 20px 20px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    pointer-events: none;
+}
+.bl-pc-view-label {
+    position: absolute; top: 12px; left: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; letter-spacing: 2px; color: #55E6B5;
+    text-transform: uppercase; z-index: 10;
+    display: flex; align-items: center; gap: 6px;
+}
+.bl-pc-view-label::before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: #55E6B5; box-shadow: 0 0 8px #55E6B5;
+    animation: blPulse 1.5s ease-in-out infinite;
+}
+.bl-pc-view-fps {
+    position: absolute; top: 12px; right: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; letter-spacing: 2px; color: #6A7570;
+    text-transform: uppercase; text-align: right; z-index: 10;
+}
+.bl-pc-view-fps strong {
+    display: block; font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px; color: #55E6B5; font-weight: 700;
+    letter-spacing: -0.5px; text-shadow: 0 0 15px rgba(85,230,181,0.6);
+    line-height: 1.1;
+}
+.bl-pc-stage {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    padding-top: 25px;
+}
+.bl-pc-case {
+    position: relative; width: 140px; height: 200px;
+    background: linear-gradient(145deg, #1A1F22 0%, #0E1212 60%, #050707 100%);
+    border: 2px solid #2A3230; border-radius: 6px;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 0 40px rgba(85,230,181,0.25), 0 10px 25px rgba(0,0,0,0.6);
+    animation: blPcFloat 6s ease-in-out infinite;
+}
+@keyframes blPcFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.bl-rgb {
+    position: absolute; top: 8px; bottom: 8px; left: -1px; width: 3px;
+    background: linear-gradient(180deg, #55E6B5, #A8FFE3, #55E6B5);
+    border-radius: 2px;
+    box-shadow: 0 0 15px #55E6B5, 0 0 30px rgba(85,230,181,0.5);
+    animation: blRgbPulse 3s ease-in-out infinite;
+}
+@keyframes blRgbPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; box-shadow: 0 0 25px #55E6B5, 0 0 50px rgba(85,230,181,0.7); }
+}
+.bl-top-fan {
+    position: absolute; top: 6px; right: 6px;
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 1px solid rgba(85,230,181,0.5);
+    background: radial-gradient(circle, #1A1F22, #050707); z-index: 4;
+}
+.bl-top-fan::before {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    width: 14px; height: 14px; margin-top: -7px; margin-left: -7px;
+    border-radius: 50%; border-top: 1.5px solid #55E6B5;
+    border-right: 1.5px solid #55E6B5;
+    animation: blSpin 1s linear infinite;
+    box-shadow: 0 0 6px #55E6B5;
+}
+@keyframes blSpin { to { transform: rotate(360deg); } }
+.bl-pc-inner {
+    position: absolute; inset: 8px;
+    background: linear-gradient(135deg, rgba(85,230,181,0.06), rgba(0,0,0,0.4));
+    border: 1px solid rgba(85,230,181,0.2);
+    border-radius: 4px; overflow: hidden;
+}
+.bl-pc-inner::before {
+    content: ''; position: absolute; top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.08) 48%, transparent 52%);
+    animation: blShine 8s ease-in-out infinite; pointer-events: none;
+}
+@keyframes blShine {
+    0%, 100% { transform: translate(-30%, -30%); }
+    50% { transform: translate(30%, 30%); }
+}
+.bl-part-cpu {
+    position: absolute; top: 8px; left: 8px;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: radial-gradient(circle, #232A29 30%, #0E1212 70%);
+    border: 1.5px solid rgba(85,230,181,0.4);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0.4; transition: all 0.5s ease; z-index: 3;
+}
+.bl-part-cpu.active {
+    opacity: 1; border-color: #55E6B5;
+    box-shadow: 0 0 25px rgba(85,230,181,0.9), inset 0 0 15px rgba(85,230,181,0.3);
+}
+.bl-fan-cpu { width: 24px; height: 24px; position: relative; animation: blSpin 1.5s linear infinite; }
+.bl-fan-cpu::before, .bl-fan-cpu::after {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    background: #55E6B5; border-radius: 50%; box-shadow: 0 0 6px #55E6B5;
+}
+.bl-fan-cpu::before { width: 2px; height: 22px; margin-top: -11px; margin-left: -1px; }
+.bl-fan-cpu::after { width: 22px; height: 2px; margin-top: -1px; margin-left: -11px; }
+.bl-ram-group { position: absolute; top: 8px; right: 8px; display: flex; gap: 3px; }
+.bl-part-ram {
+    width: 6px; height: 45px;
+    background: linear-gradient(180deg, #232A29, #0E1212);
+    border: 1px solid rgba(85,230,181,0.4);
+    border-radius: 2px; opacity: 0.4;
+    transition: all 0.5s ease; position: relative;
+}
+.bl-part-ram::before {
+    content: ''; position: absolute; top: 3px; left: -1px; right: -1px;
+    height: 2px; background: #55E6B5; box-shadow: 0 0 8px #55E6B5;
+    opacity: 0; transition: opacity 0.5s ease;
+}
+.bl-part-ram.active { opacity: 1; border-color: #55E6B5; box-shadow: 0 0 15px rgba(85,230,181,0.7); }
+.bl-part-ram.active::before { opacity: 1; animation: blPulse 2s ease-in-out infinite; }
+.bl-part-ssd {
+    position: absolute; top: 55px; left: 8px;
+    width: 55px; height: 8px;
+    background: linear-gradient(90deg, #232A29, #0E1212);
+    border: 1px solid rgba(85,230,181,0.4);
+    border-radius: 2px; opacity: 0.4;
+    transition: all 0.5s ease; z-index: 3;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 5px; letter-spacing: 1px; color: #55E6B5;
+    display: flex; align-items: center; justify-content: center;
+}
+.bl-part-ssd.active {
+    opacity: 1; border-color: #55E6B5;
+    background: linear-gradient(90deg, rgba(85,230,181,0.3), rgba(85,230,181,0.05));
+    box-shadow: 0 0 15px rgba(85,230,181,0.7);
+}
+.bl-part-gpu {
+    position: absolute; bottom: 30px; left: 8px; right: 8px; height: 26px;
+    background: linear-gradient(180deg, #232A29, #0E1212);
+    border: 1.5px solid rgba(85,230,181,0.4);
+    border-radius: 3px; opacity: 0.4;
+    transition: all 0.5s ease; z-index: 4;
+    display: flex; align-items: center; justify-content: space-around; padding: 0 5px;
+}
+.bl-part-gpu.active {
+    opacity: 1; border-color: #55E6B5;
+    box-shadow: 0 0 25px rgba(85,230,181,0.8), inset 0 0 15px rgba(85,230,181,0.2);
+}
+.bl-gpu-fan {
+    width: 13px; height: 13px; border-radius: 50%;
+    border: 1px solid #55E6B5; position: relative;
+    animation: blSpin 1s linear infinite;
+}
+.bl-gpu-fan::before, .bl-gpu-fan::after {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    background: #55E6B5; border-radius: 1px; box-shadow: 0 0 3px #55E6B5;
+}
+.bl-gpu-fan::before { width: 1.5px; height: 10px; margin-top: -5px; margin-left: -0.75px; }
+.bl-gpu-fan::after { width: 10px; height: 1.5px; margin-top: -0.75px; margin-left: -5px; }
+.bl-part-psu {
+    position: absolute; bottom: 6px; left: 8px; right: 8px; height: 16px;
+    background: linear-gradient(180deg, #232A29, #050707);
+    border: 1px solid rgba(85,230,181,0.4);
+    border-radius: 2px; opacity: 0.4;
+    transition: all 0.5s ease; z-index: 3;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 6px; letter-spacing: 1px; color: #55E6B5; font-weight: 600;
+}
+.bl-part-psu.active {
+    opacity: 1; border-color: #55E6B5;
+    box-shadow: 0 0 15px rgba(85,230,181,0.7);
+    background: linear-gradient(180deg, rgba(85,230,181,0.1), #050707);
+}
+.bl-summary-items { display: flex; flex-direction: column; gap: 6px; }
+.bl-summary-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; background: rgba(24,30,29,0.4);
+    border: 1px solid #1F2626; border-radius: 6px;
+    cursor: pointer; transition: all 0.3s ease;
+}
+.bl-summary-item:hover { background: rgba(85,230,181,0.05); border-color: rgba(85,230,181,0.25); }
+.bl-summary-item.active { background: rgba(85,230,181,0.08); border-color: rgba(85,230,181,0.4); }
+.bl-summary-item-icon {
+    width: 26px; height: 26px;
+    background: rgba(85,230,181,0.08);
+    border: 1px solid rgba(85,230,181,0.2);
+    border-radius: 4px; display: flex; align-items: center; justify-content: center;
+    color: #55E6B5; font-size: 11px; font-weight: 700;
+    flex-shrink: 0; font-family: 'Space Grotesk', sans-serif;
+}
+.bl-summary-item-info { flex: 1; min-width: 0; }
+.bl-summary-item-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; letter-spacing: 1.5px; color: #6A7570;
+    text-transform: uppercase; display: block; margin-bottom: 2px;
+}
+.bl-summary-item-val {
+    font-size: 11px; color: #E8F0ED; font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;
+}
+.bl-summary-item-price { font-family: 'Space Grotesk', sans-serif; font-size: 11px; font-weight: 600; color: #55E6B5; flex-shrink: 0; }
+.bl-summary-diag {
+    display: flex; flex-direction: column; gap: 10px;
+    padding-top: 14px; border-top: 1px dashed rgba(85,230,181,0.2);
+}
+.bl-sd-row {
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 1px; color: #6A7570; text-transform: uppercase;
+}
+.bl-sd-val { color: #55E6B5; font-weight: 600; }
+.bl-sd-val.warn { color: #E5C76B; }
+.bl-sd-val.bad { color: #EF6B6B; }
+.bl-sd-bar { height: 3px; background: rgba(85,230,181,0.1); border-radius: 2px; overflow: hidden; margin-top: 4px; }
+.bl-sd-fill {
+    height: 100%; background: linear-gradient(90deg, #55E6B5, #A8FFE3);
+    border-radius: 2px; transition: width 0.6s ease;
+    box-shadow: 0 0 8px rgba(85,230,181,0.5);
+}
+.bl-sd-fill.warn { background: linear-gradient(90deg, #E5C76B, #FFE4A0); }
+.bl-sd-fill.bad { background: linear-gradient(90deg, #EF6B6B, #FF9E9E); }
+.bl-summary-total { padding-top: 14px; border-top: 1px solid rgba(85,230,181,0.2); }
+.bl-total-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 2.5px; color: #6A7570;
+    text-transform: uppercase; margin-bottom: 6px; display: block;
+}
+.bl-total-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 30px; font-weight: 800; color: #E8F0ED;
+    letter-spacing: -1px; line-height: 1;
+    display: flex; align-items: baseline; gap: 4px; margin-bottom: 4px;
+}
+.bl-total-value .currency { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #55E6B5; font-weight: 600; }
+.bl-total-value.pulse { animation: blTotalPulse 0.8s ease; }
+@keyframes blTotalPulse {
+    0% { color: #55E6B5; text-shadow: 0 0 40px rgba(85,230,181,1); }
+    100% { color: #E8F0ED; text-shadow: 0 0 20px rgba(85,230,181,0.3); }
+}
+.bl-summary-actions { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid #1F2626; }
+.bl-btn {
+    padding: 14px 20px; border-radius: 6px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 12px; letter-spacing: 2px;
+    text-transform: uppercase; cursor: pointer;
+    transition: all 0.3s ease; border: none;
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px; text-decoration: none; white-space: nowrap;
+}
+.bl-btn-primary { background: #55E6B5; color: #080A0A; box-shadow: 0 10px 25px rgba(85,230,181,0.3); }
+.bl-btn-primary:hover:not(:disabled) { background: #A8FFE3; transform: translateY(-2px); box-shadow: 0 15px 35px rgba(85,230,181,0.6); }
+.bl-btn-primary:disabled { opacity: 0.6; cursor: wait; }
+.bl-btn-secondary { background: transparent; color: #E8F0ED; border: 1px solid #232A29; }
+.bl-btn-secondary:hover { border-color: #55E6B5; background: rgba(85,230,181,0.05); color: #55E6B5; }
+.bl-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.bl-ticker { position: relative; z-index: 2; max-width: 1600px; margin: 0 auto 24px; padding: 0 40px; }
+.bl-ticker-track {
+    display: flex; gap: 8px;
+    background: rgba(14,18,18,0.6);
+    border: 1px solid #1F2626; border-radius: 8px;
+    padding: 10px 14px; overflow-x: auto;
+    white-space: nowrap; scrollbar-width: none;
+    -ms-overflow-style: none; cursor: grab;
+}
+.bl-ticker-track::-webkit-scrollbar { display: none; height: 0; }
+.bl-ticker-track:active { cursor: grabbing; }
+.bl-tick {
+    flex-shrink: 0; display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px; background: rgba(85,230,181,0.04);
+    border: 1px solid rgba(85,230,181,0.15);
+    border-radius: 4px; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 1.5px; color: #55E6B5;
+    text-transform: uppercase; cursor: pointer;
+    transition: all 0.3s ease; text-decoration: none; position: relative;
+}
+.bl-tick::before { content: '◆'; color: #55E6B5; font-size: 6px; }
+.bl-tick:hover {
+    background: rgba(85,230,181,0.15); border-color: #55E6B5;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(85,230,181,0.3);
+}
+.bl-tick.bl-tip::after {
+    content: attr(data-tip);
+    position: absolute; bottom: calc(100% + 10px); left: 50%;
+    transform: translateX(-50%) translateY(6px);
+    background: #1F2626; color: #E8F0ED;
+    font-family: 'Inter', sans-serif; font-size: 11px;
+    font-weight: 400; line-height: 1.5; letter-spacing: 0.2px;
+    padding: 10px 14px; border-radius: 8px;
+    border: 1px solid rgba(85,230,181,0.3);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 25px rgba(85,230,181,0.15);
+    white-space: normal; width: 220px; text-align: left;
+    opacity: 0; visibility: hidden;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 99999; pointer-events: none; text-transform: none;
+}
+.bl-tick.bl-tip::before {
+    content: ''; position: absolute; bottom: calc(100% + 4px); left: 50%;
+    transform: translateX(-50%) translateY(6px);
+    width: 0; height: 0;
+    border-left: 6px solid transparent; border-right: 6px solid transparent;
+    border-top: 6px solid #1F2626; border-bottom: none;
+    opacity: 0; visibility: hidden;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 99999; pointer-events: none;
+}
+.bl-tick.bl-tip:hover::after, .bl-tick.bl-tip:hover::before {
+    opacity: 1; visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+.bl-tip:not(.bl-tick) { position: relative; cursor: help; }
+.bl-tip:not(.bl-tick)::after {
+    content: attr(data-tip);
+    position: absolute; bottom: calc(100% + 10px); left: 50%;
+    transform: translateX(-50%) translateY(6px);
+    background: #1F2626; color: #E8F0ED;
+    font-family: 'Inter', sans-serif; font-size: 11px;
+    line-height: 1.5; padding: 10px 14px; border-radius: 8px;
+    border: 1px solid rgba(85,230,181,0.3);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 25px rgba(85,230,181,0.15);
+    white-space: normal; width: 220px; text-align: left;
+    opacity: 0; visibility: hidden;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 9999; pointer-events: none;
+}
+.bl-tip:not(.bl-tick)::before {
+    content: ''; position: absolute; bottom: calc(100% + 4px); left: 50%;
+    transform: translateX(-50%) translateY(6px);
+    width: 0; height: 0;
+    border-left: 6px solid transparent; border-right: 6px solid transparent;
+    border-top: 6px solid #1F2626;
+    opacity: 0; visibility: hidden;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 9999; pointer-events: none;
+}
+.bl-tip:not(.bl-tick):hover::after, .bl-tip:not(.bl-tick):hover::before {
+    opacity: 1; visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+.bl-perf-section { position: relative; z-index: 2; max-width: 1600px; margin: 0 auto 60px; padding: 0 40px; }
+.bl-perf-card { background: linear-gradient(180deg, #0E1212 0%, #0A0D0D 100%); border: 1px solid #1F2626; border-radius: 12px; padding: 28px; }
+.bl-perf-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 22px; padding-bottom: 14px;
+    border-bottom: 1px dashed rgba(85,230,181,0.15);
+    flex-wrap: wrap; gap: 16px;
+}
+.bl-perf-title { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; color: #E8F0ED; letter-spacing: -0.5px; margin: 0; }
+.bl-perf-title .mint { color: #55E6B5; }
+.bl-perf-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 2px; color: #6A7570; text-transform: uppercase; }
+.bl-perf-games { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.bl-game {
+    padding: 16px; background: rgba(24,30,29,0.4);
+    border: 1px solid #1F2626; border-radius: 8px; transition: all 0.3s ease;
+}
+.bl-game:hover { border-color: rgba(85,230,181,0.3); transform: translateY(-2px); }
+.bl-game-name { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 600; color: #E8F0ED; margin-bottom: 10px; }
+.bl-game-fps {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 32px; font-weight: 800; color: #55E6B5;
+    letter-spacing: -1.5px; line-height: 1;
+    display: flex; align-items: baseline; gap: 4px;
+}
+.bl-game-fps small { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #6A7570; font-weight: 500; letter-spacing: 1px; }
+.bl-game-tag { font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 1.5px; color: #6A7570; text-transform: uppercase; margin-top: 6px; display: block; }
+.bl-game-bar { height: 3px; background: rgba(85,230,181,0.1); border-radius: 2px; overflow: hidden; margin-top: 12px; }
+.bl-game-bar-fill {
+    height: 100%; background: linear-gradient(90deg, #55E6B5, #A8FFE3);
+    border-radius: 2px; transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 0 8px rgba(85,230,181,0.5);
+}
+.bl-game-bar-fill.warn { background: linear-gradient(90deg, #E5C76B, #FFE4A0); }
+.bl-game-bar-fill.bad { background: linear-gradient(90deg, #EF6B6B, #FF9E9E); }
+.bl-toast {
+    position: fixed; bottom: 30px; right: 30px;
+    background: linear-gradient(135deg, #0E1212, #181E1D);
+    border: 1px solid #55E6B5; border-left: 3px solid #55E6B5;
+    padding: 14px 20px; border-radius: 6px; z-index: 99999;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.7), 0 0 40px rgba(85,230,181,0.4);
+    transform: translateX(400px); opacity: 0;
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    max-width: 320px; font-family: 'JetBrains Mono', monospace;
+}
+.bl-toast.show { transform: translateX(0); opacity: 1; }
+.bl-toast-label { font-size: 10px; letter-spacing: 2px; color: #55E6B5; text-transform: uppercase; display: block; margin-bottom: 4px; }
+.bl-toast-val { font-size: 12px; color: #E8F0ED; font-weight: 600; }
+.bl-cart-modal {
+    position: fixed; inset: 0; background: rgba(8,10,10,0.9);
+    backdrop-filter: blur(10px); z-index: 99999;
+    display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.bl-cart-modal.show { display: flex; animation: blModalIn 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes blModalIn { from { opacity: 0; } to { opacity: 1; } }
+.bl-cart-modal-inner {
+    background: linear-gradient(135deg, #0E1212, #181E1D);
+    border: 1px solid #55E6B5; border-radius: 16px; padding: 40px;
+    max-width: 500px; width: 100%; text-align: center;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 80px rgba(85,230,181,0.3);
+    animation: blModalScale 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes blModalScale {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+.bl-cart-icon {
+    width: 80px; height: 80px; margin: 0 auto 20px;
+    border-radius: 50%; background: #55E6B5;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 60px rgba(85,230,181,0.9);
+    animation: blCartPulse 2s ease-in-out infinite;
+}
+@keyframes blCartPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+.bl-cart-icon svg {
+    width: 40px; height: 40px; stroke: #080A0A;
+    stroke-width: 3; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+}
+.bl-cart-title { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 800; color: #E8F0ED; margin: 0 0 12px; letter-spacing: -1px; }
+.bl-cart-title .mint { color: #55E6B5; }
+.bl-cart-msg { font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 1.5px; color: #9DAAA6; text-transform: uppercase; line-height: 1.8; margin: 0 0 28px; }
+.bl-cart-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+@media (max-width: 1200px) {
+    .bl-main-grid { grid-template-columns: 1fr 360px; }
+    .bl-perf-games { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+    .bl-hero { padding: 40px 20px 24px; }
+    .bl-hero-grid { grid-template-columns: 1fr; gap: 24px; }
+    .bl-hero-title { font-size: 42px; letter-spacing: -2px; }
+    .bl-steps { padding: 0 20px; }
+    .bl-main-grid { grid-template-columns: 1fr; padding: 0 20px 40px; }
+    .bl-summary { position: relative; top: 0; max-height: none; }
+    .bl-content { padding: 20px; }
+    .bl-product { grid-template-columns: 80px 1fr; gap: 14px; padding: 16px; }
+    .bl-product-action { grid-column: 1 / -1; flex-direction: row; justify-content: space-between; align-items: center; min-width: 0; }
+    .bl-perf-section { padding: 0 20px; }
+    .bl-perf-games { grid-template-columns: 1fr 1fr; }
+    .bl-ticker { padding: 0 20px; }
+}
+@media (max-width: 550px) {
+    .bl-hero-title { font-size: 30px; }
+    .bl-hero-stats { flex-wrap: wrap; gap: 16px; }
+    .bl-content-title { font-size: 22px; }
+    .bl-product { grid-template-columns: 1fr; }
+    .bl-product-visual { display: none; }
+    .bl-product-action { flex-direction: column; align-items: flex-start; }
+    .bl-perf-games { grid-template-columns: 1fr; }
+    .bl-cart-modal-inner { padding: 30px 20px; }
+    .bl-cart-title { font-size: 22px; }
+}
+</style>
+
+<div class="bl-page" id="buildLabPage">
+
+    <div class="bl-hero">
+        <div class="bl-hero-top">
+            <a href="/">HOME</a>
+            <span class="sep">/</span>
+            <span class="active">BUILD LAB</span>
+        </div>
+        <div class="bl-hero-grid">
+            <div>
+                <h1 class="bl-hero-title">BUILD YOUR <span class="mint">MACHINE.</span></h1>
+                <p class="bl-hero-desc">
+                    Pick each component with detailed specs, real-time compatibility checks, live pricing, and performance estimates for the games you play. Your build, your rules.
+                </p>
+            </div>
+            <div class="bl-hero-stats">
+                <div class="bl-hero-stat">
+                    <span class="bl-hero-stat-num">8</span>
+                    <span class="bl-hero-stat-lbl">Steps</span>
+                </div>
+                <div class="bl-hero-stat">
+                    <span class="bl-hero-stat-num">16<span class="mint">+</span></span>
+                    <span class="bl-hero-stat-lbl">Components</span>
+                </div>
+                <div class="bl-hero-stat">
+                    <span class="bl-hero-stat-num">100<span class="mint">%</span></span>
+                    <span class="bl-hero-stat-lbl">Compatible</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bl-steps">
+        <div class="bl-steps-track" id="blStepsTrack"></div>
+    </div>
+
+    <div class="bl-main-grid">
+        <div class="bl-content">
+            <div class="bl-content-header">
+                <div>
+                    <div class="bl-content-step" id="stepLabel">STEP 01 / 08</div>
+                    <h2 class="bl-content-title" id="stepTitle">Choose Your Processor</h2>
+                    <p class="bl-content-desc" id="stepDesc">The brain of your PC.</p>
+                </div>
+                <div class="bl-content-count" id="stepCount">0 OPTIONS</div>
+            </div>
+            <div class="bl-products" id="blProducts"></div>
+        </div>
+
+        <div class="bl-summary">
+            <div class="bl-summary-head">
+                <span class="bl-summary-title">YOUR BUILD</span>
+                <span class="bl-summary-count" id="buildCount">0/8</span>
+            </div>
+
+            <div class="bl-pc-view">
+                <div class="bl-pc-view-label">LIVE PREVIEW</div>
+                <div class="bl-pc-view-fps">
+                    FPS EST.
+                    <strong><span id="bpFps">0</span></strong>
+                </div>
+                <div class="bl-pc-stage">
+                    <div class="bl-pc-case">
+                        <div class="bl-rgb"></div>
+                        <div class="bl-top-fan"></div>
+                        <div class="bl-pc-inner">
+                            <div class="bl-part-cpu" data-part="CPU">
+                                <div class="bl-fan-cpu"></div>
+                            </div>
+                            <div class="bl-ram-group">
+                                <div class="bl-part-ram" data-part="RAM"></div>
+                                <div class="bl-part-ram" data-part="RAM"></div>
+                            </div>
+                            <div class="bl-part-ssd" data-part="SSD">SSD</div>
+                            <div class="bl-part-gpu" data-part="GPU">
+                                <div class="bl-gpu-fan"></div>
+                                <div class="bl-gpu-fan"></div>
+                            </div>
+                            <div class="bl-part-psu" data-part="PSU">FORGE 850W</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bl-summary-items" id="blSummaryItems"></div>
+
+            <div class="bl-summary-diag">
+                <div>
+                    <div class="bl-sd-row">
+                        <span class="bl-tip" data-tip="Checks CPU socket match with motherboard and PSU adequacy.">Compatibility</span>
+                        <span class="bl-sd-val" id="sdCompat">0%</span>
+                    </div>
+                    <div class="bl-sd-bar"><div class="bl-sd-fill" id="sdCompatBar" style="width:0"></div></div>
+                </div>
+                <div>
+                    <div class="bl-sd-row">
+                        <span class="bl-tip" data-tip="Composite score from CPU, GPU, and RAM performance ratings.">Performance</span>
+                        <span class="bl-sd-val" id="sdPerf">0/100</span>
+                    </div>
+                    <div class="bl-sd-bar"><div class="bl-sd-fill" id="sdPerfBar" style="width:0"></div></div>
+                </div>
+                <div>
+                    <div class="bl-sd-row">
+                        <span class="bl-tip" data-tip="Total watts your components will draw under full load.">Power Draw</span>
+                        <span class="bl-sd-val" id="sdPower">0W</span>
+                    </div>
+                    <div class="bl-sd-bar"><div class="bl-sd-fill" id="sdPowerBar" style="width:0"></div></div>
+                </div>
+                <div>
+                    <div class="bl-sd-row">
+                        <span class="bl-tip" data-tip="Estimated CPU temperature under load with selected cooler.">Thermals</span>
+                        <span class="bl-sd-val" id="sdTherm">0°C</span>
+                    </div>
+                    <div class="bl-sd-bar"><div class="bl-sd-fill" id="sdThermBar" style="width:0"></div></div>
+                </div>
+            </div>
+
+            <div class="bl-summary-total">
+                <span class="bl-total-label">Total Price</span>
+                <div class="bl-total-value" id="blTotalValue">
+                    <span class="currency">₨</span>
+                    <span id="blTotalAmount">0</span>
+                </div>
+            </div>
+
+            <div class="bl-summary-actions">
+                <button class="bl-btn bl-btn-primary" id="addCartBtn">Add Build to Cart →</button>
+                <div class="bl-btn-row">
+                    <button class="bl-btn bl-btn-secondary" id="saveBuildBtn">Save</button>
+                    <button class="bl-btn bl-btn-secondary" id="resetBuildBtn">Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bl-ticker">
+        <div class="bl-ticker-track" id="blTicker">
+            <a href="#build" class="bl-tick bl-tip" data-tip="Click any component slot on the left to swap it — updates instantly.">CLICK COMPONENT TO SWAP</a>
+            <a href="#build" class="bl-tick bl-tip" data-tip="Every price updates live as you build. No page refresh needed.">LIVE PRICING</a>
+            <a href="#build" class="bl-tick bl-tip" data-tip="We check CPU socket, PSU wattage, and RAM compatibility in real-time.">REAL-TIME COMPATIBILITY</a>
+            <a href="#build" class="bl-tick bl-tip" data-tip="Total price auto-calculates as you add or swap parts.">TOTAL AUTO-CALCULATED</a>
+            <a href="#build" class="bl-tick bl-tip" data-tip="8 guided steps: CPU → GPU → RAM → Motherboard → SSD → PSU → Cooling → Case">8-STEP CONFIGURATOR</a>
+            <a href="#build" class="bl-tick bl-tip" data-tip="FPS estimates for popular games based on your current build.">PERFORMANCE ESTIMATES</a>
+            <a href="#build" class="bl-tick bl-tip" data-tip="Save your build and return to it anytime from this browser.">SAVE YOUR BUILD</a>
+            <a href="#build" class="bl-tick bl-tip" data-tip="Export your entire build to WooCommerce cart in one click.">EXPORT TO CART</a>
+        </div>
+    </div>
+
+    <div class="bl-perf-section">
+        <div class="bl-perf-card">
+            <div class="bl-perf-header">
+                <h3 class="bl-perf-title">PERFORMANCE <span class="mint">ESTIMATE</span></h3>
+                <span class="bl-perf-meta">1440P · ULTRA · DLSS ON</span>
+            </div>
+            <div class="bl-perf-games" id="blPerfGames"></div>
+        </div>
+    </div>
+
+    <div class="bl-toast" id="blToast">
+        <span class="bl-toast-label" id="blToastLabel">UPDATED</span>
+        <span class="bl-toast-val" id="blToastVal"></span>
+    </div>
+
+    <div class="bl-cart-modal" id="blCartModal">
+        <div class="bl-cart-modal-inner">
+            <div class="bl-cart-icon">
+                <svg viewBox="0 0 24 24"><polyline points="5 12 10 17 19 8"/></svg>
+            </div>
+            <h3 class="bl-cart-title">Build <span class="mint">Added!</span></h3>
+            <p class="bl-cart-msg" id="blCartMsg">Components added to cart</p>
+            <div class="bl-cart-actions">
+                <a href="/cart/" class="bl-btn bl-btn-primary" id="blGoToCart">View Cart →</a>
+                <button class="bl-btn bl-btn-secondary" id="blCloseModal">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+
+    // WooCommerce Product ID mapping
+    const WOO_IDS = {
+        'Ryzen 5 7600X': 144, 'Ryzen 7 7800X3D': 145,
+        'RTX 4060': 146, 'RTX 5090 OC': 147,
+        '16GB DDR5 5200': 148, '32GB DDR5 6000': 149,
+        'MSI B650 Tomahawk WiFi': 150, 'ASUS ROG Strix X670E': 151,
+        '1TB NVMe Gen4': 152, '2TB NVMe Gen4': 153,
+        '850W Gold Modular': 154, '1000W Platinum': 155,
+        'Noctua NH-D15': 156, 'NZXT Kraken 240 AIO': 157,
+        'NZXT H7 Flow': 158, 'Lian Li O11 Dynamic': 159
+    };
+
+    const CATALOG = {
+        CPU: { step: 1, title: 'Choose Your Processor', desc: 'The brain of your PC. Determines overall speed and multitasking capability.', items: [
+            { name: 'Ryzen 5 7600X', price: 45000, desc: 'Excellent value 6-core CPU for 1080p and 1440p gaming.', specs: [{k:'Cores',v:'6C/12T'},{k:'Clock',v:'5.3 GHz'},{k:'Socket',v:'AM5'}], rating: 4.8, badges: ['VALUE'], performance: 65, power: 105 },
+            { name: 'Ryzen 7 7800X3D', price: 72000, desc: 'Best gaming CPU with 3D V-Cache. Dominates in every game.', specs: [{k:'Cores',v:'8C/16T'},{k:'Clock',v:'5.0 GHz'},{k:'Socket',v:'AM5'}], rating: 4.9, badges: ['BEST'], performance: 92, power: 120 }
+        ]},
+        GPU: { step: 2, title: 'Choose Your Graphics Card', desc: 'The most important part for gaming. Determines visual quality and FPS.', items: [
+            { name: 'RTX 4060', price: 85000, desc: 'Entry-level ray tracing. Great for 1080p gaming.', specs: [{k:'VRAM',v:'8GB'},{k:'Bus',v:'128-bit'},{k:'TDP',v:'115W'}], rating: 4.5, badges: ['VALUE'], performance: 40, power: 115 },
+            { name: 'RTX 5090 OC', price: 245000, desc: 'The ultimate GPU. 4K ultra with ray tracing.', specs: [{k:'VRAM',v:'24GB'},{k:'Bus',v:'384-bit'},{k:'TDP',v:'450W'}], rating: 5.0, badges: ['NEW'], performance: 100, power: 450 }
+        ]},
+        RAM: { step: 3, title: 'Choose Your Memory', desc: 'More RAM = smoother multitasking and better performance.', items: [
+            { name: '16GB DDR5 5200', price: 12500, desc: 'Basic kit for light gaming and everyday tasks.', specs: [{k:'Type',v:'DDR5'},{k:'Speed',v:'5200 MHz'},{k:'CL',v:'40'}], rating: 4.4, badges: ['VALUE'], performance: 60, power: 0 },
+            { name: '32GB DDR5 6000', price: 22500, desc: 'The sweet spot. Ideal for gaming + streaming.', specs: [{k:'Type',v:'DDR5'},{k:'Speed',v:'6000 MHz'},{k:'CL',v:'30'}], rating: 4.8, badges: ['BEST'], performance: 90, power: 0 }
+        ]},
+        MOTHERBOARD: { step: 4, title: 'Choose Your Motherboard', desc: 'The foundation. Determines CPU socket and expansion options.', items: [
+            { name: 'MSI B650 Tomahawk WiFi', price: 42000, desc: 'Excellent AM5 board with strong VRMs and WiFi 6E.', specs: [{k:'Socket',v:'AM5'},{k:'Form',v:'ATX'},{k:'Chipset',v:'B650'}], rating: 4.7, badges: ['BEST'], performance: 85, power: 0 },
+            { name: 'ASUS ROG Strix X670E', price: 78000, desc: 'Premium AM5 flagship with PCIe 5.0 and dual USB4.', specs: [{k:'Socket',v:'AM5'},{k:'Form',v:'ATX'},{k:'Chipset',v:'X670E'}], rating: 4.9, badges: ['HOT'], performance: 100, power: 0 }
+        ]},
+        SSD: { step: 5, title: 'Choose Your Storage', desc: 'Fast NVMe SSD = quicker game loads and snappier Windows.', items: [
+            { name: '1TB NVMe Gen4', price: 14500, desc: 'Sweet spot for gamers. Holds OS + 10-15 games.', specs: [{k:'Capacity',v:'1TB'},{k:'Read',v:'7000 MB/s'},{k:'Gen',v:'Gen4'}], rating: 4.7, badges: ['VALUE'], performance: 85, power: 0 },
+            { name: '2TB NVMe Gen4', price: 18900, desc: 'Ideal for content creators and big game libraries.', specs: [{k:'Capacity',v:'2TB'},{k:'Read',v:'7000 MB/s'},{k:'Gen',v:'Gen4'}], rating: 4.8, badges: ['BEST'], performance: 95, power: 0 }
+        ]},
+        PSU: { step: 6, title: 'Choose Your Power Supply', desc: 'Powers everything. Must have enough wattage for your GPU.', items: [
+            { name: '850W Gold Modular', price: 24000, desc: 'The sweet spot. Handles up to RTX 4080.', specs: [{k:'Wattage',v:'850W'},{k:'Rating',v:'80+ Gold'},{k:'Modular',v:'Full'}], rating: 4.8, badges: ['BEST'], performance: 90, power: 0 },
+            { name: '1000W Platinum', price: 45000, desc: 'For high-end builds. Handles RTX 4090 / 5090.', specs: [{k:'Wattage',v:'1000W'},{k:'Rating',v:'80+ Platinum'},{k:'Modular',v:'Full'}], rating: 4.9, badges: ['HOT'], performance: 95, power: 0 }
+        ]},
+        COOLING: { step: 7, title: 'Choose Your Cooling', desc: 'Keeps CPU temps in check. Air or liquid?', items: [
+            { name: 'Noctua NH-D15', price: 28000, desc: 'Top-tier air cooler. Silent and powerful.', specs: [{k:'Type',v:'Air'},{k:'TDP',v:'250W'},{k:'Noise',v:'24 dBA'}], rating: 4.9, badges: ['BEST'], performance: 92, power: 0 },
+            { name: 'NZXT Kraken 240 AIO', price: 38000, desc: '240mm liquid cooler. Clean looks + great temps.', specs: [{k:'Type',v:'AIO 240'},{k:'TDP',v:'250W'},{k:'Noise',v:'22 dBA'}], rating: 4.7, badges: ['HOT'], performance: 88, power: 0 }
+        ]},
+        CASE: { step: 8, title: 'Choose Your Case', desc: 'Houses everything. Affects airflow, size, and style.', items: [
+            { name: 'NZXT H7 Flow', price: 15500, desc: 'The sweet spot. Great airflow, clean design.', specs: [{k:'Form',v:'Mid-Tower'},{k:'Glass',v:'Tempered'},{k:'Support',v:'ATX'}], rating: 4.8, badges: ['BEST'], performance: 92, power: 0 },
+            { name: 'Lian Li O11 Dynamic', price: 32000, desc: 'Iconic dual-glass case. Stunning showcase build.', specs: [{k:'Form',v:'Mid-Tower'},{k:'Glass',v:'Dual Tempered'},{k:'Support',v:'EATX'}], rating: 4.9, badges: ['HOT'], performance: 95, power: 0 }
+        ]}
+    };
+
+    const DEFAULT = {
+        CPU: 'Ryzen 7 7800X3D', GPU: 'RTX 5090 OC', RAM: '32GB DDR5 6000',
+        MOTHERBOARD: 'MSI B650 Tomahawk WiFi', SSD: '2TB NVMe Gen4',
+        PSU: '850W Gold Modular', COOLING: 'Noctua NH-D15', CASE: 'NZXT H7 Flow'
+    };
+
+    const SLOT_ICONS = { CPU:'C', GPU:'G', RAM:'R', MOTHERBOARD:'M', SSD:'S', PSU:'P', COOLING:'❄', CASE:'◘' };
+    const state = Object.assign({}, DEFAULT);
+    let activeStep = 'CPU';
+
+    function getProduct(cat, name) {
+        var items = (CATALOG[cat] && CATALOG[cat].items) || [];
+        for (var i = 0; i < items.length; i++) if (items[i].name === name) return items[i];
+        return { name: name, price: 0, specs: [], desc: '', rating: 0, badges: [], performance: 0, power: 0 };
+    }
+    function getCategoryKeys() {
+        return Object.keys(CATALOG).sort(function(a, b) { return CATALOG[a].step - CATALOG[b].step; });
+    }
+
+    // Toast notifications
+    var toast = document.getElementById('blToast');
+    var toastLabel = document.getElementById('blToastLabel');
+    var toastVal = document.getElementById('blToastVal');
+    var toastTimer;
+    function showToast(label, val) {
+        toastLabel.textContent = label;
+        toastVal.textContent = val;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function() { toast.classList.remove('show'); }, 2400);
+    }
+
+    // Render step tracker
+    var stepsTrack = document.getElementById('blStepsTrack');
+    function renderSteps() {
+        stepsTrack.innerHTML = '';
+        getCategoryKeys().forEach(function(cat) {
+            var catData = CATALOG[cat];
+            var product = getProduct(cat, state[cat]);
+            var step = document.createElement('button');
+            step.className = 'bl-step';
+            if (cat === activeStep) step.classList.add('active');
+            if (state[cat]) step.classList.add('completed');
+            step.innerHTML =
+                '<div class="bl-step-top">' +
+                    '<span class="bl-step-num">' + String(catData.step).padStart(2, '0') + '</span>' +
+                    '<span class="bl-step-check">✓</span>' +
+                '</div>' +
+                '<span class="bl-step-name">' + cat.charAt(0) + cat.slice(1).toLowerCase() + '</span>' +
+                '<span class="bl-step-info">' + (product.name || 'Not selected') + '</span>';
+            step.addEventListener('click', function() {
+                activeStep = cat; renderSteps(); renderContent();
+            });
+            stepsTrack.appendChild(step);
+        });
+    }
+
+    // Render product list for active step
+    var stepLabel = document.getElementById('stepLabel');
+    var stepTitle = document.getElementById('stepTitle');
+    var stepDesc = document.getElementById('stepDesc');
+    var stepCount = document.getElementById('stepCount');
+    var productsContainer = document.getElementById('blProducts');
+
+    function renderContent() {
+        var catData = CATALOG[activeStep];
+        var items = catData.items;
+        stepLabel.textContent = 'STEP ' + String(catData.step).padStart(2, '0') + ' / 08';
+        stepTitle.textContent = catData.title;
+        stepDesc.textContent = catData.desc;
+        stepCount.textContent = items.length + ' OPTIONS';
+        productsContainer.innerHTML = '';
+
+        items.forEach(function(item) {
+            var isSelected = state[activeStep] === item.name;
+            var card = document.createElement('div');
+            card.className = 'bl-product' + (isSelected ? ' selected' : '');
+            var stars = '★'.repeat(Math.round(item.rating)) + '☆'.repeat(5 - Math.round(item.rating));
+            card.innerHTML =
+                '<div class="bl-product-visual">' +
+                    '<svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">' + getIconForCategory(activeStep) + '</svg>' +
+                '</div>' +
+                '<div class="bl-product-info">' +
+                    '<div class="bl-product-badge-row">' + item.badges.map(function(b) { return '<span class="bl-badge bl-badge-' + b.toLowerCase() + '">' + b + '</span>'; }).join('') + '</div>' +
+                    '<h3 class="bl-product-name">' + item.name + '</h3>' +
+                    '<p class="bl-product-desc">' + item.desc + '</p>' +
+                    '<div class="bl-product-specs">' + item.specs.map(function(s) { return '<span class="bl-spec-chip bl-tip" data-tip="' + s.k + ': ' + s.v + '">' + s.k + ': <strong>' + s.v + '</strong></span>'; }).join('') + '</div>' +
+                    '<div class="bl-product-rating"><span class="bl-stars">' + stars + '</span><span class="bl-rating-val">' + item.rating.toFixed(1) + '</span></div>' +
+                '</div>' +
+                '<div class="bl-product-action">' +
+                    '<div class="bl-product-price"><span class="currency">₨</span><span>' + item.price.toLocaleString() + '</span></div>' +
+                    '<span class="bl-product-stock">IN STOCK</span>' +
+                    '<button class="bl-product-select-btn">' + (isSelected ? '✓ Selected' : 'Select →') + '</button>' +
+                '</div>';
+            card.addEventListener('click', function(e) {
+                e.stopPropagation();
+                selectProduct(activeStep, item.name);
+            });
+            productsContainer.appendChild(card);
+        });
+    }
+
+    function getIconForCategory(cat) {
+        var icons = {
+            CPU: '<rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/>',
+            GPU: '<rect x="2" y="8" width="20" height="10" rx="2"/><circle cx="8" cy="13" r="2.5"/><circle cx="16" cy="13" r="2.5"/>',
+            RAM: '<rect x="3" y="8" width="18" height="8" rx="1"/><line x1="6" y1="8" x2="6" y2="5"/><line x1="10" y1="8" x2="10" y2="5"/><line x1="14" y1="8" x2="14" y2="5"/><line x1="18" y1="8" x2="18" y2="5"/>',
+            MOTHERBOARD: '<rect x="4" y="4" width="16" height="16" rx="1"/><rect x="7" y="7" width="5" height="5"/><rect x="14" y="7" width="3" height="3"/>',
+            SSD: '<rect x="3" y="6" width="18" height="12" rx="1"/><circle cx="12" cy="12" r="2"/>',
+            PSU: '<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="8" cy="12" r="3"/>',
+            COOLING: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/>',
+            CASE: '<rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="11" r="2"/>'
+        };
+        return icons[cat] || icons.CPU;
+    }
+
+    function selectProduct(cat, name) {
+        if (state[cat] === name) return;
+        state[cat] = name;
+        renderSteps();
+        renderContent();
+        renderSummary();
+        recalculate();
+        updatePerformance();
+        showToast(cat + ' SELECTED', name);
+    }
+
+    // Render build summary sidebar
+    var summaryItems = document.getElementById('blSummaryItems');
+    var buildCount = document.getElementById('buildCount');
+
+    function renderSummary() {
+        summaryItems.innerHTML = '';
+        var keys = getCategoryKeys();
+        var filled = 0;
+        keys.forEach(function(cat) {
+            var product = getProduct(cat, state[cat]);
+            if (state[cat]) filled++;
+            var item = document.createElement('div');
+            item.className = 'bl-summary-item' + (cat === activeStep ? ' active' : '');
+            item.innerHTML =
+                '<div class="bl-summary-item-icon">' + SLOT_ICONS[cat] + '</div>' +
+                '<div class="bl-summary-item-info">' +
+                    '<span class="bl-summary-item-label">' + cat + '</span>' +
+                    '<span class="bl-summary-item-val">' + (state[cat] || 'Not selected') + '</span>' +
+                '</div>' +
+                '<span class="bl-summary-item-price">₨ ' + product.price.toLocaleString() + '</span>';
+            item.addEventListener('click', function() {
+                activeStep = cat; renderSteps(); renderContent(); renderSummary();
+            });
+            summaryItems.appendChild(item);
+        });
+        buildCount.textContent = filled + '/' + keys.length;
+
+        document.querySelectorAll('.bl-part-cpu').forEach(function(el) { el.classList.toggle('active', !!state.CPU); });
+        document.querySelectorAll('.bl-part-ram').forEach(function(el) { el.classList.toggle('active', !!state.RAM); });
+        document.querySelectorAll('.bl-part-ssd').forEach(function(el) { el.classList.toggle('active', !!state.SSD); });
+        document.querySelectorAll('.bl-part-gpu').forEach(function(el) { el.classList.toggle('active', !!state.GPU); });
+        document.querySelectorAll('.bl-part-psu').forEach(function(el) { el.classList.toggle('active', !!state.PSU); });
+    }
+
+    // Recalculate price, compatibility, performance, power, thermals
+    function recalculate() {
+        var total = 0, totalPerf = 0, totalPower = 0, count = 0;
+        getCategoryKeys().forEach(function(cat) {
+            var p = getProduct(cat, state[cat]);
+            total += p.price;
+            if (['CPU', 'GPU', 'RAM'].indexOf(cat) !== -1) { totalPerf += p.performance; count++; }
+            totalPower += p.power || 0;
+        });
+        animateNumber(document.getElementById('blTotalAmount'), total, 600);
+        var tv = document.getElementById('blTotalValue');
+        tv.classList.remove('pulse'); void tv.offsetWidth; tv.classList.add('pulse');
+
+        var cpuSocket = (state.CPU && state.CPU.indexOf('Ryzen') !== -1) ? 'AM5' : 'LGA1700';
+        var moboSocket = (state.MOTHERBOARD && state.MOTHERBOARD.indexOf('AM5') !== -1) ? 'AM5' : 'LGA1700';
+        var compat = 100;
+        if (cpuSocket !== moboSocket) compat -= 40;
+        if (!state.PSU) compat -= 20;
+        compat = Math.max(compat, 30);
+
+        var sdC = document.getElementById('sdCompat');
+        sdC.textContent = compat + '%';
+        sdC.className = 'bl-sd-val ' + (compat >= 85 ? '' : (compat >= 60 ? 'warn' : 'bad'));
+        var cBar = document.getElementById('sdCompatBar');
+        cBar.style.width = compat + '%';
+        cBar.className = 'bl-sd-fill ' + (compat >= 85 ? '' : (compat >= 60 ? 'warn' : 'bad'));
+
+        var perf = count > 0 ? Math.round(totalPerf / count) : 0;
+        var sdP = document.getElementById('sdPerf');
+        sdP.textContent = perf + '/100';
+        sdP.className = 'bl-sd-val ' + (perf >= 75 ? '' : (perf >= 50 ? 'warn' : 'bad'));
+        var pBar = document.getElementById('sdPerfBar');
+        pBar.style.width = perf + '%';
+        pBar.className = 'bl-sd-fill ' + (perf >= 75 ? '' : (perf >= 50 ? 'warn' : 'bad'));
+
+        var psuMatch = state.PSU && state.PSU.match(/(\d+)W/);
+        var psuWatt = psuMatch ? parseInt(psuMatch[1]) : 0;
+        var headroom = psuWatt - totalPower;
+        var sdPw = document.getElementById('sdPower');
+        sdPw.textContent = totalPower + 'W';
+        var powerCls = headroom < 0 ? 'bad' : (headroom < 100 ? 'warn' : '');
+        sdPw.className = 'bl-sd-val ' + powerCls;
+        var pwBar = document.getElementById('sdPowerBar');
+        pwBar.style.width = Math.min((totalPower / Math.max(psuWatt, 1)) * 100, 100) + '%';
+        pwBar.className = 'bl-sd-fill ' + powerCls;
+
+        var therm = 40;
+        if (state.CPU && (state.CPU.indexOf('Ryzen 9') !== -1 || state.CPU.indexOf('i9') !== -1)) therm += 15;
+        if (state.GPU && state.GPU.indexOf('5090') !== -1) therm += 10;
+        if (state.COOLING && state.COOLING.indexOf('360') !== -1) therm -= 8;
+        if (state.COOLING && state.COOLING.indexOf('NH-D15') !== -1) therm -= 6;
+        var sdT = document.getElementById('sdTherm');
+        sdT.textContent = therm + '°C';
+        sdT.className = 'bl-sd-val ' + (therm < 55 ? '' : (therm < 70 ? 'warn' : 'bad'));
+        var tBar = document.getElementById('sdThermBar');
+        tBar.style.width = Math.min(therm * 1.3, 100) + '%';
+        tBar.className = 'bl-sd-fill ' + (therm < 55 ? '' : (therm < 70 ? 'warn' : 'bad'));
+
+        var gpuP = getProduct('GPU', state.GPU).performance || 50;
+        var cpuP = getProduct('CPU', state.CPU).performance || 50;
+        var avgP = (gpuP * 0.7) + (cpuP * 0.3);
+        var fps = Math.round(avgP * 2.4);
+        animateNumber(document.getElementById('bpFps'), fps, 600);
+    }
+
+    // Update game FPS estimates
+    var perfGames = document.getElementById('blPerfGames');
+    function updatePerformance() {
+        perfGames.innerHTML = '';
+        var gpuPerf = getProduct('GPU', state.GPU).performance || 50;
+        var cpuPerf = getProduct('CPU', state.CPU).performance || 50;
+        var avgPerf = (gpuPerf * 0.7) + (cpuPerf * 0.3);
+
+        var games = [
+            { name: 'Cyberpunk 2077', tag: 'AAA · 1440p Ultra', base: 2.4 },
+            { name: 'Valorant', tag: 'Esports · 1080p Low', base: 6.5 },
+            { name: 'GTA V', tag: 'AAA · 1440p High', base: 3.2 },
+            { name: 'Elden Ring', tag: 'AAA · 1440p Max', base: 2.8 }
+        ];
+        games.forEach(function(g) {
+            var fps = Math.round(avgPerf * g.base);
+            var pct = Math.min((fps / 300) * 100, 100);
+            var cls = fps >= 144 ? '' : (fps >= 60 ? 'warn' : 'bad');
+            var card = document.createElement('div');
+            card.className = 'bl-game';
+            card.innerHTML =
+                '<div class="bl-game-name bl-tip" data-tip="Estimated FPS based on current CPU + GPU combo at ' + g.tag + '">' + g.name + '</div>' +
+                '<div class="bl-game-fps">' + fps + '<small>FPS</small></div>' +
+                '<span class="bl-game-tag">' + g.tag + '</span>' +
+                '<div class="bl-game-bar"><div class="bl-game-bar-fill ' + cls + '" style="width:' + pct + '%"></div></div>';
+            perfGames.appendChild(card);
+        });
+    }
+
+    function animateNumber(el, target, duration) {
+        if (!el) return;
+        var start = parseInt(el.textContent.replace(/,/g, '')) || 0;
+        var st = performance.now();
+        function tick(now) {
+            var p = Math.min((now - st) / duration, 1);
+            var e = 1 - Math.pow(1 - p, 3);
+            el.textContent = Math.floor(start + (target - start) * e).toLocaleString();
+            if (p < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+    }
+
+    // Save & Reset
+    document.getElementById('saveBuildBtn').addEventListener('click', function() {
+        localStorage.setItem('pcf_build_full', JSON.stringify(state));
+        var orig = this.textContent;
+        this.textContent = '✓ Saved';
+        showToast('BUILD SAVED', 'Restored on next visit');
+        var btn = this;
+        setTimeout(function() { btn.textContent = orig; }, 1800);
+    });
+
+    document.getElementById('resetBuildBtn').addEventListener('click', function() {
+        Object.keys(DEFAULT).forEach(function(k) { state[k] = DEFAULT[k]; });
+        activeStep = 'CPU';
+        renderSteps();
+        renderContent();
+        renderSummary();
+        recalculate();
+        updatePerformance();
+        showToast('BUILD RESET', 'Back to default');
+    });
+
+    // Add to cart via WooCommerce AJAX loop
+    var addCartBtn = document.getElementById('addCartBtn');
+    var cartModal = document.getElementById('blCartModal');
+    var cartMsg = document.getElementById('blCartMsg');
+    var closeModal = document.getElementById('blCloseModal');
+
+    if (addCartBtn) {
+        addCartBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            var ids = [];
+            Object.keys(state).forEach(function(cat) {
+                var wooId = WOO_IDS[state[cat]];
+                if (wooId) ids.push(wooId);
+            });
+            if (ids.length === 0) {
+                showToast('MAPPING MISSING', 'No products found');
+                return;
+            }
+            var originalText = addCartBtn.textContent;
+            addCartBtn.textContent = 'Adding ' + ids.length + ' items...';
+            addCartBtn.disabled = true;
+            var added = 0;
+
+            try {
+                for (var i = 0; i < ids.length; i++) {
+                    var url = '/?wc-ajax=add_to_cart&product_id=' + ids[i] + '&quantity=1';
+                    try {
+                        var res = await fetch(url, { method: 'GET', credentials: 'same-origin' });
+                        var data = await res.json();
+                        if (data && data.fragments) added++;
+                    } catch (err) { /* silent */ }
+                    await new Promise(function(r) { setTimeout(r, 150); });
+                }
+                addCartBtn.textContent = originalText;
+                addCartBtn.disabled = false;
+                cartMsg.textContent = added + ' of ' + ids.length + ' components added to cart';
+                document.getElementById('blGoToCart').href = '/cart/';
+                cartModal.classList.add('show');
+                showToast('BUILD ADDED', added + ' components in cart');
+            } catch (err) {
+                addCartBtn.textContent = originalText;
+                addCartBtn.disabled = false;
+                showToast('ERROR', 'Could not add to cart');
+            }
+        });
+    }
+
+    if (closeModal) {
+        closeModal.addEventListener('click', function() { cartModal.classList.remove('show'); });
+    }
+    if (cartModal) {
+        cartModal.addEventListener('click', function(e) {
+            if (e.target === cartModal) cartModal.classList.remove('show');
+        });
+    }
+
+    // Auto-scroll ticker
+    var ticker = document.getElementById('blTicker');
+    if (ticker) {
+        var tickerPaused = false;
+        ticker.addEventListener('mouseenter', function() { tickerPaused = true; });
+        ticker.addEventListener('mouseleave', function() { tickerPaused = false; });
+        var scrollPos = 0;
+        setInterval(function() {
+            if (tickerPaused) return;
+            scrollPos += 0.6;
+            if (scrollPos >= ticker.scrollWidth - ticker.clientWidth) scrollPos = 0;
+            ticker.scrollLeft = scrollPos;
+        }, 30);
+    }
+
+    // Restore saved build
+    try {
+        var saved = localStorage.getItem('pcf_build_full');
+        if (saved) {
+            var parsed = JSON.parse(saved);
+            Object.keys(DEFAULT).forEach(function(k) {
+                if (parsed[k] && CATALOG[k] && CATALOG[k].items.some(function(p) { return p.name === parsed[k]; })) {
+                    state[k] = parsed[k];
+                }
+            });
+        }
+    } catch (e) {}
+
+    renderSteps();
+    renderContent();
+    renderSummary();
+    recalculate();
+    updatePerformance();
+})();
+</script>

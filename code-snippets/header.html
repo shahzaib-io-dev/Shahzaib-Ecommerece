@@ -1,0 +1,1954 @@
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+.pf-forge-header, .pf-forge-header *,
+.pf-mega, .pf-mega * { box-sizing: border-box !important; margin: 0; padding: 0; }
+
+.pf-forge-header {
+    --pf-bg: #080A0A; --pf-surface: #111515; --pf-card: #181E1D;
+    --pf-elevated: #1E2624; --pf-border: #283130;
+    --pf-text: #E8F0ED; --pf-muted: #9DAAA6; --pf-dim: #6A7570;
+    --pf-mint: #55E6B5; --pf-mint-deep: #1C9C78; --pf-glow: #A8FFE3;
+    --pf-warn: #E5C76B; --pf-error: #EF6B6B;
+    --pf-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --pf-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    position: fixed; top: 0; left: 0; right: 0; z-index: 9990;
+    background: rgba(8, 10, 10, 0.35);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border-bottom: 1px solid rgba(85, 230, 181, 0.06);
+    font-family: 'Inter', sans-serif;
+    transition: background 0.5s var(--pf-ease), border-color 0.5s var(--pf-ease),
+        box-shadow 0.5s var(--pf-ease), backdrop-filter 0.5s var(--pf-ease);
+    will-change: background, backdrop-filter;
+    isolation: isolate;
+}
+.pf-forge-header.scrolled {
+    background: rgba(8, 10, 10, 0.72);
+    backdrop-filter: blur(36px) saturate(200%);
+    -webkit-backdrop-filter: blur(36px) saturate(200%);
+    border-bottom-color: rgba(85, 230, 181, 0.18);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.55), 0 0 40px rgba(85, 230, 181, 0.06);
+}
+
+/* Canvas + beam + progress */
+.pf-forge-canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    z-index: 1; pointer-events: none; opacity: 0;
+    transition: opacity 1.2s var(--pf-ease);
+}
+.pf-forge-header.ready .pf-forge-canvas { opacity: 0.45; }
+.pf-forge-header.scrolled .pf-forge-canvas { opacity: 0.25; }
+
+.pf-forge-beam {
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent 0%, transparent 20%, var(--pf-mint) 45%, var(--pf-glow) 50%, var(--pf-mint) 55%, transparent 80%, transparent 100%);
+    background-size: 200% 100%;
+    animation: pfBeamFlow 8s linear infinite;
+    opacity: 0.55; pointer-events: none; z-index: 3;
+}
+@keyframes pfBeamFlow { 0% { background-position: 100% center; } 100% { background-position: -100% center; } }
+.pf-forge-progress {
+    position: absolute; bottom: -1px; left: 0; height: 1px; width: 0%;
+    background: linear-gradient(90deg, var(--pf-mint-deep), var(--pf-mint), var(--pf-glow));
+    box-shadow: 0 0 12px var(--pf-mint); z-index: 4;
+    transition: width 0.1s linear; pointer-events: none;
+}
+
+/* Inner grid */
+.pf-forge-inner {
+    max-width: 1480px; margin: 0 auto; padding: 0 32px; height: 82px;
+    display: grid; grid-template-columns: auto 1fr auto;
+    align-items: center; gap: 40px;
+    position: relative; z-index: 5;
+    transition: height 0.5s var(--pf-ease), gap 0.5s var(--pf-ease);
+}
+.pf-forge-header.scrolled .pf-forge-inner { height: 66px; gap: 28px; }
+
+/* Brand + F logo */
+.pf-forge-brand {
+    display: flex; align-items: center; gap: 14px;
+    text-decoration: none; flex-shrink: 0;
+    position: relative; padding: 4px 0;
+    transform: translateY(-120%); opacity: 0;
+    transition: transform 0.9s var(--pf-ease), opacity 0.9s var(--pf-ease);
+}
+.pf-forge-header.ready .pf-forge-brand { transform: translateY(0); opacity: 1; }
+.pf-forge-emblem {
+    position: relative; width: 42px; height: 42px;
+    flex-shrink: 0; transition: transform 0.6s var(--pf-ease);
+}
+.pf-forge-header.scrolled .pf-forge-emblem { transform: scale(0.9); }
+.pf-forge-emblem svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.pf-forge-emblem .pf-shape {
+    fill: none; stroke: var(--pf-mint); stroke-width: 1.4;
+    stroke-linecap: round; stroke-linejoin: round;
+    transition: stroke 0.5s var(--pf-ease), filter 0.5s var(--pf-ease), transform 0.7s var(--pf-ease);
+    transform-origin: center; transform-box: fill-box;
+}
+.pf-forge-emblem .pf-shape-1 { stroke-dasharray: 100; stroke-dashoffset: 100; animation: pfDrawPath 1s 0.3s var(--pf-ease) forwards; }
+.pf-forge-emblem .pf-shape-2 { stroke-dasharray: 80; stroke-dashoffset: 80; animation: pfDrawPath 1.1s 0.5s var(--pf-ease) forwards; }
+.pf-forge-emblem .pf-shape-3 { stroke-dasharray: 100; stroke-dashoffset: 100; animation: pfDrawPath 1.2s 0.7s var(--pf-ease) forwards; }
+.pf-forge-emblem .pf-core {
+    fill: var(--pf-mint); opacity: 0;
+    filter: drop-shadow(0 0 6px var(--pf-mint));
+    animation: pfCorePulse 0.8s 1.3s var(--pf-ease) forwards;
+    transform-origin: center; transform-box: fill-box;
+    transition: all 0.5s var(--pf-ease);
+}
+@keyframes pfDrawPath { to { stroke-dashoffset: 0; } }
+@keyframes pfCorePulse {
+    0% { opacity: 0; transform: scale(0); }
+    60% { opacity: 1; transform: scale(1.6); }
+    100% { opacity: 1; transform: scale(1); }
+}
+.pf-forge-emblem .pf-trace {
+    fill: none; stroke: var(--pf-glow); stroke-width: 1.8;
+    stroke-linecap: round; stroke-dasharray: 8 100; stroke-dashoffset: 0;
+    filter: drop-shadow(0 0 4px var(--pf-glow));
+    animation: pfTraceRun 4s 1.5s linear infinite;
+}
+@keyframes pfTraceRun { 0% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -108; } }
+.pf-forge-brand:hover .pf-shape-1 { transform: translateY(-2px) translateX(1px); }
+.pf-forge-brand:hover .pf-shape-2 { transform: translateX(3px); }
+.pf-forge-brand:hover .pf-shape-3 { transform: translateY(2px); }
+.pf-forge-brand:hover .pf-core { filter: drop-shadow(0 0 14px var(--pf-mint)); transform: scale(1.3); }
+.pf-forge-brand:focus-visible { outline: 2px solid var(--pf-mint); outline-offset: 4px; border-radius: 4px; }
+
+.pf-forge-emblem::after {
+    content: ''; position: absolute; inset: -2px;
+    border-radius: 50%; border: 1.5px solid var(--pf-mint);
+    opacity: 0; pointer-events: none; z-index: -1;
+}
+.pf-forge-brand:hover .pf-forge-emblem::after { animation: pfPulseRing 1.4s var(--pf-ease) infinite; }
+@keyframes pfPulseRing {
+    0% { transform: scale(1); opacity: 0.7; border-width: 2px; }
+    100% { transform: scale(2.4); opacity: 0; border-width: 1px; }
+}
+
+.pf-forge-wordmark-wrap { display: flex; flex-direction: column; gap: 3px; line-height: 1; min-width: 0; }
+.pf-forge-wordmark {
+    font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 800;
+    letter-spacing: 5px; color: var(--pf-text); line-height: 1;
+    position: relative; overflow: hidden; display: inline-block;
+    clip-path: inset(0 100% 0 0);
+    transition: color 0.35s var(--pf-ease); padding-right: 5px;
+}
+.pf-forge-header.ready .pf-forge-wordmark { animation: pfWordReveal 1s 0.9s var(--pf-ease) forwards; }
+@keyframes pfWordReveal { to { clip-path: inset(0 0 0 0); } }
+.pf-forge-brand:hover .pf-forge-wordmark { color: var(--pf-mint); text-shadow: 0 0 20px rgba(85, 230, 181, 0.5); }
+.pf-forge-subtitle {
+    font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 2.5px;
+    color: var(--pf-dim); text-transform: uppercase; opacity: 0;
+    display: flex; align-items: center; gap: 8px;
+    transition: opacity 0.4s var(--pf-ease);
+}
+.pf-forge-header.ready .pf-forge-subtitle { animation: pfFadeUp 0.7s 1.3s var(--pf-ease) forwards; }
+.pf-forge-header.scrolled .pf-forge-subtitle { opacity: 0; }
+@keyframes pfFadeUp {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 0.75; transform: translateY(0); }
+}
+.pf-forge-status-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--pf-mint); box-shadow: 0 0 8px var(--pf-mint);
+    animation: pfPulse 2s ease-in-out infinite; flex-shrink: 0;
+}
+@keyframes pfPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.35; transform: scale(0.7); }
+}
+
+/* Nav */
+.pf-forge-nav {
+    display: flex; align-items: center; gap: 2px;
+    justify-self: center; position: relative;
+}
+.pf-forge-nav-item { position: relative; }
+.pf-forge-nav-link {
+    position: relative; padding: 12px 18px;
+    color: var(--pf-muted); text-decoration: none;
+    font-size: 12.5px; font-weight: 500; letter-spacing: 1.3px;
+    text-transform: uppercase; border-radius: 6px;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: color 0.3s var(--pf-ease);
+    overflow: hidden;
+    transform: translateY(-15px); opacity: 0;
+    background: transparent; border: none; cursor: pointer;
+    font-family: inherit;
+}
+.pf-forge-header.ready .pf-forge-nav-link { animation: pfNavDrop 0.6s var(--pf-ease) forwards; }
+.pf-forge-header.ready .pf-forge-nav-item:nth-child(1) .pf-forge-nav-link { animation-delay: 1.4s; }
+.pf-forge-header.ready .pf-forge-nav-item:nth-child(2) .pf-forge-nav-link { animation-delay: 1.5s; }
+.pf-forge-header.ready .pf-forge-nav-item:nth-child(3) .pf-forge-nav-link { animation-delay: 1.6s; }
+.pf-forge-header.ready .pf-forge-nav-item:nth-child(4) .pf-forge-nav-link { animation-delay: 1.7s; }
+.pf-forge-header.ready .pf-forge-nav-item:nth-child(5) .pf-forge-nav-link { animation-delay: 1.8s; }
+@keyframes pfNavDrop { to { opacity: 1; transform: translateY(0); } }
+
+.pf-forge-nav-link::before {
+    content: ''; position: absolute; bottom: 0;
+    left: 18px; right: 18px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--pf-mint), transparent);
+    transform: scaleX(0); transform-origin: center;
+    transition: transform 0.5s var(--pf-ease);
+    box-shadow: 0 0 10px var(--pf-mint);
+}
+.pf-forge-nav-link::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(85, 230, 181, 0.08), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s var(--pf-ease);
+    pointer-events: none;
+}
+.pf-forge-nav-link:hover, .pf-forge-nav-item.pf-hover .pf-forge-nav-link { color: var(--pf-mint); }
+.pf-forge-nav-link:hover::before, .pf-forge-nav-item.pf-hover .pf-forge-nav-link::before { transform: scaleX(1); }
+.pf-forge-nav-link:hover::after { transform: translateX(100%); }
+.pf-nav-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    color: var(--pf-dim); letter-spacing: 0;
+    transition: all 0.35s var(--pf-ease); line-height: 1;
+}
+.pf-forge-nav-link:hover .pf-nav-num, .pf-forge-nav-item.pf-hover .pf-nav-num {
+    color: var(--pf-mint); transform: translateY(-1px);
+}
+.pf-nav-marker {
+    position: absolute; top: 7px; right: 7px;
+    width: 4px; height: 4px; background: var(--pf-mint); border-radius: 50%;
+    opacity: 0; transform: scale(0);
+    transition: all 0.4s var(--pf-ease-spring);
+    box-shadow: 0 0 8px var(--pf-mint);
+}
+.pf-forge-nav-link:hover .pf-nav-marker, .pf-forge-nav-item.pf-hover .pf-nav-marker {
+    opacity: 1; transform: scale(1);
+}
+.pf-nav-chevron {
+    width: 10px; height: 10px; stroke: currentColor;
+    stroke-width: 2.5; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+    transition: transform 0.4s var(--pf-ease); opacity: 0.6;
+}
+.pf-forge-nav-item.pf-hover .pf-nav-chevron { transform: rotate(180deg); opacity: 1; }
+.pf-forge-nav-link.pf-active { color: var(--pf-mint); }
+.pf-forge-nav-link.pf-active .pf-nav-num { color: var(--pf-mint); }
+.pf-forge-nav-link.pf-active::before { transform: scaleX(1); opacity: 0.6; }
+.pf-forge-nav-link:focus-visible { outline: 2px solid var(--pf-mint); outline-offset: 2px; }
+
+.pf-nav-meta {
+    font-family: 'JetBrains Mono', monospace; font-size: 8px;
+    letter-spacing: 1.2px; color: var(--pf-dim); opacity: 0.6;
+    text-transform: lowercase; padding: 2px 6px; border-radius: 3px;
+    background: rgba(85, 230, 181, 0.06);
+    border: 1px solid rgba(85, 230, 181, 0.12);
+    transition: all 0.35s var(--pf-ease);
+    margin-left: 2px; line-height: 1; position: relative; top: -1px;
+}
+.pf-forge-nav-link:hover .pf-nav-meta,
+.pf-forge-nav-item.pf-hover .pf-nav-meta {
+    color: var(--pf-mint);
+    background: rgba(85, 230, 181, 0.12);
+    border-color: rgba(85, 230, 181, 0.3);
+    opacity: 1;
+}
+.pf-forge-header.scrolled .pf-nav-meta { display: none; }
+
+.pf-nav-wave {
+    display: inline-flex; align-items: center;
+    gap: 1.5px; height: 10px; opacity: 0; width: 0;
+    overflow: hidden; transition: all 0.4s var(--pf-ease); margin-left: 0;
+}
+.pf-forge-nav-link:hover .pf-nav-wave,
+.pf-forge-nav-item.pf-hover .pf-nav-wave {
+    opacity: 1; width: 14px; margin-left: 4px;
+}
+.pf-nav-wave span {
+    width: 1.5px; background: var(--pf-mint); border-radius: 1px;
+    animation: pfWave 1s ease-in-out infinite;
+    box-shadow: 0 0 4px var(--pf-mint);
+}
+.pf-nav-wave span:nth-child(1) { height: 4px; animation-delay: 0s; }
+.pf-nav-wave span:nth-child(2) { height: 8px; animation-delay: 0.15s; }
+.pf-nav-wave span:nth-child(3) { height: 6px; animation-delay: 0.3s; }
+.pf-nav-wave span:nth-child(4) { height: 10px; animation-delay: 0.45s; }
+@keyframes pfWave {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.4); }
+}
+
+/* Utilities */
+.pf-forge-utils {
+    display: flex; align-items: center; gap: 6px;
+    flex-shrink: 0; justify-self: end;
+}
+.pf-forge-util {
+    position: relative; width: 42px; height: 42px;
+    background: rgba(24, 30, 29, 0.4);
+    border: 1px solid rgba(40, 49, 48, 0.6);
+    border-radius: 9px;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--pf-muted); text-decoration: none; cursor: pointer;
+    transition: color 0.3s var(--pf-ease), border-color 0.3s var(--pf-ease),
+        background 0.3s var(--pf-ease), transform 0.3s var(--pf-ease);
+    font-family: inherit; transform: translateY(-15px); opacity: 0;
+}
+.pf-forge-header.ready .pf-forge-util { animation: pfNavDrop 0.6s var(--pf-ease) forwards; }
+.pf-forge-header.ready .pf-forge-util:nth-child(1) { animation-delay: 2s; }
+.pf-forge-header.ready .pf-forge-util:nth-child(2) { animation-delay: 2.05s; }
+.pf-forge-header.ready .pf-forge-util:nth-child(3) { animation-delay: 2.1s; }
+.pf-forge-header.ready .pf-forge-util:nth-child(4) { animation-delay: 2.15s; }
+.pf-forge-util:hover {
+    color: var(--pf-mint);
+    border-color: rgba(85, 230, 181, 0.4);
+    background: rgba(85, 230, 181, 0.06);
+    transform: translateY(-2px);
+}
+.pf-forge-util:focus-visible { outline: 2px solid var(--pf-mint); outline-offset: 2px; }
+.pf-forge-util svg {
+    width: 17px; height: 17px; stroke: currentColor;
+    stroke-width: 2; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+    transition: transform 0.35s var(--pf-ease);
+}
+.pf-forge-util:hover svg { transform: scale(1.08); }
+.pf-forge-cart-count {
+    position: absolute; top: -5px; right: -5px;
+    min-width: 20px; height: 20px; padding: 0 6px;
+    background: var(--pf-mint); color: var(--pf-bg);
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 12px rgba(85, 230, 181, 0.7);
+    border: 1.5px solid var(--pf-bg);
+    transition: transform 0.35s var(--pf-ease-spring);
+    transform-origin: center; line-height: 1;
+}
+.pf-forge-cart-count.pf-pop { animation: pfCartPop 0.6s var(--pf-ease-spring); }
+@keyframes pfCartPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4) rotate(8deg); }
+    100% { transform: scale(1) rotate(0); }
+}
+
+/* CTA */
+.pf-forge-cta {
+    position: relative;
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 13px 22px;
+    background: transparent; color: var(--pf-mint); text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 1.8px; text-transform: uppercase;
+    border: 1.5px solid var(--pf-mint); border-radius: 9px;
+    white-space: nowrap; overflow: hidden;
+    transition: color 0.4s var(--pf-ease), background 0.4s var(--pf-ease),
+        transform 0.5s var(--pf-ease), box-shadow 0.4s var(--pf-ease),
+        border-color 0.4s var(--pf-ease);
+    flex-shrink: 0;
+    transform: translateY(-15px); opacity: 0;
+    cursor: pointer; margin-left: 4px;
+    will-change: transform;
+}
+.pf-forge-header.ready .pf-forge-cta { animation: pfNavDrop 0.6s var(--pf-ease) 2.2s forwards; }
+.pf-forge-cta.pf-magnetic {
+    transition: color 0.4s var(--pf-ease), background 0.4s var(--pf-ease),
+        transform 0.15s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.4s var(--pf-ease), border-color 0.4s var(--pf-ease);
+}
+.pf-forge-cta::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--pf-mint), var(--pf-glow), var(--pf-mint));
+    box-shadow: 0 0 12px var(--pf-mint);
+    transform: translateX(-100%);
+    transition: transform 0.6s var(--pf-ease);
+}
+.pf-forge-cta::after {
+    content: ''; position: absolute; inset: 0;
+    background: var(--pf-mint); transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.55s var(--pf-ease); z-index: -1;
+}
+.pf-forge-cta-inner {
+    position: relative; z-index: 2;
+    display: inline-flex; align-items: center; gap: 10px;
+}
+.pf-forge-cta:hover {
+    color: var(--pf-bg); background: var(--pf-mint);
+    box-shadow: 0 10px 30px rgba(85, 230, 181, 0.4), 0 0 40px rgba(85, 230, 181, 0.2);
+    border-color: var(--pf-mint);
+}
+.pf-forge-cta:hover::before { transform: translateX(0); }
+.pf-forge-cta:hover::after { transform: scaleX(1); }
+.pf-forge-cta:hover .pf-cta-arrow { transform: translateX(4px); }
+.pf-forge-cta:active { transform: translateY(0) scale(0.98); }
+.pf-forge-cta:focus-visible { outline: 2px solid var(--pf-glow); outline-offset: 3px; }
+.pf-cta-arrow { display: inline-flex; transition: transform 0.35s var(--pf-ease); font-size: 15px; line-height: 1; }
+
+/* Menu button */
+.pf-forge-menu-btn {
+    display: none; position: relative;
+    width: 42px; height: 42px;
+    background: rgba(24, 30, 29, 0.4);
+    border: 1px solid rgba(40, 49, 48, 0.6);
+    border-radius: 9px; color: var(--pf-text); cursor: pointer;
+    align-items: center; justify-content: center;
+    transition: all 0.35s var(--pf-ease);
+    transform: translateY(-15px); opacity: 0;
+    font-family: inherit; margin-left: 4px;
+}
+.pf-forge-header.ready .pf-forge-menu-btn { animation: pfNavDrop 0.6s var(--pf-ease) 2.25s forwards; }
+.pf-forge-menu-btn:hover {
+    color: var(--pf-mint);
+    border-color: rgba(85, 230, 181, 0.4);
+    background: rgba(85, 230, 181, 0.06);
+}
+.pf-forge-menu-btn:focus-visible { outline: 2px solid var(--pf-mint); outline-offset: 2px; }
+.pf-forge-menu-btn svg {
+    width: 20px; height: 20px; stroke: currentColor;
+    stroke-width: 2; fill: none;
+    stroke-linecap: round; transition: all 0.35s var(--pf-ease);
+}
+.pf-forge-menu-btn .pf-bar { transition: all 0.4s var(--pf-ease); transform-origin: center; }
+.pf-forge-menu-btn.active .pf-bar-1 { transform: translateY(6px) rotate(45deg); }
+.pf-forge-menu-btn.active .pf-bar-2 { opacity: 0; transform: scaleX(0); }
+.pf-forge-menu-btn.active .pf-bar-3 { transform: translateY(-6px) rotate(-45deg); }
+
+/* Mega menu */
+.pf-mega {
+    position: fixed; top: 0; left: 0; right: 0;
+    padding-top: 82px; z-index: 9985;
+    pointer-events: none; opacity: 0; visibility: hidden;
+    transition: opacity 0.4s var(--pf-ease), visibility 0.4s;
+    perspective: 2000px;
+}
+.pf-mega.pf-open { opacity: 1; visibility: visible; pointer-events: auto; }
+.pf-mega-inner { max-width: 1480px; margin: 0 auto; padding: 0 32px; position: relative; }
+.pf-mega-panel {
+    position: relative;
+    background: linear-gradient(180deg, rgba(20, 26, 24, 0.75) 0%, rgba(12, 16, 15, 0.85) 100%);
+    backdrop-filter: blur(48px) saturate(180%);
+    -webkit-backdrop-filter: blur(48px) saturate(180%);
+    border: 1px solid rgba(85, 230, 181, 0.15);
+    border-top: none; border-radius: 0 0 24px 24px;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6), 0 0 100px rgba(85, 230, 181, 0.08),
+        inset 0 1px 0 rgba(85, 230, 181, 0.15);
+    overflow: hidden;
+    transform: translateY(-20px) rotateX(-4deg);
+    transform-origin: top center; opacity: 0;
+    transition: transform 0.55s var(--pf-ease), opacity 0.45s var(--pf-ease);
+}
+.pf-mega.pf-open .pf-mega-panel { transform: translateY(0) rotateX(0); opacity: 1; }
+.pf-mega-panel::after {
+    content: ''; position: absolute;
+    top: -200px; left: 50%; transform: translateX(-50%);
+    width: 900px; height: 500px;
+    background: radial-gradient(ellipse, rgba(85, 230, 181, 0.1), transparent 60%);
+    pointer-events: none; z-index: 0;
+    animation: pfMegaGlow 10s ease-in-out infinite;
+}
+@keyframes pfMegaGlow {
+    0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.8; }
+    50% { transform: translateX(-50%) scale(1.15); opacity: 0.5; }
+}
+.pf-mega-scan {
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--pf-mint), var(--pf-glow), var(--pf-mint), transparent);
+    background-size: 200% 100%;
+    animation: pfBeamFlow 6s linear infinite;
+    box-shadow: 0 0 20px var(--pf-mint); z-index: 10;
+}
+.pf-mega-head {
+    padding: 16px 28px;
+    border-bottom: 1px dashed rgba(85, 230, 181, 0.15);
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(24, 30, 29, 0.3);
+    position: relative; z-index: 5;
+}
+.pf-mega-head-label {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 3px;
+    color: var(--pf-mint); text-transform: uppercase;
+}
+.pf-mega-head-label::before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--pf-mint); box-shadow: 0 0 8px var(--pf-mint);
+    animation: pfPulse 1.5s ease-in-out infinite;
+}
+.pf-mega-head-hint {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 2px; color: var(--pf-dim); text-transform: uppercase;
+}
+.pf-mega-head-hint kbd {
+    background: rgba(24, 30, 29, 0.8);
+    border: 1px solid var(--pf-border); border-radius: 3px;
+    padding: 1px 5px; margin: 0 2px;
+    color: var(--pf-text); font-family: inherit;
+}
+.pf-mega-grid { padding: 28px; display: grid; gap: 30px; position: relative; z-index: 5; }
+.pf-mega-grid-shop { grid-template-columns: 1.4fr 1fr 320px; }
+.pf-mega-grid-build { grid-template-columns: 1fr 1fr 1fr; }
+.pf-mega-col-title {
+    font-family: 'JetBrains Mono', monospace; font-size: 9px;
+    letter-spacing: 3px; color: var(--pf-mint); text-transform: uppercase;
+    padding-bottom: 12px; margin-bottom: 16px;
+    border-bottom: 1px solid rgba(85, 230, 181, 0.15);
+    display: flex; align-items: center; justify-content: space-between;
+}
+.pf-mega-col-title::after { content: '▣'; opacity: 0.5; font-size: 10px; }
+
+.pf-mega-cats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pf-mega-cat {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px;
+    background: rgba(24, 30, 29, 0.35);
+    border: 1px solid rgba(40, 49, 48, 0.5);
+    border-radius: 10px; text-decoration: none;
+    transition: all 0.35s var(--pf-ease);
+    position: relative; overflow: hidden;
+}
+.pf-mega-cat::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 2px; background: var(--pf-mint);
+    transform: scaleY(0); transition: transform 0.35s var(--pf-ease);
+    transform-origin: center; box-shadow: 0 0 10px var(--pf-mint);
+}
+.pf-mega-cat:hover {
+    background: rgba(85, 230, 181, 0.08);
+    border-color: rgba(85, 230, 181, 0.35);
+    transform: translateX(3px);
+}
+.pf-mega-cat:hover::before { transform: scaleY(1); }
+.pf-mega-cat-icon {
+    width: 40px; height: 40px;
+    background: rgba(85, 230, 181, 0.12);
+    border: 1.5px solid rgba(85, 230, 181, 0.4);
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.35s var(--pf-ease);
+}
+.pf-mega-cat:hover .pf-mega-cat-icon {
+    background: var(--pf-mint); border-color: var(--pf-mint);
+    box-shadow: 0 0 20px rgba(85, 230, 181, 0.5);
+    transform: scale(1.05);
+}
+.pf-mega-cat-icon svg {
+    width: 20px !important; height: 20px !important;
+    stroke: #55E6B5 !important; stroke-width: 1.8 !important;
+    fill: none !important;
+    stroke-linecap: round !important; stroke-linejoin: round !important;
+    transition: stroke 0.35s cubic-bezier(0.22, 1, 0.36, 1) !important;
+    display: block !important; opacity: 1 !important; visibility: visible !important;
+}
+.pf-mega-cat:hover .pf-mega-cat-icon svg { stroke: #080A0A !important; }
+.pf-mega-cat-info { flex: 1; min-width: 0; }
+.pf-mega-cat-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px; font-weight: 600;
+    color: var(--pf-text); letter-spacing: -0.2px;
+    display: block; margin-bottom: 3px;
+    transition: color 0.3s var(--pf-ease);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.pf-mega-cat:hover .pf-mega-cat-name { color: var(--pf-mint); }
+.pf-mega-cat-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; letter-spacing: 1.5px;
+    color: var(--pf-dim); text-transform: uppercase;
+    display: block;
+}
+.pf-mega-cat-arrow {
+    color: var(--pf-mint); font-size: 12px;
+    opacity: 0.4; transition: all 0.35s var(--pf-ease);
+    flex-shrink: 0;
+}
+.pf-mega-cat:hover .pf-mega-cat-arrow { opacity: 1; transform: translateX(3px); }
+
+.pf-mega-feat { display: flex; flex-direction: column; gap: 8px; }
+.pf-mega-feat-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px;
+    background: rgba(24, 30, 29, 0.35);
+    border: 1px solid rgba(40, 49, 48, 0.5);
+    border-radius: 10px; text-decoration: none;
+    transition: all 0.35s var(--pf-ease);
+}
+.pf-mega-feat-item:hover {
+    background: rgba(85, 230, 181, 0.08);
+    border-color: rgba(85, 230, 181, 0.35);
+    transform: translateX(3px);
+}
+.pf-mega-feat-img {
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, rgba(85, 230, 181, 0.08), rgba(85, 230, 181, 0.02));
+    border: 1px solid rgba(85, 230, 181, 0.25);
+    border-radius: 8px; flex-shrink: 0; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    color: #55E6B5; font-size: 20px;
+}
+.pf-mega-feat-img img {
+    width: 100%; height: 100%; object-fit: contain; padding: 4px;
+    transition: transform 0.4s var(--pf-ease);
+}
+.pf-mega-feat-item:hover .pf-mega-feat-img img { transform: scale(1.1); }
+.pf-mega-feat-info { flex: 1; min-width: 0; }
+.pf-mega-feat-cat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; letter-spacing: 1.5px;
+    color: var(--pf-dim); text-transform: uppercase;
+    display: block; margin-bottom: 3px;
+}
+.pf-mega-feat-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12.5px; font-weight: 600;
+    color: var(--pf-text); display: block;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 3px; transition: color 0.3s var(--pf-ease);
+}
+.pf-mega-feat-item:hover .pf-mega-feat-name { color: var(--pf-mint); }
+.pf-mega-feat-price {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--pf-mint);
+    font-weight: 600; letter-spacing: 0.3px;
+}
+
+.pf-mega-promo {
+    background: linear-gradient(145deg, rgba(85, 230, 181, 0.1), rgba(85, 230, 181, 0.02));
+    border: 1px solid rgba(85, 230, 181, 0.35);
+    border-radius: 14px; padding: 24px;
+    display: flex; flex-direction: column; gap: 16px;
+    position: relative; overflow: hidden; height: 100%;
+}
+.pf-mega-promo::before {
+    content: ''; position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(85, 230, 181, 0.15), transparent 40%);
+    animation: pfPromoGlow 8s ease-in-out infinite;
+    pointer-events: none;
+}
+@keyframes pfPromoGlow {
+    0%, 100% { transform: translate(-30%, -30%); }
+    50% { transform: translate(30%, 30%); }
+}
+.pf-mega-promo-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 3px;
+    color: var(--pf-mint); text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px;
+    position: relative; z-index: 2;
+}
+.pf-mega-promo-label::before {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--pf-mint); box-shadow: 0 0 8px var(--pf-mint);
+    animation: pfPulse 1.5s ease-in-out infinite;
+}
+.pf-mega-promo-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 26px; font-weight: 800; line-height: 1.05;
+    letter-spacing: -1px; color: var(--pf-text);
+    position: relative; z-index: 2;
+}
+.pf-mega-promo-title .pf-mint { color: var(--pf-mint); }
+.pf-mega-promo-desc {
+    font-size: 12.5px; color: var(--pf-muted);
+    line-height: 1.6; position: relative; z-index: 2; margin-bottom: auto;
+}
+.pf-mega-promo-cta {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 13px 20px;
+    background: var(--pf-mint); color: var(--pf-bg);
+    text-decoration: none;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 11px;
+    letter-spacing: 1.8px; text-transform: uppercase;
+    border-radius: 9px; transition: all 0.4s var(--pf-ease);
+    position: relative; z-index: 2; overflow: hidden;
+}
+.pf-mega-promo-cta::before {
+    content: ''; position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.6s var(--pf-ease);
+}
+.pf-mega-promo-cta:hover {
+    background: var(--pf-glow); transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(85, 230, 181, 0.5);
+}
+.pf-mega-promo-cta:hover::before { left: 100%; }
+.pf-mega-promo-cta .arrow { transition: transform 0.3s var(--pf-ease); }
+.pf-mega-promo-cta:hover .arrow { transform: translateX(4px); }
+.pf-mega-promo-badges {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    position: relative; z-index: 2;
+}
+.pf-mega-promo-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; letter-spacing: 1.5px;
+    color: var(--pf-muted); text-transform: uppercase;
+    padding: 4px 8px; background: rgba(24, 30, 29, 0.6);
+    border: 1px solid rgba(85, 230, 181, 0.2); border-radius: 4px;
+}
+
+.pf-mega-actions { display: flex; flex-direction: column; gap: 8px; }
+.pf-mega-action {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px;
+    background: rgba(24, 30, 29, 0.35);
+    border: 1px solid rgba(40, 49, 48, 0.5);
+    border-radius: 10px; text-decoration: none;
+    transition: all 0.35s var(--pf-ease);
+}
+.pf-mega-action:hover {
+    background: rgba(85, 230, 181, 0.08);
+    border-color: rgba(85, 230, 181, 0.35);
+    transform: translateX(3px);
+}
+.pf-mega-action-icon {
+    width: 40px; height: 40px;
+    background: rgba(85, 230, 181, 0.12);
+    border: 1.5px solid rgba(85, 230, 181, 0.4);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.35s var(--pf-ease);
+}
+.pf-mega-action:hover .pf-mega-action-icon {
+    background: var(--pf-mint); border-color: var(--pf-mint);
+    box-shadow: 0 0 20px rgba(85, 230, 181, 0.5);
+    transform: scale(1.05);
+}
+.pf-mega-action-icon svg {
+    width: 20px !important; height: 20px !important;
+    stroke: #55E6B5 !important; stroke-width: 1.8 !important;
+    fill: none !important;
+    stroke-linecap: round !important; stroke-linejoin: round !important;
+    transition: stroke 0.35s var(--pf-ease) !important;
+    display: block !important;
+}
+.pf-mega-action:hover .pf-mega-action-icon svg { stroke: #080A0A !important; }
+.pf-mega-action-info { flex: 1; min-width: 0; }
+.pf-mega-action-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px; font-weight: 600;
+    color: var(--pf-text); display: block;
+    margin-bottom: 3px; transition: color 0.3s var(--pf-ease);
+}
+.pf-mega-action:hover .pf-mega-action-title { color: var(--pf-mint); }
+.pf-mega-action-desc {
+    font-size: 11.5px; color: var(--pf-dim);
+    line-height: 1.5; display: block;
+}
+.pf-mega-features { display: flex; flex-direction: column; gap: 10px; }
+.pf-mega-feature {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(85, 230, 181, 0.12);
+}
+.pf-mega-feature:last-child { border-bottom: none; }
+.pf-mega-feature-check {
+    width: 22px; height: 22px;
+    background: rgba(85, 230, 181, 0.15);
+    border: 1.5px solid var(--pf-mint);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 2px;
+}
+.pf-mega-feature-check svg {
+    width: 12px !important; height: 12px !important;
+    stroke: #55E6B5 !important; stroke-width: 3 !important;
+    fill: none !important;
+    stroke-linecap: round !important; stroke-linejoin: round !important;
+    display: block !important;
+}
+.pf-mega-feature-text {
+    font-size: 12.5px; color: var(--pf-muted); line-height: 1.6;
+}
+.pf-mega-feature-text strong {
+    color: var(--pf-text); font-weight: 600;
+    display: block; margin-bottom: 2px; font-size: 13px;
+}
+.pf-mega-presets { display: flex; flex-direction: column; gap: 8px; }
+.pf-mega-preset {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    background: rgba(24, 30, 29, 0.35);
+    border: 1px solid rgba(40, 49, 48, 0.5);
+    border-radius: 10px; text-decoration: none;
+    transition: all 0.35s var(--pf-ease);
+}
+.pf-mega-preset:hover {
+    background: rgba(85, 230, 181, 0.08);
+    border-color: rgba(85, 230, 181, 0.35);
+    transform: translateX(3px);
+}
+.pf-mega-preset-tier {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 1.5px; padding: 3px 7px;
+    border-radius: 3px; flex-shrink: 0; text-transform: uppercase;
+}
+.pf-mega-preset-tier.pf-budget {
+    color: #E5C76B; background: rgba(229, 199, 107, 0.12);
+    border: 1px solid rgba(229, 199, 107, 0.3);
+}
+.pf-mega-preset-tier.pf-mid {
+    color: var(--pf-mint); background: rgba(85, 230, 181, 0.12);
+    border: 1px solid rgba(85, 230, 181, 0.3);
+}
+.pf-mega-preset-tier.pf-ultra {
+    color: #EF6B6B; background: rgba(239, 107, 107, 0.12);
+    border: 1px solid rgba(239, 107, 107, 0.3);
+}
+.pf-mega-preset-info { flex: 1; min-width: 0; }
+.pf-mega-preset-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px; font-weight: 600;
+    color: var(--pf-text); display: block;
+    margin-bottom: 2px; transition: color 0.3s var(--pf-ease);
+}
+.pf-mega-preset:hover .pf-mega-preset-name { color: var(--pf-mint); }
+.pf-mega-preset-price {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--pf-dim); letter-spacing: 0.5px;
+}
+.pf-mega-preset-arrow {
+    color: var(--pf-mint); font-size: 12px;
+    opacity: 0.4; transition: all 0.35s var(--pf-ease);
+}
+.pf-mega-preset:hover .pf-mega-preset-arrow { opacity: 1; transform: translateX(3px); }
+
+/* Command nav */
+.pf-forge-command {
+    position: fixed; inset: 0; z-index: 99999;
+    background: rgba(8, 10, 10, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    opacity: 0; visibility: hidden; overflow: hidden;
+    transition: opacity 0.5s var(--pf-ease), visibility 0.5s;
+}
+.pf-forge-command.open { opacity: 1; visibility: visible; }
+.pf-forge-command::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(85, 230, 181, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85, 230, 181, 0.045) 1px, transparent 1px);
+    background-size: 70px 70px;
+    mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+    opacity: 0; transition: opacity 0.8s var(--pf-ease) 0.1s;
+}
+.pf-forge-command.open::before { opacity: 1; }
+.pf-forge-command-inner {
+    position: relative; z-index: 2;
+    max-width: 1300px; margin: 0 auto;
+    padding: 90px 44px 50px; min-height: 100vh;
+    display: flex; flex-direction: column; overflow-y: auto;
+}
+.pf-forge-command-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 24px; margin-bottom: 50px;
+    border-bottom: 1px dashed rgba(85, 230, 181, 0.2);
+}
+.pf-forge-command-label {
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 4px;
+    color: var(--pf-mint); text-transform: uppercase;
+}
+.pf-forge-command-label::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--pf-mint); box-shadow: 0 0 10px var(--pf-mint);
+    animation: pfPulse 1.5s ease-in-out infinite;
+}
+.pf-forge-command-close {
+    width: 46px; height: 46px;
+    background: rgba(24, 30, 29, 0.4);
+    border: 1px solid var(--pf-border);
+    border-radius: 10px; color: var(--pf-text); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.4s var(--pf-ease); font-family: inherit;
+}
+.pf-forge-command-close:hover {
+    color: var(--pf-error); border-color: var(--pf-error);
+    background: rgba(239, 107, 107, 0.08);
+    transform: rotate(90deg);
+}
+.pf-forge-command-close:focus-visible { outline: 2px solid var(--pf-mint); outline-offset: 2px; }
+.pf-forge-command-close svg {
+    width: 20px; height: 20px; stroke: currentColor;
+    stroke-width: 2; fill: none; stroke-linecap: round;
+}
+.pf-forge-command-nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.pf-forge-command-link {
+    display: flex; align-items: center; gap: 32px;
+    padding: 22px 28px; text-decoration: none;
+    color: var(--pf-text); border-radius: 14px;
+    transition: background 0.4s var(--pf-ease), padding 0.4s var(--pf-ease), border-color 0.4s var(--pf-ease);
+    position: relative;
+    opacity: 0; transform: translateX(-40px);
+    border: 1px solid transparent;
+}
+.pf-forge-command.open .pf-forge-command-link { animation: pfCmdLinkIn 0.7s var(--pf-ease) forwards; }
+.pf-forge-command.open .pf-forge-command-link:nth-child(1) { animation-delay: 0.2s; }
+.pf-forge-command.open .pf-forge-command-link:nth-child(2) { animation-delay: 0.28s; }
+.pf-forge-command.open .pf-forge-command-link:nth-child(3) { animation-delay: 0.36s; }
+.pf-forge-command.open .pf-forge-command-link:nth-child(4) { animation-delay: 0.44s; }
+.pf-forge-command.open .pf-forge-command-link:nth-child(5) { animation-delay: 0.52s; }
+@keyframes pfCmdLinkIn { to { opacity: 1; transform: translateX(0); } }
+.pf-forge-command-link::before {
+    content: ''; position: absolute;
+    left: 0; top: 50%; transform: translateY(-50%);
+    width: 3px; height: 0;
+    background: var(--pf-mint); border-radius: 2px;
+    box-shadow: 0 0 15px var(--pf-mint);
+    transition: height 0.4s var(--pf-ease);
+}
+.pf-forge-command-link:hover, .pf-forge-command-link.pf-active {
+    background: rgba(85, 230, 181, 0.05);
+    border-color: rgba(85, 230, 181, 0.18);
+    padding-left: 42px;
+}
+.pf-forge-command-link:hover::before, .pf-forge-command-link.pf-active::before { height: 55%; }
+.pf-forge-command-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; color: var(--pf-dim);
+    letter-spacing: 1px; transition: color 0.4s var(--pf-ease);
+    flex-shrink: 0; min-width: 36px;
+}
+.pf-forge-command-link:hover .pf-forge-command-num,
+.pf-forge-command-link.pf-active .pf-forge-command-num { color: var(--pf-mint); }
+.pf-forge-command-text {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 42px; font-weight: 700;
+    letter-spacing: -1.5px; line-height: 1;
+    color: var(--pf-text); transition: color 0.4s var(--pf-ease); flex: 1;
+}
+.pf-forge-command-link:hover .pf-forge-command-text,
+.pf-forge-command-link.pf-active .pf-forge-command-text { color: var(--pf-mint); }
+.pf-forge-command-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2.5px;
+    color: var(--pf-dim); text-transform: uppercase;
+    opacity: 0; transform: translateX(20px);
+    transition: all 0.4s var(--pf-ease); flex-shrink: 0;
+}
+.pf-forge-command-link:hover .pf-forge-command-desc {
+    opacity: 1; transform: translateX(0);
+}
+.pf-forge-command-footer {
+    margin-top: auto; padding-top: 40px;
+    border-top: 1px dashed rgba(85, 230, 181, 0.15);
+    display: flex; justify-content: space-between;
+    align-items: flex-end; gap: 30px; flex-wrap: wrap;
+}
+.pf-forge-command-info {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: var(--pf-dim); text-transform: uppercase; line-height: 2;
+}
+.pf-forge-command-info strong { color: var(--pf-mint); font-weight: 600; }
+
+/* Search */
+.pf-forge-search {
+    position: fixed; inset: 0; z-index: 99998;
+    background: rgba(8, 10, 10, 0.88);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 16vh 20px 40px;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.45s var(--pf-ease), visibility 0.45s;
+}
+.pf-forge-search.open { opacity: 1; visibility: visible; }
+.pf-forge-search-box {
+    width: 100%; max-width: 720px;
+    transform: translateY(-40px) scale(0.94);
+    transition: transform 0.6s var(--pf-ease);
+}
+.pf-forge-search.open .pf-forge-search-box { transform: translateY(0) scale(1); }
+.pf-forge-search-label {
+    display: flex; align-items: center; gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 4px;
+    color: var(--pf-mint); text-transform: uppercase;
+    margin-bottom: 18px;
+}
+.pf-forge-search-label::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--pf-mint); box-shadow: 0 0 10px var(--pf-mint);
+    animation: pfPulse 1.5s ease-in-out infinite;
+}
+.pf-forge-search-form {
+    position: relative;
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 8px 8px 24px;
+    background: linear-gradient(145deg, rgba(24, 30, 29, 0.85), rgba(17, 21, 21, 0.9));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1.5px solid rgba(85, 230, 181, 0.2);
+    border-radius: 14px; transition: all 0.4s var(--pf-ease);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+}
+.pf-forge-search-form:focus-within {
+    border-color: var(--pf-mint);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), 0 0 0 4px rgba(85, 230, 181, 0.1), 0 0 60px rgba(85, 230, 181, 0.2);
+}
+.pf-forge-search-prefix {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px; font-weight: 700;
+    color: var(--pf-mint);
+    text-shadow: 0 0 15px rgba(85, 230, 181, 0.6); flex-shrink: 0;
+}
+.pf-forge-search-input {
+    flex: 1; min-width: 0;
+    background: transparent; border: none; outline: none;
+    padding: 20px 6px; color: var(--pf-text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px; letter-spacing: 0.5px;
+    box-shadow: none !important;
+}
+.pf-forge-search-input::placeholder {
+    color: var(--pf-dim); letter-spacing: 2px;
+    text-transform: uppercase; font-size: 11.5px;
+}
+.pf-forge-search-submit {
+    padding: 16px 24px;
+    background: var(--pf-mint); color: var(--pf-bg);
+    border: none; border-radius: 9px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: all 0.35s var(--pf-ease);
+    display: inline-flex; align-items: center; gap: 8px;
+    white-space: nowrap;
+}
+.pf-forge-search-submit:hover {
+    background: var(--pf-glow); transform: translateY(-1px);
+    box-shadow: 0 12px 30px rgba(85, 230, 181, 0.5);
+}
+.pf-forge-search-hint {
+    margin-top: 16px; display: flex; gap: 22px; flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    color: var(--pf-dim); text-transform: uppercase;
+}
+.pf-forge-search-hint kbd {
+    background: rgba(24, 30, 29, 0.9);
+    border: 1px solid var(--pf-border); border-radius: 4px;
+    padding: 2px 7px; font-family: inherit;
+    color: var(--pf-text); font-size: 9px; margin: 0 2px;
+}
+.pf-forge-search-chips {
+    margin-top: 24px; display: flex; align-items: center;
+    gap: 10px; flex-wrap: wrap;
+    opacity: 0; transform: translateY(10px);
+    transition: all 0.5s var(--pf-ease) 0.2s;
+}
+.pf-forge-search.open .pf-forge-search-chips { opacity: 1; transform: translateY(0); }
+.pf-forge-search-chips-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: var(--pf-dim); text-transform: uppercase;
+    margin-right: 4px;
+}
+.pf-forge-search-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px;
+    background: rgba(85, 230, 181, 0.05);
+    border: 1px solid rgba(85, 230, 181, 0.2);
+    border-radius: 20px; color: var(--pf-muted);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; letter-spacing: 1.2px;
+    text-transform: uppercase; transition: all 0.35s var(--pf-ease);
+    position: relative; overflow: hidden;
+}
+.pf-forge-search-chip::before {
+    content: ''; position: absolute;
+    left: 0; top: 0; bottom: 0; width: 2px;
+    background: var(--pf-mint);
+    transform: scaleY(0); transition: transform 0.3s var(--pf-ease);
+    box-shadow: 0 0 8px var(--pf-mint);
+}
+.pf-forge-search-chip:hover {
+    background: rgba(85, 230, 181, 0.12);
+    border-color: var(--pf-mint); color: var(--pf-mint);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(85, 230, 181, 0.25);
+}
+.pf-forge-search-chip:hover::before { transform: scaleY(1); }
+.pf-forge-search-chip .count {
+    color: var(--pf-dim); font-size: 9px;
+    transition: color 0.3s var(--pf-ease);
+}
+.pf-forge-search-chip:hover .count { color: var(--pf-glow); }
+
+.pf-cart-flyer {
+    position: fixed; width: 20px; height: 20px;
+    background: var(--pf-mint); border-radius: 50%;
+    box-shadow: 0 0 20px var(--pf-mint), 0 0 40px rgba(85, 230, 181, 0.5);
+    pointer-events: none; z-index: 99999;
+    opacity: 0; transition: all 1s cubic-bezier(0.5, -0.5, 0.5, 1.5);
+}
+.pf-cart-flyer.active { opacity: 1; }
+
+/* Body lock + push */
+body.pf-forge-locked { overflow: hidden !important; }
+body.pf-forge-active { padding-top: 82px !important; transition: padding-top 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+body.pf-forge-active.pf-forge-scrolled { padding-top: 66px !important; }
+body.pf-forge-active .whb-header,
+body.pf-forge-active .woodmart-header,
+body.pf-forge-active header.woodmart-header,
+body.pf-forge-active .site-header:not(.pf-forge-header) { display: none !important; }
+
+/* Responsive */
+@media (max-width: 1280px) {
+    .pf-forge-inner { padding: 0 24px; gap: 28px; }
+    .pf-forge-nav-link { padding: 11px 14px; font-size: 11.5px; }
+    .pf-forge-nav-link::before { left: 14px; right: 14px; }
+    .pf-mega-grid-shop { grid-template-columns: 1.3fr 1fr 280px; gap: 24px; }
+    .pf-mega-grid-build { gap: 24px; }
+    .pf-forge-command-text { font-size: 36px; }
+    .pf-nav-meta { display: none; }
+}
+@media (max-width: 1080px) {
+    .pf-forge-nav { display: none; }
+    .pf-forge-menu-btn { display: flex; }
+    .pf-forge-cta { display: none; }
+    .pf-mega { display: none !important; }
+}
+@media (max-width: 768px) {
+    .pf-forge-inner { height: 68px; padding: 0 18px; gap: 12px; }
+    .pf-forge-header.scrolled .pf-forge-inner { height: 60px; }
+    .pf-forge-wordmark { font-size: 16px; letter-spacing: 3px; }
+    .pf-forge-subtitle { display: none; }
+    .pf-forge-emblem { width: 34px; height: 34px; }
+    .pf-forge-util { width: 38px; height: 38px; }
+    .pf-forge-util svg { width: 16px; height: 16px; }
+    .pf-forge-menu-btn { width: 38px; height: 38px; }
+    .pf-forge-menu-btn svg { width: 18px; height: 18px; }
+    body.pf-forge-active { padding-top: 68px !important; }
+    body.pf-forge-active.pf-forge-scrolled { padding-top: 60px !important; }
+    .pf-forge-command-inner { padding: 70px 22px 40px; }
+    .pf-forge-command-text { font-size: 26px; letter-spacing: -1px; }
+    .pf-forge-command-link { padding: 16px 18px; gap: 16px; }
+    .pf-forge-command-num { font-size: 11px; min-width: 28px; }
+    .pf-forge-command-desc { display: none; }
+    .pf-forge-command-header { margin-bottom: 30px; padding-bottom: 16px; }
+    .pf-forge-command-close { width: 40px; height: 40px; }
+    .pf-forge-search { padding-top: 12vh; }
+    .pf-forge-search-form { padding: 6px 6px 6px 16px; }
+    .pf-forge-search-input { font-size: 14px; padding: 16px 4px; }
+    .pf-forge-search-submit { padding: 14px 18px; font-size: 10px; }
+    .pf-forge-search-prefix { font-size: 16px; }
+    .pf-forge-canvas { display: none; }
+    .pf-forge-search-chips-label { display: none; }
+}
+@media (max-width: 480px) {
+    .pf-forge-inner { padding: 0 14px; gap: 8px; }
+    .pf-forge-utils { gap: 4px; }
+    .pf-forge-util { width: 36px; height: 36px; border-radius: 8px; }
+    .pf-forge-util svg { width: 15px; height: 15px; }
+    .pf-forge-cart-count { min-width: 18px; height: 18px; font-size: 9px; padding: 0 5px; }
+    .pf-forge-wordmark { font-size: 14px; letter-spacing: 2.5px; }
+    .pf-forge-emblem { width: 30px; height: 30px; }
+    .pf-forge-brand { gap: 10px; }
+    .pf-forge-command-text { font-size: 22px; }
+    .pf-forge-command-link { padding: 14px 14px; gap: 12px; }
+    .pf-forge-command-num { font-size: 10px; min-width: 24px; }
+    .pf-forge-command-inner { padding: 60px 16px 30px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .pf-forge-header *, .pf-forge-command *, .pf-forge-search *, .pf-mega * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    .pf-forge-beam { animation: none; opacity: 0; }
+    .pf-forge-canvas { display: none !important; }
+    .pf-forge-brand, .pf-forge-wordmark, .pf-forge-nav-link, .pf-forge-util,
+    .pf-forge-cta, .pf-forge-menu-btn, .pf-forge-subtitle {
+        opacity: 1 !important; transform: none !important;
+        clip-path: none !important; animation: none !important;
+    }
+    .pf-shape { stroke-dashoffset: 0 !important; animation: none !important; }
+    .pf-core { opacity: 1 !important; transform: scale(1) !important; animation: none !important; }
+    .pf-trace { animation: none; opacity: 0; }
+    .pf-forge-command-link { opacity: 1 !important; transform: none !important; animation: none !important; }
+    .pf-forge-emblem::after { display: none; }
+    .pf-nav-wave { display: none; }
+}
+</style>
+
+<!-- Header -->
+<header class="pf-forge-header" id="pfForgeHeader" role="banner">
+    <canvas class="pf-forge-canvas" id="pfForgeCanvas" aria-hidden="true"></canvas>
+    <div class="pf-forge-beam" aria-hidden="true"></div>
+    <div class="pf-forge-progress" id="pfForgeProgress" aria-hidden="true"></div>
+
+    <div class="pf-forge-inner">
+        <a href="/" class="pf-forge-brand" aria-label="PCFORGE — Home">
+            <span class="pf-forge-emblem" aria-hidden="true">
+                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                    <path class="pf-shape pf-shape-1" d="M 10 10 L 38 10 L 38 17 L 10 17 Z"/>
+                    <path class="pf-shape pf-shape-2" d="M 10 22 L 28 22 L 28 29 L 10 29 Z"/>
+                    <path class="pf-shape pf-shape-3" d="M 10 10 L 10 38 L 17 38 L 17 10 Z"/>
+                    <path class="pf-trace" d="M 10 10 L 38 10 L 38 17 L 10 17 Z"/>
+                    <circle class="pf-core" cx="22" cy="25.5" r="2.2"/>
+                </svg>
+            </span>
+            <span class="pf-forge-wordmark-wrap">
+                <span class="pf-forge-wordmark">PCFORGE</span>
+                <span class="pf-forge-subtitle">
+                    <span class="pf-forge-status-dot"></span>
+                    Precision Systems
+                </span>
+            </span>
+        </a>
+
+        <nav class="pf-forge-nav" aria-label="Main navigation">
+            <div class="pf-forge-nav-item">
+                <a href="/" class="pf-forge-nav-link" data-path="/">
+                    <span class="pf-nav-num">01</span>
+                    <span>Home</span>
+                    <span class="pf-nav-wave"><span></span><span></span><span></span><span></span></span>
+                    <span class="pf-nav-marker"></span>
+                </a>
+            </div>
+            <div class="pf-forge-nav-item" data-mega="build">
+                <button type="button" class="pf-forge-nav-link" aria-expanded="false" aria-haspopup="true">
+                    <span class="pf-nav-num">02</span>
+                    <span>Build Lab</span>
+                    <span class="pf-nav-meta">5 min avg</span>
+                    <svg class="pf-nav-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                    <span class="pf-nav-wave"><span></span><span></span><span></span><span></span></span>
+                    <span class="pf-nav-marker"></span>
+                </button>
+            </div>
+            <div class="pf-forge-nav-item" data-mega="shop">
+                <button type="button" class="pf-forge-nav-link" aria-expanded="false" aria-haspopup="true">
+                    <span class="pf-nav-num">03</span>
+                    <span>Shop</span>
+                    <span class="pf-nav-meta" data-meta="products">— items</span>
+                    <svg class="pf-nav-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                    <span class="pf-nav-wave"><span></span><span></span><span></span><span></span></span>
+                    <span class="pf-nav-marker"></span>
+                </button>
+            </div>
+            <div class="pf-forge-nav-item">
+                <a href="/about/" class="pf-forge-nav-link" data-path="/about/">
+                    <span class="pf-nav-num">04</span>
+                    <span>About</span>
+                    <span class="pf-nav-wave"><span></span><span></span><span></span><span></span></span>
+                    <span class="pf-nav-marker"></span>
+                </a>
+            </div>
+            <div class="pf-forge-nav-item">
+                <a href="/contact/" class="pf-forge-nav-link" data-path="/contact/">
+                    <span class="pf-nav-num">05</span>
+                    <span>Contact</span>
+                    <span class="pf-nav-wave"><span></span><span></span><span></span><span></span></span>
+                    <span class="pf-nav-marker"></span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="pf-forge-utils">
+            <button class="pf-forge-util" id="pfSearchOpen" aria-label="Open search" type="button">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+            <a href="/my-account/" class="pf-forge-util" aria-label="My Account">
+                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </a>
+            <a href="/wishlist/" class="pf-forge-util" aria-label="Wishlist">
+                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </a>
+            <a href="/cart/" class="pf-forge-util" aria-label="Cart">
+                <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                <span class="pf-forge-cart-count" id="pfCartCount" aria-label="Cart items" hidden>0</span>
+            </a>
+            <a href="/build-lab/" class="pf-forge-cta" aria-label="Build Your PC">
+                <span class="pf-forge-cta-inner">
+                    <span>Build Your PC</span>
+                    <span class="pf-cta-arrow">→</span>
+                </span>
+            </a>
+            <button class="pf-forge-menu-btn" id="pfMenuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="pfCommand" type="button">
+                <svg viewBox="0 0 24 24">
+                    <line class="pf-bar pf-bar-1" x1="4" y1="7" x2="20" y2="7"/>
+                    <line class="pf-bar pf-bar-2" x1="4" y1="12" x2="20" y2="12"/>
+                    <line class="pf-bar pf-bar-3" x1="4" y1="17" x2="20" y2="17"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</header>
+
+<!-- Mega menu: Shop -->
+<div class="pf-mega" id="pfMegaShop" data-mega="shop" role="region" aria-label="Shop menu">
+    <div class="pf-mega-inner">
+        <div class="pf-mega-panel">
+            <div class="pf-mega-scan" aria-hidden="true"></div>
+            <div class="pf-mega-head">
+                <div class="pf-mega-head-label">Browse Hardware Store</div>
+                <div class="pf-mega-head-hint">Press <kbd>Esc</kbd> to close</div>
+            </div>
+            <div class="pf-mega-grid pf-mega-grid-shop">
+                <div class="pf-mega-col">
+                    <div class="pf-mega-col-title">Categories</div>
+                    <div class="pf-mega-cats">
+                        <a href="/product-category/cpu/" class="pf-mega-cat">
+                            <span class="pf-mega-cat-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/></svg></span>
+                            <span class="pf-mega-cat-info"><span class="pf-mega-cat-name">Processors</span><span class="pf-mega-cat-count">AMD · Intel</span></span>
+                            <span class="pf-mega-cat-arrow">→</span>
+                        </a>
+                        <a href="/product-category/gpu/" class="pf-mega-cat">
+                            <span class="pf-mega-cat-icon"><svg viewBox="0 0 24 24"><rect x="2" y="8" width="20" height="10" rx="2"/><circle cx="8" cy="13" r="2.5"/><circle cx="16" cy="13" r="2.5"/></svg></span>
+                            <span class="pf-mega-cat-info"><span class="pf-mega-cat-name">Graphics Cards</span><span class="pf-mega-cat-count">RTX · Radeon</span></span>
+                            <span class="pf-mega-cat-arrow">→</span>
+                        </a>
+                        <a href="/product-category/ram/" class="pf-mega-cat">
+                            <span class="pf-mega-cat-icon"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="8" rx="1"/><line x1="6" y1="8" x2="6" y2="5"/><line x1="10" y1="8" x2="10" y2="5"/><line x1="14" y1="8" x2="14" y2="5"/><line x1="18" y1="8" x2="18" y2="5"/></svg></span>
+                            <span class="pf-mega-cat-info"><span class="pf-mega-cat-name">Memory</span><span class="pf-mega-cat-count">DDR4 · DDR5</span></span>
+                            <span class="pf-mega-cat-arrow">→</span>
+                        </a>
+                        <a href="/product-category/motherboard/" class="pf-mega-cat">
+                            <span class="pf-mega-cat-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1"/><rect x="7" y="7" width="5" height="5"/><rect x="14" y="7" width="3" height="3"/></svg></span>
+                            <span class="pf-mega-cat-info"><span class="pf-mega-cat-name">Motherboards</span><span class="pf-mega-cat-count">AM5 · LGA1700</span></span>
+                            <span class="pf-mega-cat-arrow">→</span>
+                        </a>
+                        <a href="/product-category/storage/" class="pf-mega-cat">
+                            <span class="pf-mega-cat-icon"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="1"/><circle cx="12" cy="12" r="2"/></svg></span>
+                            <span class="pf-mega-cat-info"><span class="pf-mega-cat-name">Storage</span><span class="pf-mega-cat-count">NVMe · SSD</span></span>
+                            <span class="pf-mega-cat-arrow">→</span>
+                        </a>
+                        <a href="/product-category/psu/" class="pf-mega-cat">
+                            <span class="pf-mega-cat-icon"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="8" cy="12" r="3"/></svg></span>
+                            <span class="pf-mega-cat-info"><span class="pf-mega-cat-name">Power Supply</span><span class="pf-mega-cat-count">650W – 1200W</span></span>
+                            <span class="pf-mega-cat-arrow">→</span>
+                        </a>
+                        <a href="/product-category/cooling/" class="pf-mega-cat">
+                            <span class="pf-mega-cat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg></span>
+                            <span class="pf-mega-cat-info"><span class="pf-mega-cat-name">Cooling</span><span class="pf-mega-cat-count">Air · Liquid</span></span>
+                            <span class="pf-mega-cat-arrow">→</span>
+                        </a>
+                        <a href="/product-category/case/" class="pf-mega-cat">
+                            <span class="pf-mega-cat-icon"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="11" r="2"/></svg></span>
+                            <span class="pf-mega-cat-info"><span class="pf-mega-cat-name">Cases</span><span class="pf-mega-cat-count">ATX · mATX</span></span>
+                            <span class="pf-mega-cat-arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="pf-mega-col">
+                    <div class="pf-mega-col-title">Featured</div>
+                    <div class="pf-mega-feat" id="pfMegaFeatured"></div>
+                </div>
+                <div class="pf-mega-col">
+                    <div class="pf-mega-promo">
+                        <div class="pf-mega-promo-label">Configurator</div>
+                        <div class="pf-mega-promo-title">Build Your<br><span class="pf-mint">Own PC.</span></div>
+                        <p class="pf-mega-promo-desc">Interactive build lab. Real-time compatibility, live pricing, performance estimates.</p>
+                        <a href="/build-lab/" class="pf-mega-promo-cta">Open Build Lab<span class="arrow">→</span></a>
+                        <div class="pf-mega-promo-badges">
+                            <span class="pf-mega-promo-badge">Live Pricing</span>
+                            <span class="pf-mega-promo-badge">Compatible</span>
+                            <span class="pf-mega-promo-badge">Fast Ship</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mega menu: Build Lab -->
+<div class="pf-mega" id="pfMegaBuild" data-mega="build" role="region" aria-label="Build Lab menu">
+    <div class="pf-mega-inner">
+        <div class="pf-mega-panel">
+            <div class="pf-mega-scan" aria-hidden="true"></div>
+            <div class="pf-mega-head">
+                <div class="pf-mega-head-label">Build Lab Access</div>
+                <div class="pf-mega-head-hint">Configure · Compare · Save</div>
+            </div>
+            <div class="pf-mega-grid pf-mega-grid-build">
+                <div class="pf-mega-col">
+                    <div class="pf-mega-col-title">Quick Actions</div>
+                    <div class="pf-mega-actions">
+                        <a href="/build-lab/" class="pf-mega-action">
+                            <span class="pf-mega-action-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+                            <span class="pf-mega-action-info"><span class="pf-mega-action-title">Start New Build</span><span class="pf-mega-action-desc">Begin configuring from scratch</span></span>
+                        </a>
+                        <a href="/build-lab/?resume=1" class="pf-mega-action">
+                            <span class="pf-mega-action-icon"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></span>
+                            <span class="pf-mega-action-info"><span class="pf-mega-action-title">Resume Saved</span><span class="pf-mega-action-desc">Load your last configuration</span></span>
+                        </a>
+                        <a href="/build-lab/?compare=1" class="pf-mega-action">
+                            <span class="pf-mega-action-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18"/><rect x="14" y="3" width="7" height="18"/></svg></span>
+                            <span class="pf-mega-action-info"><span class="pf-mega-action-title">Compare Builds</span><span class="pf-mega-action-desc">Side-by-side spec analysis</span></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="pf-mega-col">
+                    <div class="pf-mega-col-title">Lab Features</div>
+                    <div class="pf-mega-features">
+                        <div class="pf-mega-feature">
+                            <span class="pf-mega-feature-check"><svg viewBox="0 0 24 24"><polyline points="4 12 9 17 20 6"/></svg></span>
+                            <span class="pf-mega-feature-text"><strong>Real-time Compatibility</strong>CPU socket, RAM type, PSU wattage — checked instantly</span>
+                        </div>
+                        <div class="pf-mega-feature">
+                            <span class="pf-mega-feature-check"><svg viewBox="0 0 24 24"><polyline points="4 12 9 17 20 6"/></svg></span>
+                            <span class="pf-mega-feature-text"><strong>Live Pricing</strong>Total updates as you swap components</span>
+                        </div>
+                        <div class="pf-mega-feature">
+                            <span class="pf-mega-feature-check"><svg viewBox="0 0 24 24"><polyline points="4 12 9 17 20 6"/></svg></span>
+                            <span class="pf-mega-feature-text"><strong>Performance Estimates</strong>FPS projections for popular games</span>
+                        </div>
+                        <div class="pf-mega-feature">
+                            <span class="pf-mega-feature-check"><svg viewBox="0 0 24 24"><polyline points="4 12 9 17 20 6"/></svg></span>
+                            <span class="pf-mega-feature-text"><strong>Save & Share</strong>Store your build, add all parts to cart</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="pf-mega-col">
+                    <div class="pf-mega-col-title">Popular Builds</div>
+                    <div class="pf-mega-presets">
+                        <a href="/build-lab/?preset=budget" class="pf-mega-preset">
+                            <span class="pf-mega-preset-tier pf-budget">Budget</span>
+                            <span class="pf-mega-preset-info"><span class="pf-mega-preset-name">Budget Slayer</span><span class="pf-mega-preset-price">Starting ~Rs 150,000</span></span>
+                            <span class="pf-mega-preset-arrow">→</span>
+                        </a>
+                        <a href="/build-lab/?preset=mid" class="pf-mega-preset">
+                            <span class="pf-mega-preset-tier pf-mid">Mid</span>
+                            <span class="pf-mega-preset-info"><span class="pf-mega-preset-name">Balanced Performance</span><span class="pf-mega-preset-price">Starting ~Rs 250,000</span></span>
+                            <span class="pf-mega-preset-arrow">→</span>
+                        </a>
+                        <a href="/build-lab/?preset=ultra" class="pf-mega-preset">
+                            <span class="pf-mega-preset-tier pf-ultra">Ultra</span>
+                            <span class="pf-mega-preset-info"><span class="pf-mega-preset-name">Ultra Beast</span><span class="pf-mega-preset-price">Starting ~Rs 400,000+</span></span>
+                            <span class="pf-mega-preset-arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Command nav -->
+<div class="pf-forge-command" id="pfCommand" role="dialog" aria-modal="true" aria-label="Main navigation" aria-hidden="true">
+    <div class="pf-forge-command-inner">
+        <div class="pf-forge-command-header">
+            <div class="pf-forge-command-label">Command Interface</div>
+            <button class="pf-forge-command-close" id="pfCommandClose" aria-label="Close menu" type="button">
+                <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+            </button>
+        </div>
+        <nav class="pf-forge-command-nav" aria-label="Navigation">
+            <a href="/" class="pf-forge-command-link" data-path="/"><span class="pf-forge-command-num">01</span><span class="pf-forge-command-text">Home</span><span class="pf-forge-command-desc">Start here</span></a>
+            <a href="/build-lab/" class="pf-forge-command-link" data-path="/build-lab/"><span class="pf-forge-command-num">02</span><span class="pf-forge-command-text">Build Lab</span><span class="pf-forge-command-desc">Configure PC</span></a>
+            <a href="/shop/" class="pf-forge-command-link" data-path="/shop/"><span class="pf-forge-command-num">03</span><span class="pf-forge-command-text">Shop</span><span class="pf-forge-command-desc">Browse all</span></a>
+            <a href="/about/" class="pf-forge-command-link" data-path="/about/"><span class="pf-forge-command-num">04</span><span class="pf-forge-command-text">About</span><span class="pf-forge-command-desc">Our story</span></a>
+            <a href="/contact/" class="pf-forge-command-link" data-path="/contact/"><span class="pf-forge-command-num">05</span><span class="pf-forge-command-text">Contact</span><span class="pf-forge-command-desc">Get in touch</span></a>
+        </nav>
+        <div class="pf-forge-command-footer">
+            <div class="pf-forge-command-info">PCFORGE<br><strong>Custom Hardware Systems</strong><br>Precision forged — 2026</div>
+            <div class="pf-forge-command-info" style="text-align:right;">Navigation<br><strong>Command Active</strong><br>Session Ready</div>
+        </div>
+    </div>
+</div>
+
+<!-- Search -->
+<div class="pf-forge-search" id="pfSearch" role="dialog" aria-modal="true" aria-label="Product search" aria-hidden="true">
+    <div class="pf-forge-search-box">
+        <div class="pf-forge-search-label">Search the Forge</div>
+        <form class="pf-forge-search-form" id="pfSearchForm" method="get" action="/" role="search">
+            <span class="pf-forge-search-prefix">$</span>
+            <input type="hidden" name="post_type" value="product">
+            <label for="pfSearchInput" style="position:absolute;left:-9999px;">Search products</label>
+            <input type="search" name="s" class="pf-forge-search-input" id="pfSearchInput" placeholder="Search components, brands, categories..." autocomplete="off" spellcheck="false">
+            <button type="submit" class="pf-forge-search-submit">Search <span>→</span></button>
+        </form>
+        <div class="pf-forge-search-chips">
+            <span class="pf-forge-search-chips-label">Popular:</span>
+            <a href="/product-category/cpu/" class="pf-forge-search-chip">Processors <span class="count" data-cat-count="cpu">—</span></a>
+            <a href="/product-category/gpu/" class="pf-forge-search-chip">Graphics Cards <span class="count" data-cat-count="gpu">—</span></a>
+            <a href="/product-category/ram/" class="pf-forge-search-chip">Memory <span class="count" data-cat-count="ram">—</span></a>
+            <a href="/product-category/case/" class="pf-forge-search-chip">Cases <span class="count" data-cat-count="case">—</span></a>
+            <a href="/product-category/cooling/" class="pf-forge-search-chip">Cooling <span class="count" data-cat-count="cooling">—</span></a>
+        </div>
+        <div class="pf-forge-search-hint">
+            <span>Press <kbd>Enter</kbd> to search</span>
+            <span>Press <kbd>Esc</kbd> to close</span>
+            <span>Press <kbd>/</kbd> to open</span>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+    if (window.__pfForgeInit) return;
+    window.__pfForgeInit = true;
+
+    var header = document.getElementById('pfForgeHeader');
+    var canvas = document.getElementById('pfForgeCanvas');
+    var progress = document.getElementById('pfForgeProgress');
+    var command = document.getElementById('pfCommand');
+    var menuBtn = document.getElementById('pfMenuBtn');
+    var commandClose = document.getElementById('pfCommandClose');
+    var searchOpen = document.getElementById('pfSearchOpen');
+    var searchOverlay = document.getElementById('pfSearch');
+    var searchInput = document.getElementById('pfSearchInput');
+    var cartCount = document.getElementById('pfCartCount');
+    var body = document.body;
+    var megaShop = document.getElementById('pfMegaShop');
+    var megaBuild = document.getElementById('pfMegaBuild');
+    var megaFeatured = document.getElementById('pfMegaFeatured');
+
+    if (!header) return;
+    body.classList.add('pf-forge-active');
+
+    var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var isDesktop = window.matchMedia('(min-width: 1080px)').matches;
+
+    requestAnimationFrame(function() { setTimeout(function() { header.classList.add('ready'); }, 80); });
+
+    // Scroll effects
+    var ticking = false;
+    function onScroll() {
+        if (!ticking) {
+            requestAnimationFrame(function() {
+                var y = window.scrollY || window.pageYOffset;
+                if (y > 24) {
+                    header.classList.add('scrolled');
+                    body.classList.add('pf-forge-scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                    body.classList.remove('pf-forge-scrolled');
+                }
+                if (progress) {
+                    var docH = document.documentElement.scrollHeight - window.innerHeight;
+                    var pct = docH > 0 ? (y / docH) * 100 : 0;
+                    progress.style.width = Math.min(pct, 100) + '%';
+                }
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Mega menu
+    var activeMega = null;
+    var hoverTimeout = null;
+    var closeTimeout = null;
+
+    function openMega(name) {
+        clearTimeout(closeTimeout);
+        clearTimeout(hoverTimeout);
+        if (activeMega === name) return;
+        [megaShop, megaBuild].forEach(function(m) { if (m) m.classList.remove('pf-open'); });
+        document.querySelectorAll('.pf-forge-nav-item').forEach(function(it) { it.classList.remove('pf-hover'); });
+        document.querySelectorAll('.pf-forge-nav-link[aria-haspopup]').forEach(function(b) { b.setAttribute('aria-expanded', 'false'); });
+        var target = name === 'shop' ? megaShop : megaBuild;
+        var item = document.querySelector('.pf-forge-nav-item[data-mega="' + name + '"]');
+        if (item) {
+            item.classList.add('pf-hover');
+            var btn = item.querySelector('.pf-forge-nav-link');
+            if (btn) btn.setAttribute('aria-expanded', 'true');
+        }
+        if (target) target.classList.add('pf-open');
+        activeMega = name;
+    }
+
+    function closeMega(name) {
+        clearTimeout(closeTimeout);
+        closeTimeout = setTimeout(function() {
+            if (!name || name === 'shop') {
+                megaShop.classList.remove('pf-open');
+                var s = document.querySelector('.pf-forge-nav-item[data-mega="shop"]');
+                if (s) { s.classList.remove('pf-hover'); var b = s.querySelector('.pf-forge-nav-link'); if (b) b.setAttribute('aria-expanded', 'false'); }
+            }
+            if (!name || name === 'build') {
+                megaBuild.classList.remove('pf-open');
+                var bEl = document.querySelector('.pf-forge-nav-item[data-mega="build"]');
+                if (bEl) { bEl.classList.remove('pf-hover'); var b = bEl.querySelector('.pf-forge-nav-link'); if (b) b.setAttribute('aria-expanded', 'false'); }
+            }
+            if (!name || activeMega === name) activeMega = null;
+        }, 180);
+    }
+
+    function closeAllMega() {
+        megaShop.classList.remove('pf-open');
+        megaBuild.classList.remove('pf-open');
+        document.querySelectorAll('.pf-forge-nav-item').forEach(function(it) { it.classList.remove('pf-hover'); });
+        document.querySelectorAll('.pf-forge-nav-link[aria-haspopup]').forEach(function(b) { b.setAttribute('aria-expanded', 'false'); });
+        activeMega = null;
+    }
+
+    if (isDesktop) {
+        document.querySelectorAll('.pf-forge-nav-item[data-mega]').forEach(function(item) {
+            var name = item.dataset.mega;
+            var btn = item.querySelector('.pf-forge-nav-link');
+            item.addEventListener('mouseenter', function() {
+                clearTimeout(closeTimeout);
+                clearTimeout(hoverTimeout);
+                hoverTimeout = setTimeout(function() { openMega(name); }, 80);
+            });
+            item.addEventListener('mouseleave', function() {
+                clearTimeout(hoverTimeout);
+                closeMega(name);
+            });
+            if (btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (activeMega === name) closeAllMega();
+                    else openMega(name);
+                });
+            }
+        });
+        [megaShop, megaBuild].forEach(function(mega) {
+            if (!mega) return;
+            mega.addEventListener('mouseenter', function() { clearTimeout(closeTimeout); });
+            mega.addEventListener('mouseleave', function() { closeMega(mega.dataset.mega); });
+        });
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.pf-forge-nav-item') && !e.target.closest('.pf-mega')) closeAllMega();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && activeMega) { e.preventDefault(); closeAllMega(); }
+        });
+    }
+
+    // Mega featured products
+    function loadMegaFeatured() {
+        if (!megaFeatured) return;
+        fetch('/wp-json/wc/store/v1/products?per_page=3&orderby=popularity&order=desc', { credentials: 'same-origin' })
+            .then(function(res) { if (!res.ok) throw 0; return res.json(); })
+            .then(function(products) {
+                if (!Array.isArray(products) || products.length === 0) {
+                    megaFeatured.innerHTML = '<div style="padding:20px;text-align:center;color:#6A7570;font-family:JetBrains Mono;font-size:10px;letter-spacing:2px;">NO PRODUCTS YET</div>';
+                    return;
+                }
+                megaFeatured.innerHTML = '';
+                products.slice(0, 3).forEach(function(p) {
+                    var img = p.images && p.images[0] ? p.images[0].src : '';
+                    var minor = p.prices && p.prices.currency_minor_unit != null ? p.prices.currency_minor_unit : 0;
+                    var price = p.prices && p.prices.price ? Math.floor(parseInt(p.prices.price) / Math.pow(10, minor)) : 0;
+                    var cat = p.categories && p.categories[0] ? p.categories[0].name : 'Product';
+                    var a = document.createElement('a');
+                    a.className = 'pf-mega-feat-item';
+                    a.href = p.permalink || '/shop/';
+                    a.innerHTML =
+                        '<span class="pf-mega-feat-img">' + (img ? '<img src="' + img + '" alt="">' : '⬢') + '</span>' +
+                        '<span class="pf-mega-feat-info">' +
+                            '<span class="pf-mega-feat-cat">' + cat + '</span>' +
+                            '<span class="pf-mega-feat-name">' + p.name + '</span>' +
+                            '<span class="pf-mega-feat-price">Rs ' + price.toLocaleString('en-PK') + '</span>' +
+                        '</span>';
+                    megaFeatured.appendChild(a);
+                });
+            })
+            .catch(function() {
+                megaFeatured.innerHTML = '<div style="padding:20px;text-align:center;color:#6A7570;font-family:JetBrains Mono;font-size:10px;letter-spacing:2px;">LOADING FAILED</div>';
+            });
+    }
+    var featuredLoaded = false;
+    var shopItem = document.querySelector('.pf-forge-nav-item[data-mega="shop"]');
+    if (shopItem) shopItem.addEventListener('mouseenter', function() { if (!featuredLoaded) { featuredLoaded = true; loadMegaFeatured(); } });
+    if (isDesktop) setTimeout(loadMegaFeatured, 2000);
+
+    // Header canvas particles
+    if (canvas && isDesktop && !prefersReducedMotion) {
+        var ctx = canvas.getContext('2d', { alpha: true });
+        var W = 0, H = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var particles = [], rafId = null, running = true;
+        var pointer = { x: -1000, y: -1000, active: false };
+
+        function resize() {
+            var rect = header.getBoundingClientRect();
+            W = rect.width; H = rect.height;
+            canvas.width = W * dpr; canvas.height = H * dpr;
+            canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        function P() { this.reset(); this.y = Math.random() * H; }
+        P.prototype.reset = function() {
+            this.x = Math.random() * W; this.y = Math.random() * H;
+            this.vx = (Math.random() - 0.5) * 0.25; this.vy = (Math.random() - 0.5) * 0.25;
+            this.r = Math.random() * 1.2 + 0.4;
+            this.a = Math.random() * 0.35 + 0.15;
+            this.pulse = Math.random() * Math.PI * 2;
+            this.ps = 0.015 + Math.random() * 0.02;
+        };
+        P.prototype.update = function() {
+            this.x += this.vx; this.y += this.vy; this.pulse += this.ps;
+            if (pointer.active) {
+                var dx = pointer.x - this.x, dy = pointer.y - this.y;
+                var d2 = dx * dx + dy * dy;
+                if (d2 < 40000 && d2 > 100) {
+                    var d = Math.sqrt(d2);
+                    var f = (200 - d) / 200;
+                    this.x += (dx / d) * f * 0.5;
+                    this.y += (dy / d) * f * 0.5;
+                }
+            }
+            if (this.x < 0 || this.x > W) this.vx *= -1;
+            if (this.y < 0 || this.y > H) this.vy *= -1;
+            this.x = Math.max(0, Math.min(W, this.x));
+            this.y = Math.max(0, Math.min(H, this.y));
+        };
+        P.prototype.draw = function() {
+            var a = this.a * (0.55 + 0.45 * Math.sin(this.pulse));
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(85,230,181,' + a + ')';
+            ctx.fill();
+        };
+        function init() {
+            particles = [];
+            var n = Math.min(30, Math.max(12, Math.floor(W / 50)));
+            for (var i = 0; i < n; i++) particles.push(new P());
+        }
+        function drawConn() {
+            var md = 130, md2 = md * md;
+            for (var i = 0; i < particles.length; i++) {
+                for (var j = i + 1; j < particles.length; j++) {
+                    var a = particles[i], b = particles[j];
+                    var dx = a.x - b.x, dy = a.y - b.y;
+                    var d2 = dx * dx + dy * dy;
+                    if (d2 < md2) {
+                        var d = Math.sqrt(d2);
+                        var alpha = (1 - d / md) * 0.12;
+                        ctx.strokeStyle = 'rgba(85,230,181,' + alpha + ')';
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+                    }
+                }
+            }
+        }
+        function loop() {
+            if (!running) return;
+            ctx.clearRect(0, 0, W, H);
+            for (var i = 0; i < particles.length; i++) { particles[i].update(); particles[i].draw(); }
+            drawConn();
+            rafId = requestAnimationFrame(loop);
+        }
+        function onMove(e) {
+            var r = header.getBoundingClientRect();
+            pointer.x = e.clientX - r.left;
+            pointer.y = e.clientY - r.top;
+            pointer.active = true;
+        }
+        function onLeave() { pointer.active = false; pointer.x = -1000; }
+        var io = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting && !rafId) { running = true; loop(); }
+                else if (!entry.isIntersecting && rafId) { running = false; cancelAnimationFrame(rafId); rafId = null; }
+            });
+        }, { threshold: 0 });
+        resize(); init(); io.observe(header); loop();
+        var rt;
+        window.addEventListener('resize', function() {
+            clearTimeout(rt);
+            rt = setTimeout(function() { resize(); init(); }, 200);
+        });
+        header.addEventListener('pointermove', onMove, { passive: true });
+        header.addEventListener('pointerleave', onLeave, { passive: true });
+    }
+
+    // Active page
+    function setActive() {
+        var path = window.location.pathname.replace(/\/$/, '') || '/';
+        document.querySelectorAll('.pf-forge-nav-link, .pf-forge-command-link').forEach(function(link) {
+            var dp = (link.dataset.path || '').replace(/\/$/, '') || '/';
+            link.classList.remove('pf-active');
+            if (dp === '/' && path === '/') link.classList.add('pf-active');
+            else if (dp !== '/' && path === dp) link.classList.add('pf-active');
+            else if (dp !== '/' && path.indexOf(dp + '/') === 0) link.classList.add('pf-active');
+        });
+    }
+    setActive();
+
+    // Command nav
+    var lastFocused = null;
+    function openCommand() {
+        lastFocused = document.activeElement;
+        command.classList.add('open');
+        command.setAttribute('aria-hidden', 'false');
+        menuBtn.classList.add('active');
+        menuBtn.setAttribute('aria-expanded', 'true');
+        body.classList.add('pf-forge-locked');
+        setTimeout(function() {
+            var f = command.querySelector('.pf-forge-command-link');
+            if (f) f.focus();
+        }, 320);
+    }
+    function closeCommand() {
+        command.classList.remove('open');
+        command.setAttribute('aria-hidden', 'true');
+        menuBtn.classList.remove('active');
+        menuBtn.setAttribute('aria-expanded', 'false');
+        if (!searchOverlay.classList.contains('open')) body.classList.remove('pf-forge-locked');
+        if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
+    }
+    menuBtn.addEventListener('click', function() {
+        if (command.classList.contains('open')) closeCommand();
+        else openCommand();
+    });
+    commandClose.addEventListener('click', closeCommand);
+
+    function trapFocus(container, e) {
+        if (e.key !== 'Tab') return;
+        var els = container.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),[tabindex]:not([tabindex="-1"])');
+        if (!els.length) return;
+        var first = els[0], last = els[els.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+
+    // Search
+    function openSearch() {
+        searchOverlay.classList.add('open');
+        searchOverlay.setAttribute('aria-hidden', 'false');
+        body.classList.add('pf-forge-locked');
+        setTimeout(function() { if (searchInput) searchInput.focus(); }, 280);
+    }
+    function closeSearch() {
+        searchOverlay.classList.remove('open');
+        searchOverlay.setAttribute('aria-hidden', 'true');
+        if (!command.classList.contains('open')) body.classList.remove('pf-forge-locked');
+    }
+    searchOpen.addEventListener('click', openSearch);
+    searchOverlay.addEventListener('click', function(e) { if (e.target === searchOverlay) closeSearch(); });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (command.classList.contains('open')) { e.preventDefault(); closeCommand(); return; }
+            if (searchOverlay.classList.contains('open')) { e.preventDefault(); closeSearch(); return; }
+            if (activeMega) { e.preventDefault(); closeAllMega(); return; }
+        }
+        if (e.key === '/' && !command.classList.contains('open') && !searchOverlay.classList.contains('open')) {
+            var tag = (document.activeElement.tagName || '').toUpperCase();
+            if (tag !== 'INPUT' && tag !== 'TEXTAREA') { e.preventDefault(); openSearch(); }
+        }
+        if (command.classList.contains('open')) trapFocus(command, e);
+        else if (searchOverlay.classList.contains('open')) trapFocus(searchOverlay, e);
+    });
+
+    // Cart count
+    function fetchCart() {
+        if (!cartCount) return;
+        fetch('/wp-json/wc/store/v1/cart', { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+            .then(function(res) { if (!res.ok) throw 0; return res.json(); })
+            .then(function(data) { updateCart(parseInt(data.items_count || 0, 10)); })
+            .catch(function() {
+                var dom = document.querySelector('.cart-contents-count, .woodmart-cart-count');
+                if (dom) {
+                    var n = parseInt(dom.textContent, 10);
+                    if (!isNaN(n)) updateCart(n);
+                } else cartCount.hidden = true;
+            });
+    }
+    function updateCart(n) {
+        if (!cartCount) return;
+        if (n > 0) {
+            cartCount.hidden = false;
+            var cur = parseInt(cartCount.textContent, 10) || 0;
+            cartCount.textContent = n;
+            if (cur !== n) {
+                cartCount.classList.remove('pf-pop');
+                void cartCount.offsetWidth;
+                cartCount.classList.add('pf-pop');
+            }
+        } else cartCount.hidden = true;
+    }
+    ['wc_fragments_refreshed', 'wc_fragments_loaded', 'added_to_cart', 'removed_from_cart'].forEach(function(ev) {
+        body.addEventListener(ev, fetchCart);
+    });
+    setTimeout(fetchCart, 500);
+
+    // Product count for nav meta
+    function fetchProductCount() {
+        fetch('/wp-json/wc/store/v1/products?per_page=1', { credentials: 'same-origin' })
+            .then(function(res) { if (!res.ok) throw 0; return res; })
+            .then(function(res) {
+                var total = res.headers.get('X-WP-Total');
+                if (total) {
+                    document.querySelectorAll('[data-meta="products"]').forEach(function(el) {
+                        el.textContent = total + ' items';
+                    });
+                }
+            })
+            .catch(function() {});
+    }
+    setTimeout(fetchProductCount, 800);
+
+    // Category counts for search chips
+    function fetchCategoryCounts() {
+        fetch('/wp-json/wc/store/v1/products/categories?per_page=100', { credentials: 'same-origin' })
+            .then(function(res) { if (!res.ok) throw 0; return res.json(); })
+            .then(function(cats) {
+                if (!Array.isArray(cats)) return;
+                cats.forEach(function(cat) {
+                    var el = document.querySelector('[data-cat-count="' + cat.slug + '"]');
+                    if (el && cat.count) el.textContent = cat.count;
+                });
+            })
+            .catch(function() {});
+    }
+    setTimeout(fetchCategoryCounts, 900);
+
+    // Magnetic CTA
+    if (isDesktop && !prefersReducedMotion) {
+        var ctaEl = document.querySelector('.pf-forge-cta');
+        if (ctaEl) {
+            var ctaRaf = null;
+            ctaEl.addEventListener('mousemove', function(e) {
+                if (ctaRaf) return;
+                ctaRaf = requestAnimationFrame(function() {
+                    var r = ctaEl.getBoundingClientRect();
+                    var x = (e.clientX - r.left - r.width / 2) * 0.15;
+                    var y = (e.clientY - r.top - r.height / 2) * 0.15;
+                    ctaEl.classList.add('pf-magnetic');
+                    ctaEl.style.transform = 'translate(' + x + 'px, ' + y + 'px) translateY(-2px)';
+                    ctaRaf = null;
+                });
+            }, { passive: true });
+            ctaEl.addEventListener('mouseleave', function() {
+                ctaEl.classList.remove('pf-magnetic');
+                ctaEl.style.transform = '';
+            });
+        }
+    }
+
+    // Cart fly animation
+    document.body.addEventListener('added_to_cart', function(e, fragments, hash, button) {
+        if (!button) return;
+        var cartIcon = document.getElementById('pfCartCount');
+        if (!cartIcon) return;
+        var cartRect = cartIcon.getBoundingClientRect();
+        var btnRect = button.getBoundingClientRect();
+        var flyer = document.createElement('div');
+        flyer.className = 'pf-cart-flyer';
+        flyer.style.left = (btnRect.left + btnRect.width / 2 - 10) + 'px';
+        flyer.style.top = (btnRect.top + btnRect.height / 2 - 10) + 'px';
+        document.body.appendChild(flyer);
+        requestAnimationFrame(function() {
+            flyer.classList.add('active');
+            flyer.style.left = (cartRect.left + cartRect.width / 2 - 10) + 'px';
+            flyer.style.top = (cartRect.top + cartRect.height / 2 - 10) + 'px';
+            flyer.style.transform = 'scale(0.4)';
+            flyer.style.opacity = '0';
+        });
+        setTimeout(function() { flyer.remove(); }, 1100);
+    });
+
+    // Close search on chip click
+    document.querySelectorAll('.pf-forge-search-chip').forEach(function(chip) {
+        chip.addEventListener('click', function() { setTimeout(closeSearch, 50); });
+    });
+
+})();
+</script>

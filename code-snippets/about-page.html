@@ -1,0 +1,1002 @@
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+.pcf-about, .pcf-about * { box-sizing: border-box !important; margin: 0; padding: 0; }
+.pcf-about {
+    position: relative; background: #080A0A;
+    min-height: 100vh; padding: 80px 30px 100px;
+    font-family: 'Inter', sans-serif;
+    color: #E8F0ED; overflow: hidden;
+}
+
+/* Background layers */
+.pcf-bg-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.pcf-grid-bg {
+    position: absolute; inset: -100px;
+    background-image:
+        linear-gradient(rgba(85, 230, 181, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85, 230, 181, 0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    will-change: transform;
+}
+.pcf-orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35; will-change: transform; }
+.pcf-orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, #55E6B5, transparent 70%); top: -100px; left: -100px; animation: pcfOrbFloat1 20s ease-in-out infinite; }
+.pcf-orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, #1C9C78, transparent 70%); top: 40%; right: -150px; animation: pcfOrbFloat2 25s ease-in-out infinite; }
+.pcf-orb-3 { width: 600px; height: 600px; background: radial-gradient(circle, #55E6B5, transparent 70%); bottom: -200px; left: 30%; opacity: 0.2; animation: pcfOrbFloat3 30s ease-in-out infinite; }
+@keyframes pcfOrbFloat1 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(100px, 80px) scale(1.15); } }
+@keyframes pcfOrbFloat2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-80px, 100px) scale(1.2); } }
+@keyframes pcfOrbFloat3 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(60px, -60px) scale(1.1); } }
+
+.pcf-stars { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+.pcf-cursor-glow {
+    position: fixed; width: 400px; height: 400px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(85, 230, 181, 0.08), transparent 60%);
+    pointer-events: none; z-index: 1;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease; opacity: 0; will-change: transform;
+}
+
+.pcf-about-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; }
+
+/* Scroll reveal */
+.pcf-reveal { opacity: 0; transform: translateY(50px); transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1); will-change: opacity, transform; }
+.pcf-reveal.pcf-in { opacity: 1; transform: translateY(0); }
+.pcf-reveal-left { opacity: 0; transform: translateX(-60px); transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1); }
+.pcf-reveal-left.pcf-in { opacity: 1; transform: translateX(0); }
+.pcf-reveal-right { opacity: 0; transform: translateX(60px); transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), transform 1s cubic-bezier(0.22, 1, 0.36, 1); }
+.pcf-reveal-right.pcf-in { opacity: 1; transform: translateX(0); }
+.pcf-reveal-scale { opacity: 0; transform: scale(0.9); transition: opacity 0.9s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.pcf-reveal-scale.pcf-in { opacity: 1; transform: scale(1); }
+
+.pcf-d-1 { transition-delay: 0.1s; } .pcf-d-2 { transition-delay: 0.2s; } .pcf-d-3 { transition-delay: 0.3s; }
+.pcf-d-4 { transition-delay: 0.4s; } .pcf-d-5 { transition-delay: 0.5s; } .pcf-d-6 { transition-delay: 0.6s; }
+
+/* Hero */
+.pcf-about-hero {
+    text-align: center; min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative;
+}
+.pcf-about-label {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 4px; color: #9DAAA6;
+    text-transform: uppercase; margin-bottom: 24px;
+    padding: 6px 16px; border: 1px solid rgba(85, 230, 181, 0.25);
+    border-radius: 3px; background: rgba(85, 230, 181, 0.03);
+    backdrop-filter: blur(10px);
+}
+.pcf-about-label::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: #55E6B5; box-shadow: 0 0 10px #55E6B5;
+    animation: pcfBlink 1.5s ease-in-out infinite;
+}
+@keyframes pcfBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.pcf-about-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 110px; font-weight: 800; letter-spacing: -5px;
+    line-height: 0.92; color: #E8F0ED; margin: 0 0 28px;
+}
+.pcf-about-title .mint {
+    color: #55E6B5;
+    text-shadow: 0 0 60px rgba(85, 230, 181, 0.5), 0 0 120px rgba(85, 230, 181, 0.2);
+    position: relative; display: inline-block;
+}
+.pcf-about-title .mint::after {
+    content: ''; position: absolute;
+    bottom: 6px; left: 0; right: 0; height: 5px;
+    background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    box-shadow: 0 0 25px #55E6B5;
+    animation: pcfLinePulse 2.5s ease-in-out infinite;
+}
+@keyframes pcfLinePulse { 0%, 100% { opacity: 1; transform: scaleX(1); } 50% { opacity: 0.4; transform: scaleX(0.85); } }
+
+.pcf-about-sub { font-size: 18px; color: #9DAAA6; max-width: 720px; margin: 0 auto; line-height: 1.75; font-weight: 300; }
+.pcf-scroll-hint {
+    position: absolute; bottom: 40px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 3px; color: #6A7570;
+    text-transform: uppercase;
+}
+.pcf-scroll-hint::after {
+    content: ''; width: 1px; height: 40px;
+    background: linear-gradient(180deg, #55E6B5, transparent);
+    animation: pcfScrollLine 2s ease-in-out infinite;
+}
+@keyframes pcfScrollLine {
+    0% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+    51% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+}
+
+/* Mission */
+.pcf-mission { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-bottom: 140px; align-items: center; }
+.pcf-mission-text {
+    padding: 50px;
+    background: linear-gradient(145deg, rgba(18, 24, 27, 0.85), rgba(14, 18, 18, 0.85));
+    border: 1px solid #1F2626; border-radius: 18px;
+    position: relative; overflow: hidden;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+.pcf-mission-text:hover { border-color: rgba(85, 230, 181, 0.3); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 60px rgba(85, 230, 181, 0.1); }
+.pcf-mission-text::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: linear-gradient(180deg, #55E6B5, transparent);
+    box-shadow: 0 0 20px #55E6B5;
+}
+.pcf-mission-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px; color: #55E6B5;
+    text-transform: uppercase; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+}
+.pcf-mission-label::before { content: '◆'; font-size: 8px; }
+.pcf-mission-heading {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 36px; font-weight: 700;
+    color: #E8F0ED; line-height: 1.2;
+    letter-spacing: -1px; margin-bottom: 20px;
+}
+.pcf-mission-heading .mint { color: #55E6B5; }
+.pcf-mission-desc { font-size: 15px; color: #9DAAA6; line-height: 1.85; font-weight: 300; }
+.pcf-mission-visual { position: relative; height: 450px; display: flex; align-items: center; justify-content: center; }
+
+/* Interactive logo */
+.pcf-logo-wrapper {
+    position: relative; width: 320px; height: 320px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: transform 0.3s ease;
+    will-change: transform;
+}
+.pcf-logo-wrapper.auto-rotate { animation: pcfAutoRotate 8s linear infinite; }
+@keyframes pcfAutoRotate { 100% { transform: rotate(360deg); } }
+
+.pcf-logo-ring {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 2px dashed rgba(85, 230, 181, 0.4);
+    animation: pcfRingSpin 30s linear infinite;
+}
+.pcf-logo-ring-inner {
+    position: absolute; inset: 40px; border-radius: 50%;
+    border: 1px solid rgba(85, 230, 181, 0.2);
+    animation: pcfRingSpin 20s linear infinite reverse;
+}
+@keyframes pcfRingSpin { to { transform: rotate(360deg); } }
+
+.pcf-logo-orbit {
+    position: absolute; inset: -30px; border-radius: 50%;
+    border: 1px solid rgba(85, 230, 181, 0.15);
+    animation: pcfRingSpin 45s linear infinite;
+}
+.pcf-logo-orbit::before {
+    content: ''; position: absolute;
+    top: -5px; left: 50%;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #55E6B5;
+    box-shadow: 0 0 20px #55E6B5, 0 0 40px rgba(85, 230, 181, 0.5);
+    transform: translateX(-50%);
+}
+
+.pcf-logo-svg {
+    width: 140px; height: 140px;
+    position: relative; z-index: 2;
+    filter: drop-shadow(0 0 30px rgba(85, 230, 181, 0.6));
+    transition: all 0.3s ease;
+}
+.pcf-logo-svg path, .pcf-logo-svg circle { transition: all 0.4s ease; }
+.pcf-logo-wrapper:hover .pcf-logo-svg { filter: drop-shadow(0 0 50px rgba(85, 230, 181, 0.9)); transform: scale(1.05); }
+
+.pcf-logo-wrapper.burst { animation: pcfBurstShake 0.4s ease; }
+@keyframes pcfBurstShake {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.15); }
+    60% { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+.pcf-particle {
+    position: absolute; width: 6px; height: 6px; border-radius: 50%;
+    background: #55E6B5;
+    box-shadow: 0 0 10px #55E6B5, 0 0 20px rgba(85, 230, 181, 0.8);
+    pointer-events: none; z-index: 10;
+}
+
+/* Values */
+.pcf-values { margin-bottom: 140px; }
+.pcf-values-title {
+    text-align: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 52px; font-weight: 800;
+    color: #E8F0ED; margin-bottom: 60px;
+    letter-spacing: -2px; line-height: 1.05;
+}
+.pcf-values-title .mint { color: #55E6B5; text-shadow: 0 0 40px rgba(85, 230, 181, 0.4); }
+.pcf-values-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.pcf-value {
+    padding: 36px 30px;
+    background: linear-gradient(145deg, rgba(18, 24, 27, 0.85), rgba(14, 18, 18, 0.85));
+    border: 1px solid #1F2626; border-radius: 16px;
+    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative; overflow: hidden;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+}
+.pcf-value::before {
+    content: ''; position: absolute;
+    top: 0; left: -100%; width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    transition: left 1s ease;
+}
+.pcf-value:hover::before { left: 100%; }
+.pcf-value::after {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(85, 230, 181, 0.08), transparent 60%);
+    opacity: 0; transition: opacity 0.5s ease; pointer-events: none;
+}
+.pcf-value:hover::after { opacity: 1; }
+.pcf-value:hover {
+    border-color: rgba(85, 230, 181, 0.4);
+    transform: translateY(-10px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 60px rgba(85, 230, 181, 0.15);
+}
+.pcf-value-icon {
+    width: 60px; height: 60px;
+    background: rgba(85, 230, 181, 0.1);
+    border: 1.5px solid rgba(85, 230, 181, 0.3);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 22px;
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative; z-index: 2;
+}
+.pcf-value:hover .pcf-value-icon {
+    background: #55E6B5; border-color: #55E6B5;
+    box-shadow: 0 0 40px rgba(85, 230, 181, 0.6);
+    transform: scale(1.1) rotate(-8deg);
+}
+.pcf-value-icon svg {
+    width: 28px; height: 28px;
+    stroke: #55E6B5; stroke-width: 1.8; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+    transition: stroke 0.5s ease;
+}
+.pcf-value:hover .pcf-value-icon svg { stroke: #080A0A; }
+.pcf-value-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px; color: #6A7570;
+    text-transform: uppercase; margin-bottom: 10px;
+    position: relative; z-index: 2;
+}
+.pcf-value-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px; font-weight: 600;
+    color: #E8F0ED; margin-bottom: 14px;
+    letter-spacing: -0.5px;
+    position: relative; z-index: 2;
+    transition: color 0.3s ease;
+}
+.pcf-value:hover .pcf-value-title { color: #55E6B5; }
+.pcf-value-desc {
+    font-size: 14px; color: #9DAAA6;
+    line-height: 1.75; font-weight: 300;
+    position: relative; z-index: 2;
+}
+
+/* Stats */
+.pcf-astats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 20px; padding: 50px 40px;
+    background: linear-gradient(145deg, rgba(18, 24, 27, 0.85), rgba(14, 18, 18, 0.85));
+    border: 1px solid #1F2626; border-radius: 20px;
+    margin-bottom: 140px; position: relative; overflow: hidden;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+}
+.pcf-astats::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    background-size: 200% 100%;
+    animation: pcfBeamFlow 8s linear infinite;
+}
+@keyframes pcfBeamFlow { 0% { background-position: 100% center; } 100% { background-position: -100% center; } }
+.pcf-astat { text-align: center; padding: 24px 12px; position: relative; }
+.pcf-astat:not(:last-child)::after {
+    content: ''; position: absolute;
+    right: -10px; top: 20%; bottom: 20%; width: 1px;
+    background: linear-gradient(180deg, transparent, rgba(85, 230, 181, 0.3), transparent);
+}
+.pcf-astat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 48px; font-weight: 800;
+    color: #55E6B5; letter-spacing: -2px;
+    line-height: 1; text-shadow: 0 0 30px rgba(85, 230, 181, 0.5);
+    display: block; margin-bottom: 10px;
+    font-variant-numeric: tabular-nums;
+}
+.pcf-astat-num .suffix { font-size: 24px; color: #A8FFE3; }
+.pcf-astat-lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: #9DAAA6; text-transform: uppercase;
+}
+
+/* Architect */
+.pcf-architect { margin-bottom: 140px; }
+.pcf-architect-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 50px; align-items: center; }
+.pcf-architect-card {
+    padding: 50px;
+    background: linear-gradient(145deg, rgba(18, 24, 27, 0.9), rgba(14, 18, 18, 0.9));
+    border: 1px solid #1F2626; border-radius: 20px;
+    position: relative; overflow: hidden;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    text-align: center;
+}
+.pcf-architect-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+}
+.pcf-architect-avatar {
+    width: 120px; height: 120px; border-radius: 50%;
+    margin: 0 auto 24px;
+    background: linear-gradient(135deg, #1C9C78, #55E6B5);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 48px; font-weight: 800; color: #080A0A;
+    box-shadow: 0 0 40px rgba(85, 230, 181, 0.4);
+    position: relative;
+}
+.pcf-architect-avatar::after {
+    content: ''; position: absolute; inset: -10px;
+    border-radius: 50%; border: 2px dashed rgba(85, 230, 181, 0.3);
+    animation: pcfRingSpin 20s linear infinite;
+}
+.pcf-architect-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px; font-weight: 700;
+    color: #E8F0ED; margin-bottom: 8px;
+}
+.pcf-architect-role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 3px;
+    color: #55E6B5; text-transform: uppercase;
+    margin-bottom: 20px;
+}
+.pcf-architect-bio { font-size: 14px; color: #9DAAA6; line-height: 1.8; font-weight: 300; }
+
+.pcf-architect-content h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 42px; font-weight: 700;
+    color: #E8F0ED; margin-bottom: 20px;
+    letter-spacing: -1.5px; line-height: 1.15;
+}
+.pcf-architect-content h2 .mint { color: #55E6B5; }
+.pcf-architect-content p { font-size: 15px; color: #9DAAA6; line-height: 1.85; font-weight: 300; margin-bottom: 18px; }
+.pcf-architect-tech { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.pcf-tech-tag {
+    padding: 8px 16px;
+    background: rgba(85, 230, 181, 0.08);
+    border: 1px solid rgba(85, 230, 181, 0.25);
+    border-radius: 30px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 1px;
+    color: #55E6B5;
+    transition: all 0.3s ease; cursor: default;
+}
+.pcf-tech-tag:hover {
+    background: #55E6B5; color: #080A0A;
+    border-color: #55E6B5;
+    box-shadow: 0 0 20px rgba(85, 230, 181, 0.5);
+    transform: translateY(-3px);
+}
+
+/* Process */
+.pcf-process { margin-bottom: 140px; }
+.pcf-process-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.pcf-process-step {
+    padding: 36px 28px;
+    background: linear-gradient(145deg, rgba(18, 24, 27, 0.85), rgba(14, 18, 18, 0.85));
+    border: 1px solid #1F2626; border-radius: 16px;
+    position: relative; transition: all 0.4s ease; overflow: hidden;
+}
+.pcf-process-step::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg, #55E6B5, transparent);
+    opacity: 0; transition: opacity 0.4s ease;
+}
+.pcf-process-step:hover::before { opacity: 1; }
+.pcf-process-step:hover {
+    transform: translateY(-8px);
+    border-color: rgba(85, 230, 181, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+.pcf-process-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 56px; font-weight: 800;
+    color: rgba(85, 230, 181, 0.15);
+    line-height: 1; margin-bottom: 16px;
+    transition: color 0.4s ease;
+}
+.pcf-process-step:hover .pcf-process-num { color: rgba(85, 230, 181, 0.4); }
+.pcf-process-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px; font-weight: 600;
+    color: #E8F0ED; margin-bottom: 10px;
+}
+.pcf-process-desc { font-size: 13px; color: #9DAAA6; line-height: 1.7; font-weight: 300; }
+
+/* FAQ */
+.pcf-faq { margin-bottom: 140px; }
+.pcf-faq-grid { display: flex; flex-direction: column; gap: 12px; max-width: 800px; margin: 0 auto; }
+.pcf-faq-item {
+    background: rgba(18, 24, 27, 0.85);
+    border: 1px solid #1F2626; border-radius: 12px;
+    overflow: hidden; transition: all 0.4s ease;
+}
+.pcf-faq-item:hover { border-color: rgba(85, 230, 181, 0.3); }
+.pcf-faq-item.active { border-color: rgba(85, 230, 181, 0.5); background: rgba(18, 24, 27, 1); }
+.pcf-faq-q {
+    padding: 22px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px; font-weight: 600;
+    color: #E8F0ED; transition: color 0.3s ease;
+    user-select: none;
+}
+.pcf-faq-item.active .pcf-faq-q { color: #55E6B5; }
+.pcf-faq-icon {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 1.5px solid rgba(85, 230, 181, 0.4);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.4s ease; flex-shrink: 0;
+}
+.pcf-faq-icon svg { width: 12px; height: 12px; stroke: #55E6B5; stroke-width: 2; fill: none; transition: transform 0.4s ease; }
+.pcf-faq-item.active .pcf-faq-icon { background: #55E6B5; border-color: #55E6B5; }
+.pcf-faq-item.active .pcf-faq-icon svg { stroke: #080A0A; transform: rotate(180deg); }
+.pcf-faq-a {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+    padding: 0 28px; color: #9DAAA6;
+    font-size: 14px; line-height: 1.75; font-weight: 300;
+}
+.pcf-faq-item.active .pcf-faq-a { max-height: 300px; padding: 0 28px 24px; }
+
+/* CTA */
+.pcf-acta {
+    text-align: center; padding: 80px 40px;
+    background: linear-gradient(145deg, rgba(85, 230, 181, 0.08), rgba(85, 230, 181, 0.02));
+    border: 1.5px solid rgba(85, 230, 181, 0.3);
+    border-radius: 24px; position: relative; overflow: hidden;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+}
+.pcf-acta::before {
+    content: ''; position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(85, 230, 181, 0.15), transparent 40%);
+    animation: pcfPromoGlow 12s ease-in-out infinite;
+    pointer-events: none;
+}
+@keyframes pcfPromoGlow { 0%, 100% { transform: translate(-30%, -30%); } 50% { transform: translate(30%, 30%); } }
+.pcf-acta-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 56px; font-weight: 800;
+    color: #E8F0ED; margin-bottom: 20px;
+    letter-spacing: -2.5px; line-height: 1.05;
+    position: relative; z-index: 2;
+}
+.pcf-acta-title .mint { color: #55E6B5; text-shadow: 0 0 50px rgba(85, 230, 181, 0.5); }
+.pcf-acta-sub {
+    font-size: 16px; color: #9DAAA6;
+    max-width: 540px; margin: 0 auto 36px;
+    line-height: 1.75; font-weight: 300;
+    position: relative; z-index: 2;
+}
+.pcf-acta-buttons {
+    display: flex; gap: 16px; justify-content: center;
+    flex-wrap: wrap; position: relative; z-index: 2;
+}
+.pcf-acta-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 18px 36px; border-radius: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 13px;
+    letter-spacing: 2px; text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative; overflow: hidden;
+}
+.pcf-acta-btn.primary {
+    background: #55E6B5; color: #080A0A;
+    box-shadow: 0 10px 30px rgba(85, 230, 181, 0.3);
+}
+.pcf-acta-btn.primary::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+.pcf-acta-btn.primary:hover::before { transform: translateX(100%); }
+.pcf-acta-btn.primary:hover {
+    background: #A8FFE3; transform: translateY(-4px);
+    box-shadow: 0 20px 50px rgba(85, 230, 181, 0.6);
+}
+.pcf-acta-btn.secondary {
+    background: transparent; color: #E8F0ED;
+    border: 1.5px solid rgba(85, 230, 181, 0.3);
+}
+.pcf-acta-btn.secondary:hover {
+    border-color: #55E6B5;
+    background: rgba(85, 230, 181, 0.08);
+    color: #55E6B5; transform: translateY(-4px);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .pcf-about { padding: 60px 20px 80px; }
+    .pcf-about-title { font-size: 56px; letter-spacing: -2px; }
+    .pcf-about-sub { font-size: 15px; }
+    .pcf-mission { grid-template-columns: 1fr; gap: 40px; }
+    .pcf-mission-visual { height: 340px; order: -1; }
+    .pcf-logo-wrapper { width: 240px; height: 240px; }
+    .pcf-logo-svg { width: 100px; height: 100px; }
+    .pcf-values-grid { grid-template-columns: 1fr; }
+    .pcf-values-title { font-size: 38px; }
+    .pcf-astats { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 30px 20px; }
+    .pcf-astat:nth-child(2)::after { display: none; }
+    .pcf-astat-num { font-size: 36px; }
+    .pcf-architect-grid { grid-template-columns: 1fr; gap: 30px; }
+    .pcf-architect-content h2 { font-size: 30px; }
+    .pcf-process-grid { grid-template-columns: repeat(2, 1fr); }
+    .pcf-acta { padding: 50px 24px; }
+    .pcf-acta-title { font-size: 34px; letter-spacing: -1.5px; }
+    .pcf-cursor-glow { display: none; }
+}
+@media (max-width: 500px) {
+    .pcf-about-title { font-size: 40px; letter-spacing: -1.5px; }
+    .pcf-mission-text { padding: 28px; }
+    .pcf-mission-heading { font-size: 24px; }
+    .pcf-values-title { font-size: 28px; }
+    .pcf-astat-num { font-size: 28px; }
+    .pcf-architect-content h2 { font-size: 24px; }
+    .pcf-process-grid { grid-template-columns: 1fr; }
+    .pcf-acta-title { font-size: 26px; }
+    .pcf-acta-btn { padding: 14px 24px; font-size: 11px; }
+    .pcf-scroll-hint { display: none; }
+}
+</style>
+
+<div class="pcf-bg-layer">
+    <div class="pcf-orb pcf-orb-1"></div>
+    <div class="pcf-orb pcf-orb-2"></div>
+    <div class="pcf-orb pcf-orb-3"></div>
+    <div class="pcf-grid-bg" id="pcfGridBg"></div>
+    <canvas class="pcf-stars" id="pcfStars"></canvas>
+</div>
+
+<div class="pcf-cursor-glow" id="pcfCursorGlow"></div>
+
+<div class="pcf-about">
+    <div class="pcf-about-inner">
+
+        <div class="pcf-about-hero">
+            <div class="pcf-about-label pcf-reveal">About PCFORGE</div>
+            <h1 class="pcf-about-title pcf-reveal pcf-d-1">
+                FORGED FOR <span class="mint">BUILDERS.</span>
+            </h1>
+            <p class="pcf-about-sub pcf-reveal pcf-d-2">
+                PCFORGE is not just a store — it's a decision platform designed for people who take their hardware seriously. Built by builders, for builders.
+            </p>
+            <div class="pcf-scroll-hint pcf-reveal pcf-d-3">Scroll</div>
+        </div>
+
+        <div class="pcf-mission">
+            <div class="pcf-mission-text pcf-reveal-left">
+                <div class="pcf-mission-label">Our Mission</div>
+                <h2 class="pcf-mission-heading">
+                    Making PC building <span class="mint">simple, smart, and transparent.</span>
+                </h2>
+                <p class="pcf-mission-desc">
+                    Every builder has faced the same problems — unclear compatibility, scattered pricing, and confusing specs. We built PCFORGE to solve all of that in one place. From component selection to checkout, every step is designed to keep you informed, empowered, and confident about your build.
+                </p>
+            </div>
+            <div class="pcf-mission-visual pcf-reveal-right">
+                <div class="pcf-logo-wrapper" id="pcfLogoWrapper">
+                    <div class="pcf-logo-orbit"></div>
+                    <div class="pcf-logo-ring"></div>
+                    <div class="pcf-logo-ring-inner"></div>
+                    <svg class="pcf-logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 25 25 L 75 25 L 75 38 L 45 38 L 45 52 L 68 52 L 68 65 L 45 65 L 45 85 L 25 85 Z" fill="#55E6B5"/>
+                        <circle cx="75" cy="70" r="6" fill="#A8FFE3"/>
+                        <circle cx="75" cy="70" r="10" fill="none" stroke="#55E6B5" stroke-width="1.5" opacity="0.6"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="pcf-values">
+            <h2 class="pcf-values-title pcf-reveal">OUR <span class="mint">VALUES</span></h2>
+            <div class="pcf-values-grid">
+                <div class="pcf-value pcf-reveal-scale pcf-d-1">
+                    <div class="pcf-value-icon">
+                        <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/></svg>
+                    </div>
+                    <div class="pcf-value-num">// 01</div>
+                    <h3 class="pcf-value-title">Precision First</h3>
+                    <p class="pcf-value-desc">Every compatibility check, every spec, every price — accurate to the last detail. No guesswork allowed.</p>
+                </div>
+                <div class="pcf-value pcf-reveal-scale pcf-d-2">
+                    <div class="pcf-value-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3 Q15 8 12 12"/><path d="M12 3 Q9 8 12 12"/><path d="M21 12 Q16 15 12 12"/><path d="M3 12 Q8 9 12 12"/></svg>
+                    </div>
+                    <div class="pcf-value-num">// 02</div>
+                    <h3 class="pcf-value-title">Built for Real Users</h3>
+                    <p class="pcf-value-desc">Not for benchmarks or spec sheets — for gamers, creators, and professionals who need hardware that works.</p>
+                </div>
+                <div class="pcf-value pcf-reveal-scale pcf-d-3">
+                    <div class="pcf-value-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                    </div>
+                    <div class="pcf-value-num">// 03</div>
+                    <h3 class="pcf-value-title">Trust &amp; Transparency</h3>
+                    <p class="pcf-value-desc">Genuine hardware, honest pricing, and clear information. No hidden margins, no fake discounts.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="pcf-astats pcf-reveal">
+            <div class="pcf-astat">
+                <span class="pcf-astat-num" data-target="26">0<span class="suffix">+</span></span>
+                <span class="pcf-astat-lbl">Components</span>
+            </div>
+            <div class="pcf-astat">
+                <span class="pcf-astat-num" data-target="8">0</span>
+                <span class="pcf-astat-lbl">Categories</span>
+            </div>
+            <div class="pcf-astat">
+                <span class="pcf-astat-num" data-target="15000">0<span class="suffix">+</span></span>
+                <span class="pcf-astat-lbl">Builders</span>
+            </div>
+            <div class="pcf-astat">
+                <span class="pcf-astat-num" data-target="98">0<span class="suffix">%</span></span>
+                <span class="pcf-astat-lbl">Satisfaction</span>
+            </div>
+        </div>
+
+        <div class="pcf-architect">
+            <div class="pcf-architect-grid">
+                <div class="pcf-architect-card pcf-reveal-scale">
+                    <div class="pcf-architect-avatar">S</div>
+                    <h3 class="pcf-architect-name">Shahzaib</h3>
+                    <div class="pcf-architect-role">Lead Developer &amp; Architect</div>
+                    <p class="pcf-architect-bio">
+                        The mind behind PCFORGE. Combining a passion for PC hardware with modern web development to build a platform that solves real problems for builders.
+                    </p>
+                </div>
+                <div class="pcf-architect-content pcf-reveal-right">
+                    <h2>THE MIND BEHIND <span class="mint">THE FORGE</span></h2>
+                    <p>
+                        PCFORGE was born from a simple frustration — building a PC online was confusing, slow, and full of guesswork. Existing platforms showed products, but they didn't help users make decisions.
+                    </p>
+                    <p>
+                        I built something different. A platform that combines ecommerce, real-time compatibility, live pricing, and performance insight — all in one seamless experience. Every line of code, every animation, and every pixel is crafted with the user in mind.
+                    </p>
+                    <div class="pcf-architect-tech">
+                        <span class="pcf-tech-tag">WordPress</span>
+                        <span class="pcf-tech-tag">WooCommerce</span>
+                        <span class="pcf-tech-tag">Elementor Pro</span>
+                        <span class="pcf-tech-tag">PHP</span>
+                        <span class="pcf-tech-tag">JavaScript</span>
+                        <span class="pcf-tech-tag">CSS3</span>
+                        <span class="pcf-tech-tag">Canvas API</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pcf-process">
+            <h2 class="pcf-values-title pcf-reveal">HOW IT <span class="mint">WORKS</span></h2>
+            <div class="pcf-process-grid">
+                <div class="pcf-process-step pcf-reveal pcf-d-1">
+                    <div class="pcf-process-num">01</div>
+                    <h3 class="pcf-process-title">Choose Components</h3>
+                    <p class="pcf-process-desc">Browse our catalog and select the parts that match your budget and performance needs.</p>
+                </div>
+                <div class="pcf-process-step pcf-reveal pcf-d-2">
+                    <div class="pcf-process-num">02</div>
+                    <h3 class="pcf-process-title">Check Compatibility</h3>
+                    <p class="pcf-process-desc">Our real-time engine instantly verifies that every part works together perfectly.</p>
+                </div>
+                <div class="pcf-process-step pcf-reveal pcf-d-3">
+                    <div class="pcf-process-num">03</div>
+                    <h3 class="pcf-process-title">See Performance</h3>
+                    <p class="pcf-process-desc">Get FPS estimates and power draw calculations before you buy.</p>
+                </div>
+                <div class="pcf-process-step pcf-reveal pcf-d-4">
+                    <div class="pcf-process-num">04</div>
+                    <h3 class="pcf-process-title">Build &amp; Enjoy</h3>
+                    <p class="pcf-process-desc">Add to cart, checkout, and start building your dream PC with confidence.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="pcf-faq">
+            <h2 class="pcf-values-title pcf-reveal">FREQUENTLY <span class="mint">ASKED</span></h2>
+            <div class="pcf-faq-grid pcf-reveal">
+                <div class="pcf-faq-item">
+                    <div class="pcf-faq-q">
+                        <span>Is PCFORGE a real store?</span>
+                        <div class="pcf-faq-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    </div>
+                    <div class="pcf-faq-a">PCFORGE is a fully functional ecommerce platform powered by WooCommerce. You can browse, add to cart, and checkout just like any other store.</div>
+                </div>
+                <div class="pcf-faq-item">
+                    <div class="pcf-faq-q">
+                        <span>How does the compatibility checker work?</span>
+                        <div class="pcf-faq-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    </div>
+                    <div class="pcf-faq-a">Our engine uses real-time data from WooCommerce to cross-reference socket types, power requirements, and physical dimensions to ensure your build is 100% compatible.</div>
+                </div>
+                <div class="pcf-faq-item">
+                    <div class="pcf-faq-q">
+                        <span>Do you offer pre-built systems?</span>
+                        <div class="pcf-faq-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    </div>
+                    <div class="pcf-faq-a">Currently, PCFORGE focuses on custom builds. However, we do offer preset configurations in the Build Lab that you can customize to your liking.</div>
+                </div>
+                <div class="pcf-faq-item">
+                    <div class="pcf-faq-q">
+                        <span>Is there a warranty on components?</span>
+                        <div class="pcf-faq-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    </div>
+                    <div class="pcf-faq-a">Yes, all components come with the manufacturer's warranty. We also provide support to help you with any RMA claims if needed.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pcf-acta pcf-reveal-scale">
+            <h2 class="pcf-acta-title">READY TO <span class="mint">BUILD?</span></h2>
+            <p class="pcf-acta-sub">
+                Start configuring your perfect PC in our interactive Build Lab. Real-time compatibility, live pricing, and 100% genuine components.
+            </p>
+            <div class="pcf-acta-buttons">
+                <a href="/build-lab/" class="pcf-acta-btn primary">Start Building →</a>
+                <a href="/shop/" class="pcf-acta-btn secondary">Browse Store</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+    var root = document.querySelector('.pcf-about');
+    if (!root || root.dataset.init) return;
+    root.dataset.init = '1';
+
+    // Scroll reveal
+    var revealEls = root.querySelectorAll('.pcf-reveal, .pcf-reveal-left, .pcf-reveal-right, .pcf-reveal-scale');
+    if ('IntersectionObserver' in window) {
+        var revealObs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('pcf-in');
+                    revealObs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+        revealEls.forEach(function(el) { revealObs.observe(el); });
+    } else {
+        revealEls.forEach(function(el) { el.classList.add('pcf-in'); });
+    }
+
+    // Animated counters
+    var nums = root.querySelectorAll('.pcf-astat-num[data-target]');
+    var counted = false;
+    function animateCounters() {
+        if (counted) return;
+        counted = true;
+        nums.forEach(function(el, idx) {
+            var target = parseInt(el.dataset.target);
+            var suffixEl = el.querySelector('.suffix');
+            var suffix = suffixEl ? suffixEl.outerHTML : '';
+            var duration = 1800;
+            var startTime = performance.now();
+            function tick(now) {
+                var elapsed = now - startTime;
+                var t = Math.min(elapsed / duration, 1);
+                var eased = 1 - Math.pow(1 - t, 3);
+                el.innerHTML = Math.floor(eased * target).toLocaleString() + suffix;
+                if (t < 1) requestAnimationFrame(tick);
+            }
+            setTimeout(function() { requestAnimationFrame(tick); }, idx * 120);
+        });
+    }
+    if ('IntersectionObserver' in window) {
+        var statsBox = root.querySelector('.pcf-astats');
+        if (statsBox) {
+            var statsObs = new IntersectionObserver(function(entries) {
+                entries.forEach(function(e) {
+                    if (e.isIntersecting) { animateCounters(); statsObs.disconnect(); }
+                });
+            }, { threshold: 0.3 });
+            statsObs.observe(statsBox);
+        }
+    } else { animateCounters(); }
+
+    // Background parallax
+    var gridBg = document.getElementById('pcfGridBg');
+    var orb1 = document.querySelector('.pcf-orb-1');
+    var orb2 = document.querySelector('.pcf-orb-2');
+    var orb3 = document.querySelector('.pcf-orb-3');
+    var ticking = false;
+    var targetScrollY = 0;
+    var currentScrollY = 0;
+
+    window.addEventListener('scroll', function() {
+        targetScrollY = window.pageYOffset;
+        if (!ticking) { requestAnimationFrame(updateParallax); ticking = true; }
+    }, { passive: true });
+
+    function updateParallax() {
+        currentScrollY += (targetScrollY - currentScrollY) * 0.1;
+        if (gridBg) gridBg.style.transform = 'translateY(' + (currentScrollY * 0.15) + 'px)';
+        if (orb1) orb1.style.transform = 'translate(' + (currentScrollY * 0.08) + 'px, ' + (currentScrollY * 0.12) + 'px)';
+        if (orb2) orb2.style.transform = 'translate(' + (-currentScrollY * 0.06) + 'px, ' + (currentScrollY * 0.1) + 'px)';
+        if (orb3) orb3.style.transform = 'translate(' + (currentScrollY * 0.04) + 'px, ' + (-currentScrollY * 0.08) + 'px)';
+        if (Math.abs(targetScrollY - currentScrollY) > 0.5) requestAnimationFrame(updateParallax);
+        else ticking = false;
+    }
+
+    // Floating stars canvas
+    var canvas = document.getElementById('pcfStars');
+    if (canvas) {
+        var ctx = canvas.getContext('2d');
+        var stars = [], w, h;
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+            initStars();
+        }
+        function initStars() {
+            var count = Math.min(Math.floor(w * h / 12000), 120);
+            stars = [];
+            for (var i = 0; i < count; i++) {
+                stars.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    r: Math.random() * 1.5 + 0.3,
+                    baseAlpha: Math.random() * 0.5 + 0.2,
+                    speed: Math.random() * 0.15 + 0.05,
+                    phase: Math.random() * Math.PI * 2,
+                    drift: (Math.random() - 0.5) * 0.15
+                });
+            }
+        }
+        var starScroll = 0;
+        window.addEventListener('scroll', function() { starScroll = window.pageYOffset * 0.05; }, { passive: true });
+        function drawStars(time) {
+            ctx.clearRect(0, 0, w, h);
+            stars.forEach(function(s) {
+                var twinkle = Math.sin(time * 0.001 + s.phase) * 0.4 + 0.6;
+                var alpha = s.baseAlpha * twinkle;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y - (starScroll * s.speed), s.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(85, 230, 181, ' + alpha + ')';
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = 'rgba(85, 230, 181, 0.6)';
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                s.x += s.drift;
+                if (s.x > w + 5) s.x = -5;
+                if (s.x < -5) s.x = w + 5;
+            });
+            requestAnimationFrame(drawStars);
+        }
+        resize();
+        window.addEventListener('resize', resize);
+        requestAnimationFrame(drawStars);
+    }
+
+    // Cursor glow
+    var glow = document.getElementById('pcfCursorGlow');
+    if (glow && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        var mouseX = 0, mouseY = 0, glowX = 0, glowY = 0;
+        document.addEventListener('mousemove', function(e) {
+            mouseX = e.clientX; mouseY = e.clientY;
+            glow.style.opacity = '1';
+        });
+        document.addEventListener('mouseleave', function() { glow.style.opacity = '0'; });
+        function animateGlow() {
+            glowX += (mouseX - glowX) * 0.12;
+            glowY += (mouseY - glowY) * 0.12;
+            glow.style.transform = 'translate(' + glowX + 'px, ' + glowY + 'px) translate(-50%, -50%)';
+            requestAnimationFrame(animateGlow);
+        }
+        requestAnimationFrame(animateGlow);
+    }
+
+    // Interactive logo
+    var logoWrapper = document.getElementById('pcfLogoWrapper');
+    if (logoWrapper) {
+        var logoX = 0, targetX = 0;
+        var lastScroll = window.pageYOffset;
+        var idleTimer;
+        var maxMove = 180;
+
+        window.addEventListener('scroll', function() {
+            clearTimeout(idleTimer);
+            logoWrapper.classList.remove('auto-rotate');
+            var currentScroll = window.pageYOffset;
+            var delta = currentScroll - lastScroll;
+            lastScroll = currentScroll;
+            targetX += delta * 0.6;
+            targetX = Math.max(-maxMove, Math.min(maxMove, targetX));
+            idleTimer = setTimeout(function() { logoWrapper.classList.add('auto-rotate'); }, 1000);
+        }, { passive: true });
+
+        function animateLogo() {
+            logoX += (targetX - logoX) * 0.08;
+            logoWrapper.style.transform = 'translateX(' + logoX + 'px)';
+            requestAnimationFrame(animateLogo);
+        }
+        animateLogo();
+
+        logoWrapper.addEventListener('click', function(e) {
+            e.stopPropagation();
+            logoWrapper.classList.add('burst');
+            setTimeout(function() { logoWrapper.classList.remove('burst'); }, 400);
+            var rect = logoWrapper.getBoundingClientRect();
+            var centerX = rect.left + rect.width / 2;
+            var centerY = rect.top + rect.height / 2;
+
+            for (var i = 0; i < 30; i++) {
+                (function() {
+                    var particle = document.createElement('div');
+                    particle.className = 'pcf-particle';
+                    particle.style.left = centerX + 'px';
+                    particle.style.top = centerY + 'px';
+                    document.body.appendChild(particle);
+                    var angle = Math.random() * Math.PI * 2;
+                    var velocity = Math.random() * 150 + 50;
+                    var vx = Math.cos(angle) * velocity;
+                    var vy = Math.sin(angle) * velocity;
+                    var startTime = performance.now();
+                    function animateParticle(now) {
+                        var elapsed = now - startTime;
+                        var t = elapsed / 800;
+                        if (t >= 1) { particle.remove(); return; }
+                        var ease = 1 - Math.pow(1 - t, 3);
+                        particle.style.transform = 'translate(' + (vx * ease) + 'px, ' + (vy * ease) + 'px) scale(' + (1 - ease) + ')';
+                        particle.style.opacity = 1 - ease;
+                        requestAnimationFrame(animateParticle);
+                    }
+                    requestAnimationFrame(animateParticle);
+                })();
+            }
+        });
+    }
+
+    // FAQ accordion
+    var faqItems = root.querySelectorAll('.pcf-faq-item');
+    faqItems.forEach(function(item) {
+        var q = item.querySelector('.pcf-faq-q');
+        q.addEventListener('click', function() {
+            var isActive = item.classList.contains('active');
+            faqItems.forEach(function(i) { i.classList.remove('active'); });
+            if (!isActive) item.classList.add('active');
+        });
+    });
+
+})();
+</script>

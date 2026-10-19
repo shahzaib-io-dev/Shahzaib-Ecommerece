@@ -1,0 +1,3706 @@
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   PCFORGE — HOME PAGE (COMBINED)
+   ============================================================ */
+.pcf-home, .pcf-home * { box-sizing: border-box !important; margin: 0; padding: 0; }
+.pcf-home {
+    background: #080A0A;
+    color: #E8F0ED;
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ============================================================
+   1. HERO
+   ============================================================ */
+.pcf-hero {
+    position: relative;
+    min-height: 100vh;
+    background: #080A0A;
+    display: flex;
+    align-items: center;
+    padding: 100px 50px 60px;
+    overflow: hidden;
+    isolation: isolate;
+}
+.pcf-hero .pcf-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(85,230,181,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85,230,181,0.04) 1px, transparent 1px);
+    background-size: 70px 70px;
+    mask-image: radial-gradient(ellipse at 70% 50%, black 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at 70% 50%, black 20%, transparent 75%);
+    z-index: 1;
+    animation: pcfGridDrift 40s linear infinite;
+    will-change: background-position;
+}
+@keyframes pcfGridDrift {
+    0% { background-position: 0 0, 0 0; }
+    100% { background-position: 70px 70px, 70px 70px; }
+}
+.pcf-hero .pcf-glow {
+    position: absolute;
+    top: 50%; right: 5%;
+    transform: translateY(-50%);
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(85,230,181,0.18), transparent 60%);
+    pointer-events: none;
+    z-index: 2;
+    animation: pcfGlowPulse 8s ease-in-out infinite;
+}
+@keyframes pcfGlowPulse {
+    0%, 100% { transform: translateY(-50%) scale(1); opacity: 1; }
+    50% { transform: translateY(-50%) scale(1.08); opacity: 0.85; }
+}
+.pcf-particles {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+}
+.pcf-cursor-glow {
+    position: fixed; top: 0; left: 0;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(85,230,181,0.14), transparent 60%);
+    pointer-events: none; z-index: 4;
+    opacity: 0; filter: blur(20px);
+    mix-blend-mode: screen;
+    transition: opacity 0.3s ease;
+    will-change: transform;
+    margin-left: -200px; margin-top: -200px;
+}
+.pcf-cursor-ring {
+    position: fixed; top: 0; left: 0;
+    width: 40px; height: 40px;
+    border: 1px solid rgba(85,230,181,0.7);
+    border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    opacity: 0;
+    box-shadow: 0 0 20px rgba(85,230,181,0.5), inset 0 0 20px rgba(85,230,181,0.2);
+    transition: opacity 0.3s ease;
+    will-change: transform;
+    margin-left: -20px; margin-top: -20px;
+}
+.pcf-cursor-ring::before {
+    content: ''; position: absolute;
+    top: -3px; left: 50%;
+    transform: translateX(-50%);
+    width: 5px; height: 5px;
+    background: #55E6B5; border-radius: 50%;
+    box-shadow: 0 0 10px #55E6B5;
+}
+.pcf-hud {
+    position: absolute; width: 50px; height: 50px;
+    z-index: 12; pointer-events: none; opacity: 0.55;
+}
+.pcf-hud-tl { top: 40px; left: 40px; border-top: 2px solid #55E6B5; border-left: 2px solid #55E6B5; }
+.pcf-hud-tr { top: 40px; right: 40px; border-top: 2px solid #55E6B5; border-right: 2px solid #55E6B5; }
+.pcf-hud-bl { bottom: 40px; left: 40px; border-bottom: 2px solid #55E6B5; border-left: 2px solid #55E6B5; }
+.pcf-hud-br { bottom: 40px; right: 40px; border-bottom: 2px solid #55E6B5; border-right: 2px solid #55E6B5; }
+.pcf-hud-text {
+    position: absolute;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: #55E6B5; opacity: 0.5;
+    z-index: 12; pointer-events: none;
+}
+.pcf-hud-text-tl { top: 45px; left: 100px; }
+.pcf-hud-text-tr { top: 45px; right: 100px; }
+.pcf-hud-text-bl { bottom: 45px; left: 100px; }
+.pcf-hud-text-br { bottom: 45px; right: 100px; }
+.pcf-hero-inner {
+    max-width: 1400px; margin: 0 auto; width: 100%;
+    display: grid; grid-template-columns: 1.1fr 1fr;
+    gap: 60px; align-items: center;
+    position: relative; z-index: 10;
+}
+.pcf-text { position: relative; }
+.pcf-eyebrow {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-size: 11px; letter-spacing: 4px;
+    color: #9DAAA6; text-transform: uppercase;
+    margin-bottom: 32px; font-weight: 500;
+    opacity: 0; animation: pcfSlideIn 0.8s 0.2s ease-out forwards;
+}
+.pcf-eyebrow::before {
+    content: ''; width: 30px; height: 1px;
+    background: #55E6B5; box-shadow: 0 0 10px #55E6B5;
+}
+.pcf-eyebrow .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #55E6B5; box-shadow: 0 0 15px #55E6B5;
+    animation: pcfDotPulse 2s ease-in-out infinite;
+}
+@keyframes pcfDotPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+}
+.pcf-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 108px; font-weight: 800;
+    line-height: 0.92; letter-spacing: -4px;
+    color: #E8F0ED; margin: 0 0 32px;
+    opacity: 0; animation: pcfSlideIn 0.9s 0.4s ease-out forwards;
+}
+.pcf-title .row { display: block; }
+.pcf-title .mint {
+    color: #55E6B5; position: relative; display: inline-block;
+    text-shadow: 0 0 50px rgba(85,230,181,0.5);
+}
+.pcf-title .mint::after {
+    content: ''; position: absolute;
+    bottom: 8px; left: 0; width: 100%; height: 4px;
+    background: linear-gradient(90deg, #55E6B5, #A8FFE3, #55E6B5);
+    box-shadow: 0 0 25px #55E6B5;
+    animation: pcfLineGlow 3s ease-in-out infinite;
+}
+@keyframes pcfLineGlow {
+    0%, 100% { opacity: 1; transform: scaleX(1); }
+    50% { opacity: 0.6; transform: scaleX(1.02); }
+}
+.pcf-desc {
+    font-size: 17px; line-height: 1.75;
+    color: #9DAAA6; max-width: 500px;
+    margin: 0 0 44px; font-weight: 300;
+    opacity: 0; animation: pcfSlideIn 0.9s 0.6s ease-out forwards;
+}
+.pcf-desc strong { color: #E8F0ED; font-weight: 500; }
+.pcf-buttons {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    opacity: 0; animation: pcfSlideIn 0.9s 0.8s ease-out forwards;
+}
+.pcf-btn-primary {
+    position: relative; display: inline-flex; align-items: center; gap: 12px;
+    padding: 20px 40px; background: #55E6B5; color: #080A0A;
+    text-decoration: none; font-weight: 700;
+    font-size: 13px; letter-spacing: 2px;
+    text-transform: uppercase; border-radius: 4px;
+    transition: all 0.3s ease; overflow: hidden;
+    box-shadow: 0 10px 30px rgba(85,230,181,0.25);
+}
+.pcf-btn-primary::before {
+    content: ''; position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.6s ease;
+}
+.pcf-btn-primary:hover {
+    background: #A8FFE3; transform: translateY(-3px);
+    box-shadow: 0 20px 50px rgba(85,230,181,0.5);
+}
+.pcf-btn-primary:hover::before { left: 100%; }
+.pcf-btn-primary .arrow { transition: transform 0.3s ease; font-size: 16px; }
+.pcf-btn-primary:hover .arrow { transform: translateX(6px); }
+.pcf-btn-secondary {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 20px 40px; background: transparent; color: #E8F0ED;
+    text-decoration: none; font-weight: 500;
+    font-size: 13px; letter-spacing: 2px;
+    text-transform: uppercase; border-radius: 4px;
+    border: 1px solid #232A29; transition: all 0.3s ease;
+}
+.pcf-btn-secondary:hover {
+    border-color: #55E6B5; background: rgba(85,230,181,0.08);
+    transform: translateY(-3px);
+}
+.pcf-stats {
+    display: flex; gap: 55px;
+    margin-top: 60px; padding-top: 34px;
+    border-top: 1px solid #1F2626;
+    opacity: 0; animation: pcfSlideIn 0.9s 1s ease-out forwards;
+}
+.pcf-stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 34px; font-weight: 700;
+    color: #E8F0ED; line-height: 1;
+    letter-spacing: -1px; display: block;
+}
+.pcf-stat-num .mint { color: #55E6B5; }
+.pcf-stat-lbl {
+    font-size: 10px; letter-spacing: 2.5px;
+    color: #6A7570; text-transform: uppercase;
+    margin-top: 8px; display: block; font-weight: 500;
+}
+.pcf-visual {
+    position: relative; height: 620px;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; animation: pcfSlideIn 1s 0.5s ease-out forwards;
+}
+.pcf-halo {
+    position: absolute; width: 500px; height: 500px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, rgba(85,230,181,0.5), rgba(168,255,227,0.2), rgba(28,156,120,0.3), rgba(85,230,181,0.5));
+    filter: blur(50px); z-index: 1;
+    animation: pcfHaloSpin 15s linear infinite;
+    opacity: 0.4; will-change: transform;
+}
+@keyframes pcfHaloSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.pcf-ring {
+    position: absolute; top: 5%; left: 50%;
+    transform: translateX(-50%);
+    width: 460px; height: 460px;
+    border-radius: 50%;
+    border: 1px dashed rgba(85,230,181,0.4);
+    z-index: 2; animation: pcfRingSpin 30s linear infinite;
+    pointer-events: none; will-change: transform;
+}
+.pcf-ring::before {
+    content: ''; position: absolute;
+    top: -3px; left: 50%; width: 6px; height: 6px;
+    background: #55E6B5; border-radius: 50%;
+    box-shadow: 0 0 20px #55E6B5;
+}
+@keyframes pcfRingSpin {
+    0% { transform: translateX(-50%) rotate(0deg); }
+    100% { transform: translateX(-50%) rotate(360deg); }
+}
+.pcf-scan {
+    position: absolute; top: 10%; left: 50%;
+    transform: translateX(-50%);
+    width: 400px; height: 2px;
+    background: linear-gradient(90deg, transparent, #55E6B5, #A8FFE3, #55E6B5, transparent);
+    box-shadow: 0 0 25px #55E6B5;
+    z-index: 8; opacity: 0.7;
+    animation: pcfScan 5s ease-in-out infinite;
+    pointer-events: none;
+}
+@keyframes pcfScan {
+    0% { top: 10%; opacity: 0; }
+    20% { opacity: 0.7; }
+    80% { opacity: 0.7; }
+    100% { top: 85%; opacity: 0; }
+}
+.pcf-case-wrap {
+    position: relative; z-index: 5;
+    width: 100%; max-width: 380px;
+    aspect-ratio: 9 / 16; max-height: 560px;
+    overflow: hidden; border-radius: 20px;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    filter: drop-shadow(0 30px 60px rgba(0,0,0,0.7));
+    animation: pcfCaseFloat 8s ease-in-out infinite;
+    pointer-events: none;
+    clip-path: inset(4% 4% 4% 4% round 18px);
+    will-change: transform;
+}
+@keyframes pcfCaseFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+.pcf-case-wrap video {
+    width: 110%; height: 110%;
+    object-fit: cover; display: block;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    margin: -5% 0 0 -5%;
+}
+.pcf-label {
+    position: absolute;
+    background: linear-gradient(135deg, rgba(24,30,29,0.95), rgba(8,10,10,0.95));
+    border: 1px solid rgba(85,230,181,0.3);
+    border-left: 3px solid #55E6B5;
+    padding: 12px 18px; border-radius: 6px;
+    font-family: 'Space Grotesk', sans-serif;
+    z-index: 15;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 30px rgba(85,230,181,0.2);
+    animation: pcfFloat 5s ease-in-out infinite;
+    min-width: 140px; pointer-events: none;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+}
+.pcf-label .k {
+    font-size: 10px; letter-spacing: 2.5px;
+    color: #6A7570; text-transform: uppercase;
+    display: block; margin-bottom: 5px; font-weight: 500;
+}
+.pcf-label .v {
+    font-size: 14px; font-weight: 600;
+    letter-spacing: 0.5px; color: #E8F0ED;
+    display: inline-block;
+}
+.pcf-label .v.mint {
+    color: #55E6B5;
+    text-shadow: 0 0 15px rgba(85,230,181,0.6);
+}
+.pcf-label .pulse-dot {
+    position: absolute; top: 10px; right: 10px;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #55E6B5; box-shadow: 0 0 10px #55E6B5;
+    animation: pcfDotPulse 1.5s ease-in-out infinite;
+}
+.pcf-l1 { top: 30px; left: -50px; }
+.pcf-l2 { top: 42%; right: -60px; animation-delay: 1.5s; }
+.pcf-l3 { bottom: 60px; left: -55px; animation-delay: 3s; }
+.pcf-l4 { bottom: 30px; right: -40px; animation-delay: 4.5s; }
+@keyframes pcfFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+@keyframes pcfSlideIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   2. WHY PCFORGE
+   ============================================================ */
+.pcf-why {
+    position: relative; background: #080A0A;
+    padding: 140px 50px;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    border-top: 1px solid rgba(85,230,181,0.08);
+    isolation: isolate;
+}
+.pcf-why::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(85,230,181,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85,230,181,0.035) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    pointer-events: none; z-index: 0;
+}
+.pcf-why .pcf-why-glow {
+    position: absolute; width: 700px; height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(85,230,181,0.12), transparent 60%);
+    pointer-events: none; z-index: 1;
+    transform: translate(-50%, -50%);
+    opacity: 0; transition: opacity 0.4s ease;
+    filter: blur(30px); mix-blend-mode: screen;
+}
+.pcf-why:hover .pcf-why-glow { opacity: 1; }
+.pcf-why-hud {
+    position: absolute;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: #55E6B5; opacity: 0.35;
+    z-index: 2; pointer-events: none;
+    animation: pcfHudBlink 4s ease-in-out infinite;
+}
+.pcf-hud-a { top: 40px; left: 60px; }
+.pcf-hud-b { top: 40px; right: 60px; animation-delay: 1s; }
+.pcf-hud-c { bottom: 40px; left: 60px; animation-delay: 2s; }
+.pcf-hud-d { bottom: 40px; right: 60px; animation-delay: 3s; }
+@keyframes pcfHudBlink {
+    0%, 100% { opacity: 0.35; }
+    50% { opacity: 0.7; }
+}
+.pcf-why-bracket {
+    position: absolute; width: 50px; height: 50px;
+    z-index: 2; pointer-events: none; opacity: 0.5;
+    animation: pcfBracketPulse 3s ease-in-out infinite;
+}
+.pcf-why-bracket-tl { top: 30px; left: 30px; border-top: 2px solid #55E6B5; border-left: 2px solid #55E6B5; }
+.pcf-why-bracket-tr { top: 30px; right: 30px; border-top: 2px solid #55E6B5; border-right: 2px solid #55E6B5; animation-delay: 0.75s; }
+.pcf-why-bracket-bl { bottom: 30px; left: 30px; border-bottom: 2px solid #55E6B5; border-left: 2px solid #55E6B5; animation-delay: 1.5s; }
+.pcf-why-bracket-br { bottom: 30px; right: 30px; border-bottom: 2px solid #55E6B5; border-right: 2px solid #55E6B5; animation-delay: 2.25s; }
+@keyframes pcfBracketPulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.08); }
+}
+.pcf-why-inner {
+    max-width: 1300px; margin: 0 auto;
+    position: relative; z-index: 5;
+}
+.pcf-why-header {
+    text-align: center; margin-bottom: 90px; position: relative;
+}
+.pcf-why-eyebrow {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-size: 11px; letter-spacing: 5px;
+    color: #9DAAA6; text-transform: uppercase;
+    margin-bottom: 28px; font-weight: 500;
+    font-family: 'JetBrains Mono', monospace;
+}
+.pcf-why-eyebrow::before,
+.pcf-why-eyebrow::after {
+    content: ''; width: 40px; height: 1px;
+    background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    box-shadow: 0 0 10px #55E6B5;
+}
+.pcf-why-eyebrow .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #55E6B5; box-shadow: 0 0 12px #55E6B5;
+    animation: pcfDotPulse 2s ease-in-out infinite;
+}
+.pcf-why-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 72px; font-weight: 800;
+    letter-spacing: -3px; line-height: 1;
+    color: #E8F0ED; margin: 0 0 24px; position: relative;
+}
+.pcf-why-title .mint {
+    color: #55E6B5;
+    text-shadow: 0 0 50px rgba(85,230,181,0.4);
+    position: relative; display: inline-block;
+}
+.pcf-why-title .mint::after {
+    content: ''; position: absolute;
+    bottom: -8px; left: 0; width: 100%; height: 3px;
+    background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    box-shadow: 0 0 20px #55E6B5;
+    animation: pcfUnderlineGlow 3s ease-in-out infinite;
+}
+@keyframes pcfUnderlineGlow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+.pcf-why-sub {
+    font-size: 16px; color: #9DAAA6;
+    max-width: 620px; margin: 0 auto;
+    line-height: 1.75; font-weight: 300;
+}
+.pcf-why-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 20px; perspective: 1500px;
+}
+.pcf-card {
+    position: relative;
+    background: linear-gradient(145deg, #161B1B 0%, #0E1212 100%);
+    border: 1px solid #232A29; border-radius: 14px;
+    padding: 32px 26px 100px;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.4s ease, box-shadow 0.4s ease;
+    overflow: hidden; cursor: none;
+    transform-style: preserve-3d;
+    will-change: transform;
+    min-height: 380px;
+    display: flex; flex-direction: column;
+}
+.pcf-card::before {
+    content: ''; position: absolute;
+    top: 0; left: -100%; width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    transition: left 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 3;
+}
+.pcf-card:hover::before { left: 100%; }
+.pcf-card::after {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(85,230,181,0.14), transparent 55%);
+    opacity: 0; transition: opacity 0.4s ease;
+    pointer-events: none; z-index: 1; border-radius: 14px;
+}
+.pcf-card:hover::after { opacity: 1; }
+.pcf-card:hover {
+    border-color: rgba(85,230,181,0.45);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6), 0 0 60px rgba(85,230,181,0.18), inset 0 0 40px rgba(85,230,181,0.04);
+}
+.pcf-card .corner-tl,
+.pcf-card .corner-tr,
+.pcf-card .corner-bl,
+.pcf-card .corner-br {
+    position: absolute; width: 16px; height: 16px;
+    z-index: 4; opacity: 0.5; transition: all 0.4s ease;
+    pointer-events: none;
+}
+.pcf-card .corner-tl { top: 12px; left: 12px; border-top: 2px solid #55E6B5; border-left: 2px solid #55E6B5; }
+.pcf-card .corner-tr { top: 12px; right: 12px; border-top: 2px solid #55E6B5; border-right: 2px solid #55E6B5; }
+.pcf-card .corner-bl { bottom: 12px; left: 12px; border-bottom: 2px solid #55E6B5; border-left: 2px solid #55E6B5; }
+.pcf-card .corner-br { bottom: 12px; right: 12px; border-bottom: 2px solid #55E6B5; border-right: 2px solid #55E6B5; }
+.pcf-card:hover .corner-tl,
+.pcf-card:hover .corner-tr,
+.pcf-card:hover .corner-bl,
+.pcf-card:hover .corner-br {
+    width: 24px; height: 24px; opacity: 1;
+    box-shadow: 0 0 15px rgba(85,230,181,0.6);
+}
+.pcf-card-num {
+    position: absolute; top: 20px; right: 22px;
+    font-family: 'Space Grotesk', monospace;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 2px; color: #55E6B5;
+    opacity: 0.7; z-index: 4;
+}
+.pcf-card-num::before { content: '// '; opacity: 0.5; }
+.pcf-card-icon {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, rgba(85,230,181,0.14), rgba(85,230,181,0.03));
+    border: 1px solid rgba(85,230,181,0.25);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 22px; transition: all 0.4s ease;
+    position: relative; z-index: 2; overflow: hidden;
+}
+.pcf-card-icon::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle, rgba(85,230,181,0.4), transparent 70%);
+    opacity: 0; transition: opacity 0.4s ease;
+}
+.pcf-card:hover .pcf-card-icon {
+    border-color: #55E6B5;
+    transform: scale(1.08) rotate(-3deg);
+    box-shadow: 0 0 40px rgba(85,230,181,0.5);
+}
+.pcf-card:hover .pcf-card-icon::before { opacity: 1; }
+.pcf-card-icon svg {
+    width: 28px; height: 28px;
+    stroke: #55E6B5; stroke-width: 1.6; fill: none;
+    position: relative; z-index: 2;
+    filter: drop-shadow(0 0 10px rgba(85,230,181,0.7));
+}
+.pcf-card-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px; font-weight: 600;
+    color: #E8F0ED; margin: 0 0 12px;
+    letter-spacing: -0.3px; z-index: 2; position: relative;
+}
+.pcf-card-desc {
+    font-size: 13.5px; color: #9DAAA6;
+    line-height: 1.7; margin: 0; font-weight: 300;
+    z-index: 2; position: relative;
+}
+.pcf-card-status {
+    position: absolute; bottom: 20px; left: 26px; right: 26px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 14px;
+    border-top: 1px solid rgba(85,230,181,0.12);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 1.5px;
+    text-transform: uppercase; color: #9DAAA6;
+    z-index: 4;
+}
+.pcf-status-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: #55E6B5; box-shadow: 0 0 10px #55E6B5;
+    display: inline-block; margin-right: 6px;
+    animation: pcfDotPulse 1.5s ease-in-out infinite;
+}
+.pcf-status-label { display: flex; align-items: center; }
+.pcf-status-value { color: #55E6B5; font-weight: 600; }
+.pcf-card-mini-viz {
+    position: absolute; bottom: 45px; right: 26px;
+    width: 80px; height: 24px; opacity: 0.4;
+    z-index: 2; transition: opacity 0.4s ease;
+}
+.pcf-card:hover .pcf-card-mini-viz { opacity: 1; }
+.pcf-card-mini-viz svg {
+    width: 100%; height: 100%;
+    stroke: #55E6B5; fill: none; stroke-width: 1.5;
+    filter: drop-shadow(0 0 4px rgba(85,230,181,0.6));
+}
+.pcf-card-mini-viz path {
+    stroke-dasharray: 200; stroke-dashoffset: 200;
+    animation: pcfLineDraw 3s ease-in-out infinite;
+}
+@keyframes pcfLineDraw {
+    0% { stroke-dashoffset: 200; }
+    50% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -200; }
+}
+.pcf-anim { opacity: 0; transform: translateY(40px); transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+.pcf-anim.pcf-in { opacity: 1; transform: translateY(0); }
+.pcf-anim-scale { opacity: 0; transform: scale(0.92) translateY(30px); transition: all 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+.pcf-anim-scale.pcf-in { opacity: 1; transform: scale(1) translateY(0); }
+
+/* ============================================================
+   3. FORGE CONSOLE
+   ============================================================ */
+.pcf-console {
+    position: relative; background: #080A0A;
+    padding: 100px 40px;
+    font-family: 'JetBrains Mono', monospace;
+    overflow: hidden;
+}
+.pcf-console::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(85,230,181,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85,230,181,0.035) 1px, transparent 1px);
+    background-size: 50px 50px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    pointer-events: none; z-index: 0;
+}
+.pcf-console-inner { max-width: 1400px; margin: 0 auto; position: relative; z-index: 2; }
+.pcf-console-header { text-align: center; margin-bottom: 50px; }
+.pcf-console-label {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-size: 10px; letter-spacing: 4px;
+    color: #9DAAA6; text-transform: uppercase;
+    margin-bottom: 20px; padding: 6px 16px;
+    border: 1px solid rgba(85,230,181,0.25);
+    border-radius: 3px; background: rgba(85,230,181,0.03);
+}
+.pcf-console-label::before {
+    content: ''; width: 6px; height: 6px;
+    border-radius: 50%; background: #55E6B5;
+    box-shadow: 0 0 10px #55E6B5;
+    animation: pcfPulse 1.5s ease-in-out infinite;
+}
+@keyframes pcfPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.pcf-console-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 52px; font-weight: 700;
+    letter-spacing: -2px; color: #E8F0ED;
+    margin: 0 0 16px; line-height: 1.1;
+}
+.pcf-console-title .mint { color: #55E6B5; text-shadow: 0 0 40px rgba(85,230,181,0.4); }
+.pcf-console-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px; color: #9DAAA6;
+    max-width: 620px; margin: 0 auto;
+    line-height: 1.7; font-weight: 300;
+}
+.pcf-window {
+    background: linear-gradient(180deg, #0E1212 0%, #080A0A 100%);
+    border: 1px solid #1F2626; border-radius: 14px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 80px rgba(85,230,181,0.08);
+    position: relative; overflow: hidden;
+}
+.pcf-window::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    animation: pcfTopScan 5s linear infinite;
+    background-size: 200% 100%;
+}
+@keyframes pcfTopScan {
+    0% { background-position: -100% center; }
+    100% { background-position: 200% center; }
+}
+.pcf-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 22px;
+    background: rgba(24,30,29,0.6);
+    border-bottom: 1px solid #1F2626; font-size: 11px;
+}
+.pcf-dots { display: flex; gap: 8px; align-items: center; }
+.pcf-dots span { width: 11px; height: 11px; border-radius: 50%; display: block; }
+.pcf-dots .red { background: #EF6B6B; box-shadow: 0 0 8px rgba(239,107,107,0.5); }
+.pcf-dots .yellow { background: #E5C76B; box-shadow: 0 0 8px rgba(229,199,107,0.5); }
+.pcf-dots .green { background: #55E6B5; box-shadow: 0 0 8px rgba(85,230,181,0.6); }
+.pcf-name { color: #9DAAA6; font-size: 11px; letter-spacing: 2px; }
+.pcf-status {
+    display: flex; align-items: center; gap: 8px;
+    color: #55E6B5; font-size: 10px;
+    letter-spacing: 1.5px; font-weight: 500;
+}
+.pcf-status::before {
+    content: ''; width: 6px; height: 6px;
+    border-radius: 50%; background: #55E6B5;
+    box-shadow: 0 0 10px #55E6B5;
+    animation: pcfPulse 1.2s ease-in-out infinite;
+}
+.pcf-body {
+    display: grid; grid-template-columns: 1fr 1.2fr 1fr;
+    min-height: 500px;
+}
+.pcf-col { padding: 22px; border-right: 1px solid #181E1D; }
+.pcf-col:last-child { border-right: none; }
+.pcf-col-title {
+    font-size: 10px; letter-spacing: 3px;
+    color: #55E6B5; text-transform: uppercase;
+    margin-bottom: 18px; padding-bottom: 12px;
+    border-bottom: 1px dashed rgba(85,230,181,0.2);
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+}
+.pcf-col-title::after { content: '▣'; color: #55E6B5; opacity: 0.6; }
+.pcf-slots { display: flex; flex-direction: column; gap: 6px; }
+.pcf-slot {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px;
+    background: rgba(24,30,29,0.4);
+    border: 1px solid #1F2626; border-radius: 6px;
+    cursor: pointer; transition: all 0.3s ease; position: relative;
+}
+.pcf-slot:hover {
+    background: rgba(85,230,181,0.05);
+    border-color: rgba(85,230,181,0.3);
+    transform: translateX(3px);
+}
+.pcf-slot.changed { animation: pcfSlotPulse 0.8s ease; }
+@keyframes pcfSlotPulse {
+    0% { background: rgba(85,230,181,0.3); border-color: #55E6B5; }
+    100% { background: rgba(24,30,29,0.4); border-color: #1F2626; }
+}
+.pcf-slot-icon {
+    width: 32px; height: 32px; flex-shrink: 0;
+    background: rgba(85,230,181,0.08);
+    border: 1px solid rgba(85,230,181,0.2);
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    color: #55E6B5; font-size: 13px; font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif;
+}
+.pcf-slot-info { flex: 1; min-width: 0; }
+.pcf-slot-label {
+    font-size: 9px; letter-spacing: 2px;
+    color: #6A7570; text-transform: uppercase;
+    display: block; margin-bottom: 2px;
+}
+.pcf-slot-value {
+    font-size: 11.5px; color: #E8F0ED; font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    display: block;
+}
+.pcf-slot-price {
+    font-size: 11px; color: #55E6B5;
+    font-weight: 600; white-space: nowrap;
+}
+.pcf-slot-arrow {
+    color: #55E6B5; font-size: 11px;
+    opacity: 0.6; transition: transform 0.3s ease;
+}
+.pcf-slot:hover .pcf-slot-arrow { transform: translateX(3px); opacity: 1; }
+.pcf-dd {
+    position: fixed; background: #0E1212;
+    border: 1px solid #55E6B5; border-radius: 6px;
+    z-index: 999999; overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.9), 0 0 40px rgba(85,230,181,0.4);
+    max-height: 280px; overflow-y: auto;
+    animation: pcfDdOpen 0.2s ease;
+}
+@keyframes pcfDdOpen {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.pcf-dd.up { animation: pcfDdOpenUp 0.2s ease; }
+@keyframes pcfDdOpenUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.pcf-dd .pcf-dd-opt {
+    padding: 11px 14px;
+    border-bottom: 1px solid #1F2626;
+    cursor: pointer; transition: all 0.2s ease;
+    display: flex; justify-content: space-between;
+    align-items: center; gap: 10px;
+}
+.pcf-dd .pcf-dd-opt:hover {
+    background: rgba(85,230,181,0.15);
+    padding-left: 18px;
+}
+.pcf-dd .pcf-dd-opt:last-child { border-bottom: none; }
+.pcf-dd .pcf-dd-opt.selected {
+    background: rgba(85,230,181,0.1);
+    border-left: 3px solid #55E6B5;
+}
+.pcf-dd .pcf-dd-opt .name { font-size: 11px; color: #E8F0ED; flex: 1; }
+.pcf-dd .pcf-dd-opt .price { font-size: 11px; color: #55E6B5; font-weight: 600; }
+.pcf-blueprint {
+    position: relative; min-height: 440px; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background:
+        radial-gradient(circle at center, rgba(85,230,181,0.05), transparent 70%),
+        repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(85,230,181,0.03) 20px),
+        repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(85,230,181,0.03) 20px);
+    border-radius: 8px;
+    border: 1px solid rgba(85,230,181,0.1);
+    overflow: hidden;
+}
+.pcf-bp-corner {
+    position: absolute; width: 18px; height: 18px;
+    border-color: #55E6B5; opacity: 0.6;
+}
+.pcf-bp-corner.tl { top: 10px; left: 10px; border-top: 1px solid; border-left: 1px solid; }
+.pcf-bp-corner.tr { top: 10px; right: 10px; border-top: 1px solid; border-right: 1px solid; }
+.pcf-bp-corner.bl { bottom: 10px; left: 10px; border-bottom: 1px solid; border-left: 1px solid; }
+.pcf-bp-corner.br { bottom: 10px; right: 10px; border-bottom: 1px solid; border-right: 1px solid; }
+.pcf-bp-scan {
+    position: absolute; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    box-shadow: 0 0 15px #55E6B5;
+    animation: pcfBpScan 3s ease-in-out infinite;
+}
+@keyframes pcfBpScan {
+    0% { top: 10%; opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { top: 90%; opacity: 0; }
+}
+.pcf-bp-label {
+    position: absolute; top: 20px; left: 20px;
+    font-size: 9px; letter-spacing: 2px; color: #6A7570;
+}
+.pcf-bp-label strong {
+    display: block; color: #55E6B5;
+    font-weight: 500; font-size: 10px; margin-top: 2px;
+}
+.pcf-bp-fps {
+    position: absolute; top: 15px; right: 15px;
+    font-size: 10px; letter-spacing: 1.5px;
+    color: #55E6B5; text-align: right;
+}
+.pcf-bp-fps-val {
+    display: block; font-size: 24px; font-weight: 700;
+    color: #E8F0ED;
+    text-shadow: 0 0 20px rgba(85,230,181,0.6);
+    line-height: 1; margin-top: 4px;
+    font-family: 'Space Grotesk', sans-serif;
+}
+.pcf-bp-fps-val small { font-size: 10px; color: #55E6B5; margin-left: 2px; }
+.pcf-bp-pc {
+    position: relative; width: 180px; height: 260px;
+    border: 2px solid #55E6B5; border-radius: 6px;
+    background: rgba(85,230,181,0.03);
+    box-shadow: 0 0 30px rgba(85,230,181,0.2), inset 0 0 30px rgba(85,230,181,0.05);
+}
+.pcf-bp-sec {
+    position: absolute;
+    border: 1px solid rgba(85,230,181,0.4);
+    border-radius: 3px;
+    background: rgba(85,230,181,0.02);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; color: #55E6B5; letter-spacing: 1px;
+    transition: all 0.4s ease; opacity: 0.4;
+}
+.pcf-bp-sec.active {
+    background: rgba(85,230,181,0.15);
+    box-shadow: 0 0 15px rgba(85,230,181,0.5);
+    opacity: 1; color: #E8F0ED;
+}
+.pcf-bp-sec.pulse { animation: pcfBpPulse 0.6s ease; }
+@keyframes pcfBpPulse {
+    0% { box-shadow: 0 0 30px rgba(85,230,181,0.9); transform: scale(1.12); }
+    100% { box-shadow: 0 0 15px rgba(85,230,181,0.5); transform: scale(1); }
+}
+.pcf-bp-cpu { top: 15%; left: 15%; width: 40px; height: 40px; border-radius: 50%; }
+.pcf-bp-ram { top: 15%; right: 15%; width: 20px; height: 55px; }
+.pcf-bp-ssd { top: 50%; left: 15%; width: 60px; height: 15px; }
+.pcf-bp-gpu { bottom: 20%; left: 10%; right: 10%; height: 35px; }
+.pcf-bp-psu { bottom: 5%; left: 10%; right: 10%; height: 20px; }
+.pcf-diag-list { display: flex; flex-direction: column; gap: 12px; }
+.pcf-diag {
+    padding: 10px 12px;
+    background: rgba(24,30,29,0.4);
+    border: 1px solid #1F2626; border-radius: 5px;
+    transition: all 0.3s ease;
+}
+.pcf-diag.pulse { animation: pcfDiagPulse 0.8s ease; }
+@keyframes pcfDiagPulse {
+    0% { border-color: #55E6B5; background: rgba(85,230,181,0.12); }
+    100% { border-color: #1F2626; background: rgba(24,30,29,0.4); }
+}
+.pcf-diag-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px; font-size: 9px;
+    letter-spacing: 1.5px; color: #6A7570; text-transform: uppercase;
+}
+.pcf-diag-val {
+    font-size: 14px; color: #E8F0ED;
+    font-weight: 700; transition: color 0.3s ease;
+}
+.pcf-diag-val.good { color: #55E6B5; }
+.pcf-diag-val.warn { color: #E5C76B; }
+.pcf-diag-val.bad { color: #EF6B6B; }
+.pcf-diag-bar {
+    height: 3px; background: rgba(85,230,181,0.1);
+    border-radius: 3px; overflow: hidden;
+}
+.pcf-diag-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #55E6B5, #A8FFE3);
+    border-radius: 3px; width: 0;
+    transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s ease;
+    box-shadow: 0 0 10px rgba(85,230,181,0.6);
+}
+.pcf-diag-fill.warn { background: linear-gradient(90deg, #E5C76B, #FFE4A0); }
+.pcf-diag-fill.bad { background: linear-gradient(90deg, #EF6B6B, #FF9E9E); }
+.pcf-stream {
+    margin-top: 8px; padding: 12px;
+    background: rgba(24,30,29,0.4);
+    border: 1px solid #1F2626; border-radius: 5px;
+    font-size: 9px; letter-spacing: 1px;
+    color: #55E6B5; line-height: 1.8;
+}
+.pcf-stream-line strong { color: #E8F0ED; font-weight: 500; }
+.pcf-stream-line.bad { color: #EF6B6B; }
+.pcf-stream-line.bad strong { color: #EF6B6B; }
+.pcf-terminal {
+    padding: 16px 22px;
+    border-top: 1px solid #1F2626;
+    background: rgba(8,10,10,0.6);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px;
+}
+.pcf-prompt { color: #55E6B5; font-weight: 600; flex-shrink: 0; }
+.pcf-term-input { color: #E8F0ED; flex: 1; }
+.pcf-cursor {
+    display: inline-block; width: 8px; height: 14px;
+    background: #55E6B5; vertical-align: middle;
+    animation: pcfPulse 0.8s step-end infinite;
+    box-shadow: 0 0 10px #55E6B5;
+}
+.pcf-total {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 30px;
+    background: linear-gradient(90deg, rgba(85,230,181,0.05), transparent);
+    border-top: 1px solid #1F2626;
+    gap: 20px; flex-wrap: wrap;
+}
+.pcf-total-label {
+    font-size: 11px; letter-spacing: 3px;
+    color: #6A7570; text-transform: uppercase;
+    display: block; margin-bottom: 6px;
+}
+.pcf-total-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 34px; font-weight: 700;
+    color: #E8F0ED;
+    text-shadow: 0 0 30px rgba(85,230,181,0.4);
+    display: flex; align-items: baseline; gap: 6px;
+}
+.pcf-total-value.pulse { animation: pcfTotalPulse 0.8s ease; }
+@keyframes pcfTotalPulse {
+    0% { color: #55E6B5; text-shadow: 0 0 60px rgba(85,230,181,0.9); }
+    100% { color: #E8F0ED; text-shadow: 0 0 30px rgba(85,230,181,0.4); }
+}
+.pcf-total-value .curr { font-size: 18px; color: #55E6B5; }
+.pcf-total-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.pcf-btn {
+    padding: 14px 26px; border-radius: 6px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 12px;
+    letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: all 0.3s ease;
+    border: none; display: inline-flex;
+    align-items: center; gap: 8px;
+    text-decoration: none; white-space: nowrap;
+}
+.pcf-btn-primary {
+    background: #55E6B5; color: #080A0A;
+    box-shadow: 0 8px 20px rgba(85,230,181,0.3);
+}
+.pcf-btn-primary:hover {
+    background: #A8FFE3; transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(85,230,181,0.6);
+}
+.pcf-btn-secondary {
+    background: transparent; color: #E8F0ED;
+    border: 1px solid #232A29;
+}
+.pcf-btn-secondary:hover {
+    border-color: #55E6B5;
+    background: rgba(85,230,181,0.06);
+    color: #55E6B5;
+}
+.pcf-ticker {
+    border-top: 1px solid #1F2626;
+    padding: 10px 22px; background: #080A0A;
+    overflow: hidden; position: relative;
+}
+.pcf-ticker-track {
+    display: flex; gap: 40px;
+    animation: pcfTickerScroll 40s linear infinite;
+    white-space: nowrap; font-size: 10px;
+    letter-spacing: 2px; color: #55E6B5;
+    width: max-content;
+}
+.pcf-ticker:hover .pcf-ticker-track { animation-play-state: paused; }
+.pcf-ticker-item::before {
+    content: '◆'; color: #55E6B5;
+    font-size: 6px; margin-right: 8px;
+}
+@keyframes pcfTickerScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+.pcf-toast {
+    position: fixed; bottom: 30px; right: 30px;
+    background: linear-gradient(135deg, #0E1212, #181E1D);
+    border: 1px solid #55E6B5;
+    border-left: 3px solid #55E6B5;
+    padding: 14px 20px; border-radius: 6px;
+    z-index: 99999;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.7), 0 0 40px rgba(85,230,181,0.4);
+    transform: translateX(400px); opacity: 0;
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    max-width: 320px;
+    font-family: 'JetBrains Mono', monospace;
+}
+.pcf-toast.show { transform: translateX(0); opacity: 1; }
+.pcf-toast-label {
+    font-size: 10px; letter-spacing: 2px;
+    color: #55E6B5; text-transform: uppercase;
+    display: block; margin-bottom: 4px;
+}
+.pcf-toast-val { font-size: 12px; color: #E8F0ED; font-weight: 600; }
+
+/* ============================================================
+   4. CATEGORIES
+   ============================================================ */
+.pcf-cats {
+    position: relative; background: #080A0A;
+    padding: 120px 50px;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    border-top: 1px solid rgba(85,230,181,0.08);
+}
+.pcf-cats::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(85,230,181,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85,230,181,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 85%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 85%);
+    pointer-events: none;
+}
+.pcf-cats-inner { max-width: 1300px; margin: 0 auto; position: relative; z-index: 2; }
+.pcf-cats-header { text-align: center; margin-bottom: 70px; }
+.pcf-cats-eyebrow {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 4px;
+    color: #9DAAA6; text-transform: uppercase;
+    margin-bottom: 22px; padding: 6px 16px;
+    border: 1px solid rgba(85,230,181,0.25);
+    border-radius: 3px; background: rgba(85,230,181,0.03);
+}
+.pcf-cats-eyebrow::before {
+    content: ''; width: 6px; height: 6px;
+    border-radius: 50%; background: #55E6B5;
+    box-shadow: 0 0 10px #55E6B5;
+    animation: pcfCatsBlink 1.5s ease-in-out infinite;
+}
+@keyframes pcfCatsBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.pcf-cats-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 56px; font-weight: 800;
+    letter-spacing: -2px; line-height: 1.05;
+    color: #E8F0ED; margin: 0 0 18px;
+}
+.pcf-cats-title .mint { color: #55E6B5; text-shadow: 0 0 40px rgba(85,230,181,0.4); }
+.pcf-cats-sub {
+    font-size: 15px; color: #9DAAA6;
+    max-width: 580px; margin: 0 auto;
+    line-height: 1.7; font-weight: 300;
+}
+.pcf-cats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.pcf-cat {
+    position: relative;
+    background: linear-gradient(145deg, #101414 0%, #0A0D0D 100%);
+    border: 1px solid #232A29; border-radius: 12px;
+    padding: 20px 20px 20px;
+    text-decoration: none !important;
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    overflow: hidden; display: flex; flex-direction: column;
+    min-height: 340px; cursor: pointer;
+}
+.pcf-cat::before {
+    content: ''; position: absolute;
+    top: 0; left: -100%; width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    transition: left 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 5;
+}
+.pcf-cat:hover::before { left: 100%; }
+.pcf-cat:hover {
+    border-color: rgba(85,230,181,0.4);
+    transform: translateY(-6px);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.6), 0 0 60px rgba(85,230,181,0.12), inset 0 0 40px rgba(85,230,181,0.03);
+}
+.pcf-cat-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px; position: relative; z-index: 3;
+}
+.pcf-cat-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: #55E6B5;
+    letter-spacing: 2px; opacity: 0.7;
+}
+.pcf-cat-num::before { content: '// '; opacity: 0.5; }
+.pcf-cat-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: #9DAAA6;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 3px 8px;
+    border: 1px solid rgba(85,230,181,0.2);
+    border-radius: 2px; background: rgba(85,230,181,0.04);
+}
+.pcf-schematic {
+    position: relative; width: 100%; height: 130px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 16px; z-index: 2;
+}
+.pcf-schematic::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(85,230,181,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85,230,181,0.06) 1px, transparent 1px);
+    background-size: 13px 13px;
+    border: 1px dashed rgba(85,230,181,0.12);
+    border-radius: 6px; pointer-events: none;
+}
+.sch-cpu {
+    position: relative; width: 80px; height: 80px;
+    border: 1.5px solid #55E6B5; border-radius: 4px;
+    background: linear-gradient(135deg, rgba(85,230,181,0.08), rgba(85,230,181,0.02));
+    box-shadow: 0 0 20px rgba(85,230,181,0.2), inset 0 0 15px rgba(85,230,181,0.08);
+}
+.sch-cpu::before {
+    content: ''; position: absolute; inset: 15px;
+    border: 1px solid #55E6B5; border-radius: 2px;
+    background: rgba(85,230,181,0.06);
+}
+.sch-cpu .core {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px; height: 12px;
+    background: #55E6B5; border-radius: 50%;
+    box-shadow: 0 0 20px #55E6B5, 0 0 40px rgba(85,230,181,0.6);
+    animation: pcfCpuPulse 2s ease-in-out infinite;
+}
+@keyframes pcfCpuPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    50% { transform: translate(-50%, -50%) scale(1.3); opacity: 0.7; }
+}
+.sch-gpu {
+    position: relative; width: 140px; height: 50px;
+    border: 1.5px solid #55E6B5; border-radius: 4px;
+    background: linear-gradient(90deg, rgba(85,230,181,0.04), rgba(85,230,181,0.1));
+    box-shadow: 0 0 20px rgba(85,230,181,0.2);
+    display: flex; align-items: center; justify-content: space-around;
+    padding: 0 10px;
+}
+.sch-gpu .fan {
+    width: 30px; height: 30px;
+    border: 1px solid #55E6B5; border-radius: 50%;
+    position: relative; animation: pcfSpin 1.5s linear infinite;
+}
+.sch-gpu .fan::before,
+.sch-gpu .fan::after {
+    content: ''; position: absolute;
+    top: 50%; left: 50%; background: #55E6B5; border-radius: 2px;
+}
+.sch-gpu .fan::before { width: 1.5px; height: 24px; transform: translate(-50%, -50%); }
+.sch-gpu .fan::after { width: 24px; height: 1.5px; transform: translate(-50%, -50%); }
+@keyframes pcfSpin { to { transform: rotate(360deg); } }
+.sch-ram {
+    position: relative; width: 100px; height: 60px;
+    border: 1.5px solid #55E6B5; border-radius: 2px;
+    background: linear-gradient(135deg, rgba(85,230,181,0.08), rgba(85,230,181,0.02));
+    box-shadow: 0 0 20px rgba(85,230,181,0.2);
+    display: flex; align-items: center; justify-content: space-around;
+    padding: 8px 10px;
+}
+.sch-ram .chip {
+    width: 12px; height: 22px;
+    background: rgba(85,230,181,0.15);
+    border: 1px solid #55E6B5; border-radius: 1px;
+    animation: pcfChip 3s ease-in-out infinite;
+}
+.sch-ram .chip:nth-child(2) { animation-delay: 0.5s; }
+.sch-ram .chip:nth-child(3) { animation-delay: 1s; }
+.sch-ram .chip:nth-child(4) { animation-delay: 1.5s; }
+@keyframes pcfChip {
+    0%, 100% { background: rgba(85,230,181,0.15); }
+    50% { background: rgba(85,230,181,0.5); box-shadow: 0 0 8px rgba(85,230,181,0.8); }
+}
+.sch-mobo {
+    position: relative; width: 100px; height: 90px;
+    border: 1.5px solid #55E6B5; border-radius: 3px;
+    background: linear-gradient(135deg, rgba(85,230,181,0.06), rgba(85,230,181,0.02));
+    box-shadow: 0 0 20px rgba(85,230,181,0.2); padding: 6px;
+}
+.sch-mobo .cpu-socket {
+    position: absolute; top: 8px; left: 8px;
+    width: 32px; height: 32px;
+    border: 1px solid #55E6B5; border-radius: 2px;
+    background: rgba(85,230,181,0.15);
+    animation: pcfMobo 2s ease-in-out infinite;
+}
+@keyframes pcfMobo {
+    0%, 100% { background: rgba(85,230,181,0.15); }
+    50% { background: rgba(85,230,181,0.4); box-shadow: 0 0 12px rgba(85,230,181,0.8); }
+}
+.sch-mobo .ram-slot {
+    position: absolute; top: 8px; width: 6px; height: 40px;
+    border: 1px solid #55E6B5; border-radius: 1px;
+    background: rgba(85,230,181,0.1);
+}
+.sch-mobo .ram-slot:nth-child(2) { right: 24px; }
+.sch-mobo .ram-slot:nth-child(3) { right: 12px; }
+.sch-mobo .pcie {
+    position: absolute; bottom: 10px; left: 8px; right: 8px; height: 6px;
+    border: 1px solid #55E6B5; border-radius: 1px;
+    background: rgba(85,230,181,0.1);
+}
+.sch-ssd {
+    position: relative; width: 130px; height: 40px;
+    border: 1.5px solid #55E6B5; border-radius: 3px;
+    background: linear-gradient(135deg, rgba(85,230,181,0.08), rgba(85,230,181,0.02));
+    box-shadow: 0 0 20px rgba(85,230,181,0.2);
+    padding: 6px 12px; display: flex; align-items: center; gap: 4px;
+}
+.sch-ssd .nand {
+    flex: 1; height: 14px;
+    background: rgba(85,230,181,0.15);
+    border: 1px solid #55E6B5; border-radius: 1px;
+    animation: pcfChip 3s ease-in-out infinite;
+}
+.sch-ssd .nand:nth-child(2) { animation-delay: 0.4s; }
+.sch-ssd .nand:nth-child(3) { animation-delay: 0.8s; }
+.sch-ssd .nand:nth-child(4) { animation-delay: 1.2s; }
+.sch-psu {
+    position: relative; width: 120px; height: 70px;
+    border: 1.5px solid #55E6B5; border-radius: 4px;
+    background: linear-gradient(135deg, rgba(85,230,181,0.08), rgba(85,230,181,0.02));
+    box-shadow: 0 0 20px rgba(85,230,181,0.2);
+    display: flex; align-items: center; padding: 0 12px; gap: 12px;
+}
+.sch-psu .psu-fan {
+    width: 40px; height: 40px;
+    border: 1px solid #55E6B5; border-radius: 50%;
+    position: relative; flex-shrink: 0;
+    animation: pcfSpin 3s linear infinite;
+}
+.sch-psu .psu-fan::before,
+.sch-psu .psu-fan::after {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    background: #55E6B5; border-radius: 1px;
+}
+.sch-psu .psu-fan::before { width: 1.5px; height: 34px; transform: translate(-50%, -50%); box-shadow: 0 0 6px #55E6B5; }
+.sch-psu .psu-fan::after { width: 34px; height: 1.5px; transform: translate(-50%, -50%); }
+.sch-psu .connectors { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.sch-psu .connectors span { height: 6px; background: rgba(85,230,181,0.15); border: 1px solid #55E6B5; border-radius: 1px; }
+.sch-psu .connectors span:nth-child(1) { width: 90%; }
+.sch-psu .connectors span:nth-child(2) { width: 70%; animation: pcfChip 3s ease-in-out infinite; }
+.sch-psu .connectors span:nth-child(3) { width: 80%; animation: pcfChip 3s ease-in-out infinite 1s; }
+.sch-cool {
+    position: relative; width: 90px; height: 90px;
+    border: 1.5px solid #55E6B5; border-radius: 50%;
+    background: radial-gradient(circle, rgba(85,230,181,0.1), rgba(85,230,181,0.02));
+    box-shadow: 0 0 25px rgba(85,230,181,0.3), inset 0 0 15px rgba(85,230,181,0.1);
+    display: flex; align-items: center; justify-content: center;
+}
+.sch-cool .blades {
+    position: relative; width: 70px; height: 70px;
+    animation: pcfSpin 2s linear infinite;
+}
+.sch-cool .blade {
+    position: absolute; top: 50%; left: 50%;
+    width: 30px; height: 12px;
+    background: linear-gradient(90deg, rgba(85,230,181,0.5), rgba(85,230,181,0.1));
+    border: 1px solid #55E6B5; border-radius: 50% 10px 10px 50%;
+    transform-origin: 0 50%; box-shadow: 0 0 6px rgba(85,230,181,0.4);
+}
+.sch-cool .blade:nth-child(1) { transform: translate(0, -50%) rotate(0deg); }
+.sch-cool .blade:nth-child(2) { transform: translate(0, -50%) rotate(90deg); }
+.sch-cool .blade:nth-child(3) { transform: translate(0, -50%) rotate(180deg); }
+.sch-cool .blade:nth-child(4) { transform: translate(0, -50%) rotate(270deg); }
+.sch-cool .hub {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 18px; height: 18px;
+    background: #55E6B5; border-radius: 50%;
+    box-shadow: 0 0 15px #55E6B5; z-index: 2;
+}
+.sch-case {
+    position: relative; width: 70px; height: 100px;
+    border: 1.5px solid #55E6B5; border-radius: 4px;
+    background: linear-gradient(135deg, rgba(85,230,181,0.06), rgba(85,230,181,0.02));
+    box-shadow: 0 0 20px rgba(85,230,181,0.2);
+}
+.sch-case::before {
+    content: ''; position: absolute;
+    top: 8px; left: 8px; right: 8px; bottom: 8px;
+    border: 1px dashed rgba(85,230,181,0.4); border-radius: 2px;
+}
+.sch-case .mb {
+    position: absolute; top: 15px; left: 15px;
+    width: 25px; height: 30px;
+    border: 1px solid #55E6B5; border-radius: 1px;
+    background: rgba(85,230,181,0.1);
+    animation: pcfMobo 2s ease-in-out infinite;
+}
+.sch-case .front {
+    position: absolute; top: 50%; right: -8px;
+    transform: translateY(-50%);
+    width: 3px; height: 30px;
+    background: #55E6B5;
+    box-shadow: 0 0 10px rgba(85,230,181,0.6);
+    border-radius: 1px;
+    animation: pcfCaseLight 3s ease-in-out infinite;
+}
+@keyframes pcfCaseLight {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; box-shadow: 0 0 20px #55E6B5; }
+}
+.sch-case .gpu-inside {
+    position: absolute; bottom: 20px; left: 15px; right: 15px; height: 8px;
+    border: 1px solid #55E6B5; border-radius: 1px;
+    background: rgba(85,230,181,0.15);
+    animation: pcfChip 3s ease-in-out infinite;
+}
+.pcf-cat-content { position: relative; z-index: 2; margin-bottom: 14px; }
+.pcf-cat-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 17px; font-weight: 600;
+    color: #E8F0ED; margin: 0 0 4px;
+    letter-spacing: -0.3px; transition: color 0.3s ease;
+}
+.pcf-cat:hover .pcf-cat-title { color: #55E6B5; }
+.pcf-cat-specs {
+    display: flex; justify-content: space-between;
+    align-items: baseline; gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(85,230,181,0.1);
+    margin-top: 10px;
+}
+.spec-item { display: flex; flex-direction: column; gap: 2px; }
+.spec-key {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; letter-spacing: 1.5px;
+    color: #6A7570; text-transform: uppercase;
+}
+.spec-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: #55E6B5;
+    font-weight: 500; letter-spacing: 0.5px;
+}
+.spec-val.blink { animation: pcfSpecPulse 2s ease-in-out infinite; }
+@keyframes pcfSpecPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.pcf-cat-bottom {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: auto; padding-top: 14px;
+    position: relative; z-index: 2;
+}
+.pcf-cat-explore {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: #55E6B5; text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px;
+    opacity: 0.7; transition: all 0.3s ease;
+}
+.pcf-cat:hover .pcf-cat-explore { opacity: 1; gap: 12px; }
+.pcf-cat-explore .arrow { transition: transform 0.3s ease; }
+.pcf-cat:hover .pcf-cat-explore .arrow { transform: translateX(4px); }
+.pcf-cat-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 1.5px;
+    color: #6A7570; text-transform: uppercase;
+}
+.pcf-cat-bar {
+    position: absolute; bottom: 0; left: 20px; right: 20px;
+    height: 2px; background: #232A29;
+    border-radius: 2px; overflow: hidden; z-index: 3;
+}
+.pcf-cat-bar::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    transform: translateX(-100%);
+    transition: transform 0.9s ease;
+}
+.pcf-cat:hover .pcf-cat-bar::after { transform: translateX(100%); }
+
+/* ============================================================
+   5. BENCHMARK
+   ============================================================ */
+.pcf-bench {
+    position: relative; background: #080A0A;
+    padding: 120px 40px;
+    font-family: 'Inter', sans-serif;
+    overflow: hidden; isolation: isolate;
+}
+.pcf-bench::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(85,230,181,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85,230,181,0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    pointer-events: none; z-index: 0;
+}
+.pcf-bench-inner { max-width: 1400px; margin: 0 auto; position: relative; z-index: 2; }
+.pcf-bench-header { text-align: center; margin-bottom: 60px; }
+.pcf-bench-eyebrow {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 4px;
+    color: #9DAAA6; text-transform: uppercase;
+    margin-bottom: 22px; padding: 6px 16px;
+    border: 1px solid rgba(85,230,181,0.25);
+    border-radius: 3px; background: rgba(85,230,181,0.03);
+}
+.pcf-bench-eyebrow::before {
+    content: ''; width: 6px; height: 6px;
+    border-radius: 50%; background: #55E6B5;
+    box-shadow: 0 0 10px #55E6B5;
+    animation: pcfBenchBlink 1.5s ease-in-out infinite;
+}
+@keyframes pcfBenchBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.pcf-bench-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 56px; font-weight: 800;
+    letter-spacing: -2px; line-height: 1.05;
+    color: #E8F0ED; margin: 0 0 16px;
+}
+.pcf-bench-title .mint { color: #55E6B5; text-shadow: 0 0 40px rgba(85,230,181,0.4); }
+.pcf-bench-sub {
+    font-size: 15px; color: #9DAAA6;
+    max-width: 640px; margin: 0 auto;
+    line-height: 1.7; font-weight: 300;
+}
+.pcf-bench-terminal {
+    background: linear-gradient(180deg, #0E1212 0%, #080A0A 100%);
+    border: 1px solid #1F2626; border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 80px rgba(85,230,181,0.1);
+}
+.pcf-bench-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 22px;
+    background: rgba(24,30,29,0.6);
+    border-bottom: 1px solid #1F2626;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+}
+.pcf-bench-dots { display: flex; gap: 8px; align-items: center; }
+.pcf-bench-dots span { width: 11px; height: 11px; border-radius: 50%; display: block; }
+.pcf-bench-dots .red { background: #EF6B6B; box-shadow: 0 0 8px rgba(239,107,107,0.5); }
+.pcf-bench-dots .yellow { background: #E5C76B; box-shadow: 0 0 8px rgba(229,199,107,0.5); }
+.pcf-bench-dots .green { background: #55E6B5; box-shadow: 0 0 8px rgba(85,230,181,0.6); }
+.pcf-bench-name { color: #9DAAA6; font-size: 11px; letter-spacing: 2px; }
+.pcf-bench-status {
+    display: flex; align-items: center; gap: 8px;
+    color: #55E6B5; font-size: 10px;
+    letter-spacing: 1.5px; font-weight: 500;
+}
+.pcf-bench-status::before {
+    content: ''; width: 6px; height: 6px;
+    border-radius: 50%; background: #55E6B5;
+    box-shadow: 0 0 10px #55E6B5;
+    animation: pcfBenchBlink 1.2s ease-in-out infinite;
+}
+.pcf-bench-grid {
+    display: grid; grid-template-columns: 320px 1fr;
+    min-height: 600px;
+}
+.pcf-bench-left {
+    padding: 24px;
+    border-right: 1px solid #1F2626;
+    background: rgba(14,18,18,0.4);
+}
+.pcf-bench-panel-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px;
+    color: #55E6B5; text-transform: uppercase;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed rgba(85,230,181,0.2);
+    margin-bottom: 18px;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.pcf-bench-panel-title::after {
+    content: '▣'; color: #55E6B5;
+    opacity: 0.6; font-size: 12px;
+}
+.pcf-bench-spec {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px;
+    background: rgba(24,30,29,0.4);
+    border: 1px solid #1F2626; border-radius: 8px;
+    margin-bottom: 8px; transition: all 0.3s ease;
+}
+.pcf-bench-spec-icon {
+    width: 32px; height: 32px; border-radius: 6px;
+    background: rgba(85,230,181,0.08);
+    border: 1px solid rgba(85,230,181,0.25);
+    display: flex; align-items: center; justify-content: center;
+    color: #55E6B5;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 13px; flex-shrink: 0;
+}
+.pcf-bench-spec-info { flex: 1; min-width: 0; }
+.pcf-bench-spec-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px; letter-spacing: 1.5px;
+    color: #6A7570; text-transform: uppercase;
+    display: block; margin-bottom: 3px;
+}
+.pcf-bench-spec-value {
+    font-size: 12px; color: #E8F0ED; font-weight: 500;
+    white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis; display: block;
+}
+.pcf-bench-start-wrap {
+    margin-top: 24px; padding-top: 20px;
+    border-top: 1px solid #1F2626;
+}
+.pcf-bench-start {
+    width: 100%; padding: 20px;
+    background: #55E6B5; color: #080A0A;
+    border: none; border-radius: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 800; font-size: 14px;
+    letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: all 0.3s ease;
+    position: relative; overflow: hidden;
+    box-shadow: 0 10px 30px rgba(85,230,181,0.3);
+}
+.pcf-bench-start::before {
+    content: ''; position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.6s ease;
+}
+.pcf-bench-start:hover:not(:disabled) {
+    background: #A8FFE3; transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(85,230,181,0.6);
+}
+.pcf-bench-start:hover:not(:disabled)::before { left: 100%; }
+.pcf-bench-start:disabled { opacity: 0.6; cursor: wait; }
+.pcf-bench-progress {
+    margin-top: 16px; height: 6px;
+    background: rgba(85,230,181,0.08);
+    border-radius: 3px; overflow: hidden; display: none;
+}
+.pcf-bench-progress.active { display: block; }
+.pcf-bench-progress-fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #55E6B5, #A8FFE3);
+    border-radius: 3px; transition: width 0.15s linear;
+    box-shadow: 0 0 15px rgba(85,230,181,0.8);
+}
+.pcf-bench-progress-text {
+    text-align: center; margin-top: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: #55E6B5; text-transform: uppercase; display: none;
+}
+.pcf-bench-progress-text.active { display: block; }
+.pcf-bench-right {
+    padding: 24px; display: flex;
+    flex-direction: column; gap: 16px;
+}
+.pcf-chart-card {
+    background: rgba(14,18,18,0.6);
+    border: 1px solid #1F2626; border-radius: 10px;
+    padding: 16px 20px; position: relative;
+    transition: all 0.3s ease; overflow: hidden;
+}
+.pcf-chart-card.active {
+    border-color: rgba(85,230,181,0.4);
+    box-shadow: 0 0 30px rgba(85,230,181,0.15);
+}
+.pcf-chart-card.done { border-color: rgba(85,230,181,0.3); }
+.pcf-chart-head {
+    display: flex; align-items: center;
+    justify-content: space-between; margin-bottom: 12px;
+}
+.pcf-chart-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2.5px;
+    color: #6A7570; text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px;
+}
+.pcf-chart-title::before { content: '◆'; color: #55E6B5; font-size: 7px; }
+.pcf-chart-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px; font-weight: 800;
+    color: #E8F0ED; letter-spacing: -0.5px;
+    line-height: 1; display: flex;
+    align-items: baseline; gap: 4px;
+}
+.pcf-chart-value small {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: #6A7570;
+    font-weight: 500; letter-spacing: 1px;
+}
+.pcf-chart-value.mint { color: #55E6B5; text-shadow: 0 0 20px rgba(85,230,181,0.5); }
+.pcf-chart-value.warn { color: #E5C76B; text-shadow: 0 0 20px rgba(229,199,107,0.5); }
+.pcf-chart-value.bad { color: #EF6B6B; text-shadow: 0 0 20px rgba(239,107,107,0.5); }
+.pcf-chart-canvas {
+    width: 100%; height: 70px; display: block; border-radius: 4px;
+}
+.pcf-bench-results {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px; margin-top: 16px; padding-top: 20px;
+    border-top: 1px solid #1F2626;
+    opacity: 0.3; transition: opacity 0.5s ease;
+}
+.pcf-bench-results.done { opacity: 1; }
+.pcf-bench-result {
+    text-align: center; padding: 16px 12px;
+    background: rgba(24,30,29,0.4);
+    border: 1px solid #1F2626; border-radius: 8px;
+    transition: all 0.3s ease;
+}
+.pcf-bench-result.done {
+    border-color: rgba(85,230,181,0.3);
+    background: rgba(85,230,181,0.03);
+}
+.pcf-bench-result-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px; font-weight: 800;
+    color: #E8F0ED; line-height: 1;
+    letter-spacing: -1px; display: block;
+    margin-bottom: 6px; transition: color 0.3s ease;
+}
+.pcf-bench-result-value.mint { color: #55E6B5; text-shadow: 0 0 20px rgba(85,230,181,0.5); }
+.pcf-bench-result-value small { font-size: 12px; color: #6A7570; font-weight: 500; margin-left: 2px; }
+.pcf-bench-result-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    color: #6A7570; text-transform: uppercase;
+}
+.pcf-bench-score {
+    position: absolute; top: 14px; right: 14px;
+    padding: 6px 12px;
+    background: rgba(85,230,181,0.1);
+    border: 1px solid rgba(85,230,181,0.4);
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 2px;
+    color: #55E6B5; text-transform: uppercase;
+    opacity: 0; transform: translateY(-5px);
+    transition: all 0.4s ease;
+}
+.pcf-bench-score.show { opacity: 1; transform: translateY(0); }
+
+/* ============================================================
+   6. NEWSLETTER (What Will You Build)
+   ============================================================ */
+.pcf-cta {
+    position: relative; background: #080A0A;
+    padding: 140px 50px;
+    font-family: 'Space Grotesk', sans-serif;
+    overflow: hidden; isolation: isolate;
+    min-height: 700px;
+}
+.pcf-cta::before {
+    content: ''; position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1200px; height: 1200px;
+    background: radial-gradient(circle, rgba(85,230,181,0.15), rgba(85,230,181,0.04) 40%, transparent 65%);
+    filter: blur(40px); pointer-events: none; z-index: 1;
+    animation: pcfCtaGlow 6s ease-in-out infinite;
+}
+@keyframes pcfCtaGlow {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+}
+.pcf-cta::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+        linear-gradient(rgba(85,230,181,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(85,230,181,0.04) 1px, transparent 1px);
+    background-size: 50px 50px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    pointer-events: none; z-index: 1;
+}
+.pcf-cta-inner {
+    max-width: 960px; margin: 0 auto;
+    position: relative; z-index: 5; text-align: center;
+}
+.pcf-circuit {
+    position: absolute; inset: 0;
+    pointer-events: none; z-index: 2; opacity: 0.35;
+}
+.pcf-circuit svg { width: 100%; height: 100%; }
+.pcf-circuit path {
+    stroke: #55E6B5; stroke-width: 1; fill: none;
+    stroke-dasharray: 8 4;
+    animation: pcfCircuitFlow 20s linear infinite;
+}
+@keyframes pcfCircuitFlow { to { stroke-dashoffset: -200; } }
+.pcf-cta-particles {
+    position: absolute; inset: 0;
+    z-index: 3; pointer-events: none; opacity: 0.6;
+}
+.pcf-cta-eyebrow {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 4px;
+    color: #9DAAA6; text-transform: uppercase;
+    margin-bottom: 30px; padding: 6px 16px;
+    border: 1px solid rgba(85,230,181,0.25);
+    border-radius: 3px; background: rgba(85,230,181,0.03);
+}
+.pcf-cta-eyebrow::before {
+    content: ''; width: 6px; height: 6px;
+    border-radius: 50%; background: #55E6B5;
+    box-shadow: 0 0 10px #55E6B5;
+    animation: pcfCtaBlink 1.5s ease-in-out infinite;
+}
+@keyframes pcfCtaBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.pcf-cta-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 88px; font-weight: 800;
+    line-height: 0.98; letter-spacing: -4px;
+    color: #E8F0ED; margin: 0 0 24px;
+    transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.pcf-cta-title.shrink {
+    font-size: 52px; letter-spacing: -2px;
+    margin-bottom: 16px;
+}
+.pcf-cta-title .mint {
+    color: #55E6B5; display: inline-block;
+    position: relative;
+    text-shadow: 0 0 50px rgba(85,230,181,0.5);
+}
+.pcf-cta-title .mint::after {
+    content: ''; position: absolute;
+    bottom: 4px; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    box-shadow: 0 0 20px #55E6B5;
+    animation: pcfCtaLinePulse 2.5s ease-in-out infinite;
+}
+@keyframes pcfCtaLinePulse {
+    0%, 100% { opacity: 1; transform: scaleX(1); }
+    50% { opacity: 0.4; transform: scaleX(1.03); }
+}
+.pcf-cta-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px; color: #9DAAA6;
+    max-width: 580px; margin: 0 auto 55px;
+    line-height: 1.7; font-weight: 300;
+    transition: all 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.pcf-cta-sub.shrink { opacity: 0; height: 0; margin: 0; overflow: hidden; }
+.pcf-stage-wrap {
+    position: relative; min-height: 280px;
+    display: flex; align-items: flex-start; justify-content: center;
+}
+.pcf-stage { width: 100%; transition: all 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+.pcf-stage.hidden {
+    position: absolute; top: 0; left: 0;
+    opacity: 0; transform: scale(0.85);
+    pointer-events: none; filter: blur(10px);
+}
+.pcf-stage.entering { animation: pcfStageEnter 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes pcfStageEnter {
+    from { opacity: 0; transform: scale(0.85) translateY(30px); filter: blur(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+.pcf-field-wrap { position: relative; max-width: 720px; margin: 0 auto; }
+.pcf-field-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 8px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: #6A7570; text-transform: uppercase;
+}
+.pcf-field-head-left { display: flex; align-items: center; gap: 8px; }
+.pcf-field-head-left::before {
+    content: ''; width: 5px; height: 5px;
+    border-radius: 50%; background: #55E6B5;
+    box-shadow: 0 0 8px #55E6B5;
+    animation: pcfCtaBlink 1.5s ease-in-out infinite;
+}
+.pcf-field-head .status { color: #55E6B5; transition: color 0.3s ease; }
+.pcf-field-head .status.error { color: #EF6B6B; }
+.pcf-field {
+    position: relative;
+    background: linear-gradient(135deg, rgba(24,30,29,0.95), rgba(14,18,18,0.95));
+    border: 1.5px solid rgba(85,230,181,0.25);
+    border-radius: 10px;
+    display: flex; align-items: center;
+    padding: 8px; transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    overflow: hidden; min-height: 76px;
+}
+.pcf-field::before {
+    content: ''; position: absolute;
+    top: -2px; left: -100%; width: 100%; height: calc(100% + 4px);
+    background: linear-gradient(90deg, transparent, #55E6B5, #A8FFE3, #55E6B5, transparent);
+    opacity: 0; transition: opacity 0.4s ease; z-index: 0;
+}
+.pcf-field:focus-within::before {
+    opacity: 0.15;
+    animation: pcfBorderSweep 3s linear infinite;
+}
+@keyframes pcfBorderSweep {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+.pcf-field:focus-within {
+    border-color: #55E6B5;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 80px rgba(85,230,181,0.4);
+}
+.pcf-prompt {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px; color: #55E6B5;
+    font-weight: 700; padding: 0 12px 0 20px;
+    text-shadow: 0 0 15px rgba(85,230,181,0.6);
+    z-index: 2; flex-shrink: 0;
+}
+.pcf-input {
+    flex: 1; background: transparent !important;
+    border: none !important; outline: none !important;
+    padding: 20px 12px !important;
+    color: #E8F0ED !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 16px !important;
+    letter-spacing: 1.5px !important;
+    box-shadow: none !important;
+    z-index: 2; min-width: 0;
+}
+.pcf-input::placeholder {
+    color: #4A5450; letter-spacing: 3px;
+    text-transform: uppercase; font-size: 13px;
+}
+.pcf-validate {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2; flex-shrink: 0;
+}
+.pcf-validate svg {
+    width: 20px; height: 20px;
+    stroke-width: 2.5; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+    transition: all 0.3s ease;
+}
+.pcf-validate .icon-empty { stroke: #4A5450; opacity: 0.5; }
+.pcf-validate .icon-check { stroke: #55E6B5; opacity: 0; filter: drop-shadow(0 0 8px #55E6B5); }
+.pcf-validate .icon-error { stroke: #EF6B6B; opacity: 0; filter: drop-shadow(0 0 8px #EF6B6B); }
+.pcf-validate.valid .icon-empty { opacity: 0; }
+.pcf-validate.valid .icon-check { opacity: 1; animation: pcfCheckPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.pcf-validate.invalid .icon-empty { opacity: 0; }
+.pcf-validate.invalid .icon-error { opacity: 1; animation: pcfShake 0.4s ease; }
+@keyframes pcfCheckPop {
+    0% { transform: scale(0.5); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+@keyframes pcfShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+.pcf-submit {
+    padding: 18px 34px;
+    background: #55E6B5; color: #080A0A;
+    border: none; border-radius: 6px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 12px;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    cursor: pointer; transition: all 0.3s ease;
+    display: inline-flex; align-items: center; gap: 10px;
+    position: relative; overflow: hidden;
+    white-space: nowrap; z-index: 2;
+    flex-shrink: 0; min-height: 60px;
+}
+.pcf-submit:hover:not(:disabled) {
+    background: #A8FFE3; transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(85,230,181,0.6);
+}
+.pcf-submit:disabled { opacity: 0.7; cursor: wait; }
+.pcf-flyer {
+    position: fixed; z-index: 99999;
+    background: linear-gradient(135deg, #55E6B5, #A8FFE3);
+    color: #080A0A; padding: 12px 22px;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; font-weight: 700;
+    box-shadow: 0 0 60px rgba(85,230,181,0.9);
+    pointer-events: none; opacity: 0;
+}
+.pcf-flyer.active { animation: pcfFlyAway 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+@keyframes pcfFlyAway {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+    15% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+    30% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(calc(-50% + 300px), calc(-50% - 400px)) scale(0.3) rotate(15deg); }
+}
+.pcf-ripple {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px; height: 20px;
+    border: 2px solid #55E6B5;
+    border-radius: 50%; opacity: 0;
+    pointer-events: none; z-index: 10;
+}
+.pcf-ripple.active { animation: pcfRippleExpand 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+@keyframes pcfRippleExpand {
+    0% { width: 20px; height: 20px; opacity: 1; border-width: 3px; }
+    100% { width: 1200px; height: 1200px; opacity: 0; border-width: 1px; }
+}
+.pcf-otp-wrap { max-width: 720px; margin: 0 auto; }
+.pcf-sent-banner {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; padding: 14px 20px;
+    background: linear-gradient(135deg, rgba(85,230,181,0.08), rgba(85,230,181,0.02));
+    border: 1px solid rgba(85,230,181,0.3);
+    border-radius: 8px; margin-bottom: 32px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; letter-spacing: 1px; color: #E8F0ED;
+}
+.pcf-sent-banner .check-icon {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: #55E6B5;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 0 20px rgba(85,230,181,0.6);
+}
+.pcf-sent-banner .check-icon svg {
+    width: 12px; height: 12px;
+    stroke: #080A0A; stroke-width: 3; fill: none;
+}
+.pcf-sent-banner .email-highlight { color: #55E6B5; font-weight: 700; word-break: break-all; }
+.pcf-otp-instruction {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 3px;
+    color: #6A7570; text-transform: uppercase;
+    margin-bottom: 24px;
+}
+.pcf-otp-row {
+    display: flex; gap: 14px;
+    justify-content: center; margin-bottom: 32px;
+}
+.pcf-otp-box {
+    width: 76px; height: 90px;
+    background: linear-gradient(135deg, rgba(24,30,29,0.95), rgba(14,18,18,0.95));
+    border: 2px solid rgba(85,230,181,0.25);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 32px; font-weight: 700;
+    color: #E8F0ED; text-align: center;
+    outline: none; transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    caret-color: #55E6B5;
+}
+.pcf-otp-box:focus {
+    border-color: #55E6B5;
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 60px rgba(85,230,181,0.5);
+}
+.pcf-otp-box.filled {
+    border-color: #55E6B5;
+    background: linear-gradient(135deg, rgba(85,230,181,0.1), rgba(85,230,181,0.02));
+    color: #55E6B5;
+    text-shadow: 0 0 20px rgba(85,230,181,0.6);
+    animation: pcfBoxFill 0.3s ease;
+}
+@keyframes pcfBoxFill {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); box-shadow: 0 0 40px rgba(85,230,181,0.8); }
+    100% { transform: scale(1); }
+}
+.pcf-otp-box.pulse { animation: pcfBoxPulse 0.6s ease; }
+@keyframes pcfBoxPulse {
+    0%, 100% { transform: translateY(-4px) scale(1.05); }
+    50% { transform: translateY(-8px) scale(1.1); border-color: #A8FFE3; box-shadow: 0 0 80px rgba(85,230,181,0.9); }
+}
+.pcf-otp-actions {
+    display: flex; align-items: center;
+    justify-content: center; gap: 20px;
+    margin-bottom: 24px;
+}
+.pcf-otp-submit {
+    padding: 18px 44px;
+    background: #55E6B5; color: #080A0A;
+    border: none; border-radius: 6px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 13px;
+    letter-spacing: 3px; text-transform: uppercase;
+    cursor: pointer; transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(85,230,181,0.3);
+}
+.pcf-otp-submit:hover:not(:disabled) {
+    background: #A8FFE3; transform: translateY(-3px);
+    box-shadow: 0 20px 50px rgba(85,230,181,0.7);
+}
+.pcf-otp-submit:disabled { opacity: 0.4; cursor: not-allowed; background: #55E6B5; }
+.pcf-otp-submit.ready:disabled {
+    opacity: 1; cursor: pointer;
+    animation: pcfSubmitReady 1.5s ease-in-out infinite;
+}
+@keyframes pcfSubmitReady {
+    0%, 100% { box-shadow: 0 10px 30px rgba(85,230,181,0.5); }
+    50% { box-shadow: 0 15px 50px rgba(85,230,181,0.9); }
+}
+.pcf-otp-back {
+    background: transparent;
+    border: 1px solid rgba(85,230,181,0.3);
+    color: #9DAAA6; padding: 16px 24px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    text-transform: uppercase; cursor: pointer;
+    transition: all 0.3s ease;
+}
+.pcf-otp-back:hover {
+    border-color: #55E6B5; color: #55E6B5;
+    background: rgba(85,230,181,0.05);
+}
+.pcf-resend {
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: #6A7570; text-transform: uppercase;
+}
+.pcf-resend button {
+    background: none; border: none;
+    color: #55E6B5; cursor: pointer;
+    font-family: inherit; letter-spacing: inherit;
+    font-size: inherit; text-transform: inherit;
+    padding: 0; transition: all 0.3s ease;
+    text-decoration: underline; text-underline-offset: 4px;
+}
+.pcf-resend button:hover { color: #A8FFE3; }
+.pcf-resend button:disabled {
+    color: #6A7570; cursor: not-allowed; text-decoration: none;
+}
+.pcf-final-success {
+    max-width: 620px; margin: 0 auto;
+    padding: 60px 40px;
+    background: linear-gradient(135deg, rgba(85,230,181,0.08), rgba(85,230,181,0.02));
+    border: 1.5px solid #55E6B5;
+    border-radius: 16px;
+    position: relative; overflow: hidden;
+    box-shadow: 0 40px 100px rgba(85,230,181,0.3);
+    animation: pcfFinalSuccess 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes pcfFinalSuccess {
+    0% { opacity: 0; transform: scale(0.7); filter: blur(20px); }
+    100% { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+.pcf-final-success::before {
+    content: ''; position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: conic-gradient(from 0deg, transparent, rgba(85,230,181,0.3), transparent 30%);
+    animation: pcfRotateGlow 4s linear infinite; z-index: 0;
+}
+@keyframes pcfRotateGlow { to { transform: rotate(360deg); } }
+.pcf-final-success > * { position: relative; z-index: 1; }
+.pcf-final-icon {
+    width: 80px; height: 80px;
+    margin: 0 auto 24px;
+    border-radius: 50%; background: #55E6B5;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 60px rgba(85,230,181,0.9);
+    animation: pcfFinalPulse 2s ease-in-out infinite;
+}
+@keyframes pcfFinalPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+.pcf-final-icon svg { width: 40px; height: 40px; stroke: #080A0A; stroke-width: 3; fill: none; }
+.pcf-final-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 32px; font-weight: 800;
+    color: #E8F0ED; margin: 0 0 12px;
+    letter-spacing: -1px;
+}
+.pcf-final-title .mint { color: #55E6B5; }
+.pcf-final-msg {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; letter-spacing: 2px;
+    color: #9DAAA6; text-transform: uppercase;
+    line-height: 1.8; margin: 0 0 24px;
+}
+.pcf-final-msg strong { color: #55E6B5; word-break: break-all; }
+.pcf-success-reset {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; background: transparent;
+    border: 1px solid rgba(85,230,181,0.3);
+    border-radius: 8px; color: #9DAAA6;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 1.5px;
+    text-transform: uppercase; cursor: pointer;
+    transition: all 0.3s ease;
+}
+.pcf-success-reset:hover {
+    border-color: #55E6B5; color: #55E6B5;
+    background: rgba(85,230,181,0.05);
+    transform: translateY(-2px);
+}
+.pcf-confetti {
+    position: absolute; width: 8px; height: 8px;
+    background: #55E6B5; pointer-events: none;
+    z-index: 100; border-radius: 2px;
+}
+.pcf-cta-info {
+    margin-top: 60px;
+    display: flex; align-items: center; justify-content: center;
+    gap: 40px; flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 2px;
+    color: #6A7570; text-transform: uppercase;
+    transition: all 0.6s ease;
+}
+.pcf-cta-info.hide { opacity: 0; height: 0; margin: 0; overflow: hidden; }
+.pcf-cta-info-item { display: flex; align-items: center; gap: 8px; }
+.pcf-cta-info-item .dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #55E6B5; box-shadow: 0 0 8px #55E6B5;
+}
+.pcf-cta-reveal { opacity: 0; transform: translateY(40px); transition: all 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+.pcf-cta-reveal.show { opacity: 1; transform: translateY(0); }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1100px) {
+    .pcf-title { font-size: 80px; letter-spacing: -3px; }
+    .pcf-case-wrap { max-width: 320px; max-height: 500px; }
+    .pcf-why-grid { grid-template-columns: repeat(2, 1fr); }
+    .pcf-why-title { font-size: 56px; }
+    .pcf-cats-grid { grid-template-columns: repeat(2, 1fr); }
+    .pcf-cats-title { font-size: 42px; }
+    .pcf-bench-grid { grid-template-columns: 280px 1fr; }
+    .pcf-cta-title { font-size: 68px; letter-spacing: -3px; }
+}
+@media (max-width: 900px) {
+    .pcf-hero { padding: 80px 25px 60px; min-height: auto; }
+    .pcf-hero-inner { grid-template-columns: 1fr; gap: 50px; }
+    .pcf-title { font-size: 64px; letter-spacing: -2px; }
+    .pcf-visual { height: 540px; }
+    .pcf-stats { gap: 30px; flex-wrap: wrap; }
+    .pcf-stat-num { font-size: 26px; }
+    .pcf-l2 { right: -20px; }
+    .pcf-l4 { right: -10px; }
+    .pcf-ring, .pcf-halo { width: 360px; height: 360px; }
+    .pcf-cursor-glow, .pcf-cursor-ring { display: none; }
+    .pcf-hero { cursor: auto; }
+    .pcf-why { padding: 80px 25px; }
+    .pcf-why-grid { grid-template-columns: 1fr; gap: 16px; }
+    .pcf-why-title { font-size: 40px; letter-spacing: -1px; }
+    .pcf-why-header { margin-bottom: 50px; }
+    .pcf-card { padding: 28px 22px 90px; min-height: 340px; cursor: pointer; }
+    .pcf-card-num { font-size: 11px; }
+    .pcf-why-hud, .pcf-why-bracket { display: none; }
+    .pcf-body { grid-template-columns: 1fr; }
+    .pcf-col { border-right: none; border-bottom: 1px solid #181E1D; }
+    .pcf-console-title { font-size: 36px; letter-spacing: -1.5px; }
+    .pcf-console { padding: 60px 20px; }
+    .pcf-total { flex-direction: column; align-items: stretch; }
+    .pcf-total-actions { justify-content: stretch; }
+    .pcf-btn { flex: 1; justify-content: center; }
+    .pcf-cats { padding: 80px 22px; }
+    .pcf-cats-grid { grid-template-columns: 1fr; gap: 14px; }
+    .pcf-cats-title { font-size: 32px; }
+    .pcf-cats-header { margin-bottom: 45px; }
+    .pcf-bench { padding: 80px 22px; }
+    .pcf-bench-grid { grid-template-columns: 1fr; }
+    .pcf-bench-left { border-right: none; border-bottom: 1px solid #1F2626; }
+    .pcf-bench-title { font-size: 36px; letter-spacing: -1.5px; }
+    .pcf-bench-results { grid-template-columns: repeat(2, 1fr); }
+    .pcf-cta { padding: 90px 22px; min-height: auto; }
+    .pcf-cta-title { font-size: 48px; letter-spacing: -2px; }
+    .pcf-cta-title.shrink { font-size: 36px; }
+    .pcf-cta-sub { font-size: 14px; }
+    .pcf-field { flex-direction: column; padding: 12px; gap: 8px; }
+    .pcf-prompt { display: none; }
+    .pcf-input { text-align: center; padding: 14px 12px !important; }
+    .pcf-validate { display: none; }
+    .pcf-submit { width: 100%; justify-content: center; }
+    .pcf-otp-row { gap: 8px; }
+    .pcf-otp-box { width: 46px; height: 58px; font-size: 22px; border-radius: 8px; }
+    .pcf-otp-actions { flex-direction: column; gap: 12px; }
+    .pcf-otp-submit, .pcf-otp-back { width: 100%; justify-content: center; }
+    .pcf-cta-info { gap: 20px; font-size: 9px; }
+    .pcf-sent-banner { font-size: 10px; padding: 10px 14px; flex-wrap: wrap; }
+    .pcf-final-title { font-size: 24px; }
+    .pcf-final-success { padding: 40px 24px; }
+}
+@media (max-width: 550px) {
+    .pcf-title { font-size: 44px; letter-spacing: -1px; line-height: 1; }
+    .pcf-desc { font-size: 15px; }
+    .pcf-btn-primary, .pcf-btn-secondary { padding: 15px 24px; font-size: 11px; }
+    .pcf-visual { height: 480px; }
+    .pcf-case-wrap { max-width: 260px; max-height: 420px; }
+    .pcf-label { padding: 8px 12px; min-width: 100px; }
+    .pcf-label .v { font-size: 12px; }
+    .pcf-l1 { left: -10px; top: 10px; }
+    .pcf-l2 { right: -10px; }
+    .pcf-l3 { left: -10px; bottom: 30px; }
+    .pcf-l4 { display: none; }
+    .pcf-ring, .pcf-halo, .pcf-scan { display: none; }
+    .pcf-hud, .pcf-hud-text { display: none; }
+    .pcf-why-title { font-size: 30px; }
+    .pcf-why-sub { font-size: 14px; }
+    .pcf-bench-title { font-size: 28px; }
+    .pcf-chart-value { font-size: 18px; }
+    .pcf-bench-result-value { font-size: 22px; }
+    .pcf-cta-title { font-size: 36px; letter-spacing: -1px; }
+    .pcf-cta-title.shrink { font-size: 28px; }
+    .pcf-otp-box { width: 40px; height: 52px; font-size: 20px; }
+}
+</style>
+
+<div class="pcf-home">
+
+    <!-- Cursor Elements -->
+    <div class="pcf-cursor-glow" id="pcfCursorGlow"></div>
+    <div class="pcf-cursor-ring" id="pcfCursorRing"></div>
+
+    <!-- ============================================================
+         1. HERO
+         ============================================================ -->
+    <section class="pcf-hero">
+        <div class="pcf-hud pcf-hud-tl"></div>
+        <div class="pcf-hud pcf-hud-tr"></div>
+        <div class="pcf-hud pcf-hud-bl"></div>
+        <div class="pcf-hud pcf-hud-br"></div>
+        <div class="pcf-hud-text pcf-hud-text-tl">SYS // ACTIVE</div>
+        <div class="pcf-hud-text pcf-hud-text-tr">V 1.0.0</div>
+        <div class="pcf-hud-text pcf-hud-text-bl">48.4°C</div>
+        <div class="pcf-hud-text pcf-hud-text-br">FORGE // READY</div>
+
+        <div class="pcf-grid"></div>
+        <div class="pcf-glow"></div>
+        <canvas class="pcf-particles" id="pcfParticles"></canvas>
+
+        <div class="pcf-hero-inner">
+            <div class="pcf-text">
+                <div class="pcf-eyebrow">
+                    <span class="dot"></span>
+                    PCFORGE — BUILD LAB V1.0
+                </div>
+                <h1 class="pcf-title">
+                    <span class="row">BUILD</span>
+                    <span class="row">BEYOND</span>
+                    <span class="row"><span class="mint">LIMITS.</span></span>
+                </h1>
+                <p class="pcf-desc">
+                    Configure your dream gaming rig in real-time. <strong>Compatible components</strong>, live pricing, and performance estimates — all in one place.
+                </p>
+                <div class="pcf-buttons">
+                    <a href="/build-lab/" class="pcf-btn-primary">
+                        Start Building
+                        <span class="arrow">→</span>
+                    </a>
+                    <a href="/shop/" class="pcf-btn-secondary">Explore Store</a>
+                </div>
+                <div class="pcf-stats">
+                    <div>
+                        <span class="pcf-stat-num">24<span class="mint">+</span></span>
+                        <span class="pcf-stat-lbl">Components</span>
+                    </div>
+                    <div>
+                        <span class="pcf-stat-num">100<span class="mint">%</span></span>
+                        <span class="pcf-stat-lbl">Compatible</span>
+                    </div>
+                    <div>
+                        <span class="pcf-stat-num">0<span class="mint">ms</span></span>
+                        <span class="pcf-stat-lbl">Live Updates</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pcf-visual" id="pcfVisual">
+                <div class="pcf-halo"></div>
+                <div class="pcf-ring"></div>
+                <div class="pcf-scan"></div>
+
+                <div class="pcf-case-wrap" id="pcfCase">
+                    <video autoplay muted loop playsinline preload="auto">
+                        <source src="http://pcforge.com/wp-content/uploads/2026/10/14523168_2160_3840_50fps.mp4" type="video/mp4">
+                    </video>
+                </div>
+
+                <div class="pcf-label pcf-l1">
+                    <span class="pulse-dot"></span>
+                    <span class="k">CPU</span>
+                    <span class="v mint">Ryzen 7 7800X</span>
+                </div>
+                <div class="pcf-label pcf-l2">
+                    <span class="pulse-dot"></span>
+                    <span class="k">GPU</span>
+                    <span class="v mint">RTX 5090</span>
+                </div>
+                <div class="pcf-label pcf-l3">
+                    <span class="pulse-dot"></span>
+                    <span class="k">RAM</span>
+                    <span class="v">32GB DDR5</span>
+                </div>
+                <div class="pcf-label pcf-l4">
+                    <span class="pulse-dot"></span>
+                    <span class="k">Status</span>
+                    <span class="v mint">Compatible ✓</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         2. WHY PCFORGE
+         ============================================================ -->
+    <section class="pcf-why" id="pcfWhy">
+        <div class="pcf-why-glow" id="pcfWhyGlow"></div>
+        <div class="pcf-why-hud pcf-hud-a">// SYS.SCAN :: ACTIVE</div>
+        <div class="pcf-why-hud pcf-hud-b">BUILD.LAB :: v1.0.0</div>
+        <div class="pcf-why-hud pcf-hud-c">FORGE.CORE :: ONLINE</div>
+        <div class="pcf-why-hud pcf-hud-d">COMPAT :: 100%</div>
+        <div class="pcf-why-bracket pcf-why-bracket-tl"></div>
+        <div class="pcf-why-bracket pcf-why-bracket-tr"></div>
+        <div class="pcf-why-bracket pcf-why-bracket-bl"></div>
+        <div class="pcf-why-bracket pcf-why-bracket-br"></div>
+
+        <div class="pcf-why-inner">
+            <div class="pcf-why-header pcf-anim">
+                <div class="pcf-why-eyebrow">
+                    <span class="dot"></span>
+                    WHY CHOOSE PCFORGE
+                    <span class="dot"></span>
+                </div>
+                <h2 class="pcf-why-title">
+                    BUILT DIFFERENT.<br>
+                    <span class="mint">FORGED BETTER.</span>
+                </h2>
+                <p class="pcf-why-sub">
+                    PCFORGE isn't just another store. It's a complete decision platform for PC builders — from compatibility to checkout, all in one place.
+                </p>
+            </div>
+
+            <div class="pcf-why-grid">
+                <div class="pcf-card pcf-anim-scale">
+                    <span class="pcf-card-num">01</span>
+                    <div class="corner-tl"></div><div class="corner-tr"></div><div class="corner-bl"></div><div class="corner-br"></div>
+                    <div class="pcf-card-icon">
+                        <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="2" x2="9" y2="4"/><line x1="15" y1="2" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="22"/><line x1="15" y1="20" x2="15" y2="22"/><line x1="2" y1="9" x2="4" y2="9"/><line x1="2" y1="15" x2="4" y2="15"/><line x1="20" y1="9" x2="22" y2="9"/><line x1="20" y1="15" x2="22" y2="15"/></svg>
+                    </div>
+                    <h3 class="pcf-card-title">Interactive Build Lab</h3>
+                    <p class="pcf-card-desc">Pick components and watch your build come alive with live pricing and instant updates.</p>
+                    <div class="pcf-card-mini-viz"><svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,25 L10,22 L20,18 L30,20 L40,12 L50,14 L60,8 L70,10 L80,5 L90,7 L100,3"/></svg></div>
+                    <div class="pcf-card-status">
+                        <span class="pcf-status-label"><span class="pcf-status-dot"></span>SYS.ONLINE</span>
+                        <span class="pcf-status-value">LIVE</span>
+                    </div>
+                </div>
+
+                <div class="pcf-card pcf-anim-scale">
+                    <span class="pcf-card-num">02</span>
+                    <div class="corner-tl"></div><div class="corner-tr"></div><div class="corner-bl"></div><div class="corner-br"></div>
+                    <div class="pcf-card-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                    </div>
+                    <h3 class="pcf-card-title">Compatibility Engine</h3>
+                    <p class="pcf-card-desc">Real-time checks for CPU sockets, RAM types, PSU wattage, and case clearance — no guesswork.</p>
+                    <div class="pcf-card-mini-viz"><svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,20 L15,18 L30,22 L45,15 L60,10 L75,12 L90,6 L100,8"/></svg></div>
+                    <div class="pcf-card-status">
+                        <span class="pcf-status-label"><span class="pcf-status-dot"></span>CHECK.ACTIVE</span>
+                        <span class="pcf-status-value">100%</span>
+                    </div>
+                </div>
+
+                <div class="pcf-card pcf-anim-scale">
+                    <span class="pcf-card-num">03</span>
+                    <div class="corner-tl"></div><div class="corner-tr"></div><div class="corner-bl"></div><div class="corner-br"></div>
+                    <div class="pcf-card-icon">
+                        <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 6-6"/></svg>
+                    </div>
+                    <h3 class="pcf-card-title">Performance Estimates</h3>
+                    <p class="pcf-card-desc">See FPS estimates for popular games like Cyberpunk, Valorant, and GTA before you buy.</p>
+                    <div class="pcf-card-mini-viz"><svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,25 L20,20 L40,15 L60,12 L80,6 L100,4"/></svg></div>
+                    <div class="pcf-card-status">
+                        <span class="pcf-status-label"><span class="pcf-status-dot"></span>BENCH.READY</span>
+                        <span class="pcf-status-value">144+</span>
+                    </div>
+                </div>
+
+                <div class="pcf-card pcf-anim-scale">
+                    <span class="pcf-card-num">04</span>
+                    <div class="corner-tl"></div><div class="corner-tr"></div><div class="corner-bl"></div><div class="corner-br"></div>
+                    <div class="pcf-card-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                    </div>
+                    <h3 class="pcf-card-title">Genuine Components</h3>
+                    <p class="pcf-card-desc">100% original hardware sourced from authorized dealers with official warranty.</p>
+                    <div class="pcf-card-mini-viz"><svg viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,18 L25,16 L50,14 L75,12 L100,10"/></svg></div>
+                    <div class="pcf-card-status">
+                        <span class="pcf-status-label"><span class="pcf-status-dot"></span>VERIFIED</span>
+                        <span class="pcf-status-value">100%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         3. FORGE CONSOLE
+         ============================================================ -->
+    <section class="pcf-console" id="pcfConsole">
+        <div class="pcf-console-inner">
+            <div class="pcf-console-header">
+                <div class="pcf-console-label">LIVE SYSTEM MONITOR</div>
+                <h2 class="pcf-console-title">WATCH THE <span class="mint">FORGE</span> IN ACTION.</h2>
+                <p class="pcf-console-sub">Click any component to swap it. Prices, compatibility, and performance update in real-time.</p>
+            </div>
+
+            <div class="pcf-window">
+                <div class="pcf-bar">
+                    <div class="pcf-dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+                    <div class="pcf-name">forge@pcforge:~/build-sequencer</div>
+                    <div class="pcf-status">SYSTEM ONLINE</div>
+                </div>
+
+                <div class="pcf-body">
+                    <div class="pcf-col">
+                        <div class="pcf-col-title">Components</div>
+                        <div class="pcf-slots" id="pcfSlots"></div>
+                    </div>
+
+                    <div class="pcf-col">
+                        <div class="pcf-col-title">Blueprint</div>
+                        <div class="pcf-blueprint">
+                            <div class="pcf-bp-corner tl"></div>
+                            <div class="pcf-bp-corner tr"></div>
+                            <div class="pcf-bp-corner bl"></div>
+                            <div class="pcf-bp-corner br"></div>
+                            <div class="pcf-bp-scan"></div>
+                            <div class="pcf-bp-label">FORGE.BUILD<strong>v2.0.0</strong></div>
+                            <div class="pcf-bp-fps">FPS.EST<span class="pcf-bp-fps-val"><span id="pcfFps">0</span><small>fps</small></span></div>
+                            <div class="pcf-bp-pc">
+                                <div class="pcf-bp-sec pcf-bp-cpu" data-sec="CPU">CPU</div>
+                                <div class="pcf-bp-sec pcf-bp-ram" data-sec="RAM">RAM</div>
+                                <div class="pcf-bp-sec pcf-bp-ssd" data-sec="SSD">SSD</div>
+                                <div class="pcf-bp-sec pcf-bp-gpu" data-sec="GPU">GPU</div>
+                                <div class="pcf-bp-sec pcf-bp-psu" data-sec="PSU">PSU</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pcf-col">
+                        <div class="pcf-col-title">Diagnostics</div>
+                        <div class="pcf-diag-list">
+                            <div class="pcf-diag" id="pcfDiagCompat">
+                                <div class="pcf-diag-head"><span>Compatibility</span><span class="pcf-diag-val good" id="pcfValCompat">0%</span></div>
+                                <div class="pcf-diag-bar"><div class="pcf-diag-fill" id="pcfFillCompat" style="width:0"></div></div>
+                            </div>
+                            <div class="pcf-diag" id="pcfDiagPerf">
+                                <div class="pcf-diag-head"><span>Performance</span><span class="pcf-diag-val good" id="pcfValPerf">0/100</span></div>
+                                <div class="pcf-diag-bar"><div class="pcf-diag-fill" id="pcfFillPerf" style="width:0"></div></div>
+                            </div>
+                            <div class="pcf-diag" id="pcfDiagPower">
+                                <div class="pcf-diag-head"><span>Power Draw</span><span class="pcf-diag-val warn" id="pcfValPower">0W</span></div>
+                                <div class="pcf-diag-bar"><div class="pcf-diag-fill warn" id="pcfFillPower" style="width:0"></div></div>
+                            </div>
+                            <div class="pcf-diag" id="pcfDiagTherm">
+                                <div class="pcf-diag-head"><span>Thermals</span><span class="pcf-diag-val good" id="pcfValTherm">0°C</span></div>
+                                <div class="pcf-diag-bar"><div class="pcf-diag-fill" id="pcfFillTherm" style="width:0"></div></div>
+                            </div>
+                            <div class="pcf-stream" id="pcfStream">
+                                <div class="pcf-stream-line">[OK] socket.match <strong>AM5</strong></div>
+                                <div class="pcf-stream-line">[OK] ram.ddr5 <strong>compatible</strong></div>
+                                <div class="pcf-stream-line">[OK] psu.headroom <strong>+485W</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pcf-total">
+                    <div>
+                        <span class="pcf-total-label">Build Total</span>
+                        <div class="pcf-total-value" id="pcfTotalValue">
+                            <span class="curr">₨</span>
+                            <span id="pcfTotalPrice">0</span>
+                        </div>
+                    </div>
+                    <div class="pcf-total-actions">
+                        <a href="/build-lab/" class="pcf-btn pcf-btn-secondary">Full Build Lab →</a>
+                        <button class="pcf-btn pcf-btn-secondary" id="pcfSaveBtn">Save Build</button>
+                        <button class="pcf-btn pcf-btn-primary" id="pcfCartBtn">Add to Cart →</button>
+                    </div>
+                </div>
+
+                <div class="pcf-terminal">
+                    <span class="pcf-prompt">forge@pcforge:~$</span>
+                    <span class="pcf-term-input" id="pcfTermInput"></span>
+                    <span class="pcf-cursor"></span>
+                </div>
+
+                <div class="pcf-ticker">
+                    <div class="pcf-ticker-track">
+                        <span class="pcf-ticker-item">CLICK COMPONENT TO SWAP</span>
+                        <span class="pcf-ticker-item">LIVE PRICING</span>
+                        <span class="pcf-ticker-item">REAL-TIME COMPATIBILITY</span>
+                        <span class="pcf-ticker-item">TOTAL AUTO-CALCULATED</span>
+                        <span class="pcf-ticker-item">BUILT FOR GAMERS</span>
+                        <span class="pcf-ticker-item">CLICK COMPONENT TO SWAP</span>
+                        <span class="pcf-ticker-item">LIVE PRICING</span>
+                        <span class="pcf-ticker-item">REAL-TIME COMPATIBILITY</span>
+                        <span class="pcf-ticker-item">TOTAL AUTO-CALCULATED</span>
+                        <span class="pcf-ticker-item">BUILT FOR GAMERS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="pcf-toast" id="pcfToast">
+        <span class="pcf-toast-label" id="pcfToastLabel">UPDATED</span>
+        <span class="pcf-toast-val" id="pcfToastVal"></span>
+    </div>
+
+    <!-- ============================================================
+         4. CATEGORIES
+         ============================================================ -->
+    <section class="pcf-cats" id="pcfCats">
+        <div class="pcf-cats-inner">
+            <div class="pcf-cats-header">
+                <div class="pcf-cats-eyebrow">Browse Components</div>
+                <h2 class="pcf-cats-title">PICK YOUR <span class="mint">PARTS.</span></h2>
+                <p class="pcf-cats-sub">Every component. Every brand. All compatible. Browse categories and start building your rig.</p>
+            </div>
+
+            <div class="pcf-cats-grid">
+                <a href="/product-category/cpu/" class="pcf-cat pcf-anim">
+                    <div class="pcf-cat-top"><span class="pcf-cat-num">01</span><span class="pcf-cat-tag">Silicon</span></div>
+                    <div class="pcf-schematic"><div class="sch-cpu"><div class="core"></div></div></div>
+                    <div class="pcf-cat-content">
+                        <h3 class="pcf-cat-title">Processors</h3>
+                        <div class="pcf-cat-specs">
+                            <div class="spec-item"><span class="spec-key">Clock</span><span class="spec-val blink">5.2 GHz</span></div>
+                            <div class="spec-item"><span class="spec-key">Cores</span><span class="spec-val">8-16</span></div>
+                        </div>
+                    </div>
+                    <div class="pcf-cat-bottom"><span class="pcf-cat-explore">Explore <span class="arrow">→</span></span><span class="pcf-cat-count">24 ITEMS</span></div>
+                    <div class="pcf-cat-bar"></div>
+                </a>
+
+                <a href="/product-category/gpu/" class="pcf-cat pcf-anim">
+                    <div class="pcf-cat-top"><span class="pcf-cat-num">02</span><span class="pcf-cat-tag">Graphics</span></div>
+                    <div class="pcf-schematic"><div class="sch-gpu"><div class="fan"></div><div class="fan"></div></div></div>
+                    <div class="pcf-cat-content">
+                        <h3 class="pcf-cat-title">Graphics Cards</h3>
+                        <div class="pcf-cat-specs">
+                            <div class="spec-item"><span class="spec-key">VRAM</span><span class="spec-val blink">24 GB</span></div>
+                            <div class="spec-item"><span class="spec-key">Bus</span><span class="spec-val">PCIe 5.0</span></div>
+                        </div>
+                    </div>
+                    <div class="pcf-cat-bottom"><span class="pcf-cat-explore">Explore <span class="arrow">→</span></span><span class="pcf-cat-count">18 ITEMS</span></div>
+                    <div class="pcf-cat-bar"></div>
+                </a>
+
+                <a href="/product-category/ram/" class="pcf-cat pcf-anim">
+                    <div class="pcf-cat-top"><span class="pcf-cat-num">03</span><span class="pcf-cat-tag">Memory</span></div>
+                    <div class="pcf-schematic"><div class="sch-ram"><div class="chip"></div><div class="chip"></div><div class="chip"></div><div class="chip"></div></div></div>
+                    <div class="pcf-cat-content">
+                        <h3 class="pcf-cat-title">Memory</h3>
+                        <div class="pcf-cat-specs">
+                            <div class="spec-item"><span class="spec-key">Speed</span><span class="spec-val blink">6000 MHz</span></div>
+                            <div class="spec-item"><span class="spec-key">Type</span><span class="spec-val">DDR5</span></div>
+                        </div>
+                    </div>
+                    <div class="pcf-cat-bottom"><span class="pcf-cat-explore">Explore <span class="arrow">→</span></span><span class="pcf-cat-count">12 ITEMS</span></div>
+                    <div class="pcf-cat-bar"></div>
+                </a>
+
+                <a href="/product-category/motherboard/" class="pcf-cat pcf-anim">
+                    <div class="pcf-cat-top"><span class="pcf-cat-num">04</span><span class="pcf-cat-tag">Board</span></div>
+                    <div class="pcf-schematic"><div class="sch-mobo"><div class="cpu-socket"></div><div class="ram-slot"></div><div class="ram-slot"></div><div class="pcie"></div></div></div>
+                    <div class="pcf-cat-content">
+                        <h3 class="pcf-cat-title">Motherboards</h3>
+                        <div class="pcf-cat-specs">
+                            <div class="spec-item"><span class="spec-key">Socket</span><span class="spec-val blink">AM5</span></div>
+                            <div class="spec-item"><span class="spec-key">Form</span><span class="spec-val">ATX</span></div>
+                        </div>
+                    </div>
+                    <div class="pcf-cat-bottom"><span class="pcf-cat-explore">Explore <span class="arrow">→</span></span><span class="pcf-cat-count">14 ITEMS</span></div>
+                    <div class="pcf-cat-bar"></div>
+                </a>
+
+                <a href="/product-category/storage/" class="pcf-cat pcf-anim">
+                    <div class="pcf-cat-top"><span class="pcf-cat-num">05</span><span class="pcf-cat-tag">Storage</span></div>
+                    <div class="pcf-schematic"><div class="sch-ssd"><div class="nand"></div><div class="nand"></div><div class="nand"></div><div class="nand"></div></div></div>
+                    <div class="pcf-cat-content">
+                        <h3 class="pcf-cat-title">Storage</h3>
+                        <div class="pcf-cat-specs">
+                            <div class="spec-item"><span class="spec-key">Read</span><span class="spec-val blink">7000 MB/s</span></div>
+                            <div class="spec-item"><span class="spec-key">Type</span><span class="spec-val">NVMe</span></div>
+                        </div>
+                    </div>
+                    <div class="pcf-cat-bottom"><span class="pcf-cat-explore">Explore <span class="arrow">→</span></span><span class="pcf-cat-count">22 ITEMS</span></div>
+                    <div class="pcf-cat-bar"></div>
+                </a>
+
+                <a href="/product-category/psu/" class="pcf-cat pcf-anim">
+                    <div class="pcf-cat-top"><span class="pcf-cat-num">06</span><span class="pcf-cat-tag">Power</span></div>
+                    <div class="pcf-schematic"><div class="sch-psu"><div class="psu-fan"></div><div class="connectors"><span></span><span></span><span></span></div></div></div>
+                    <div class="pcf-cat-content">
+                        <h3 class="pcf-cat-title">Power Supply</h3>
+                        <div class="pcf-cat-specs">
+                            <div class="spec-item"><span class="spec-key">Output</span><span class="spec-val blink">850 W</span></div>
+                            <div class="spec-item"><span class="spec-key">Rating</span><span class="spec-val">80+ Gold</span></div>
+                        </div>
+                    </div>
+                    <div class="pcf-cat-bottom"><span class="pcf-cat-explore">Explore <span class="arrow">→</span></span><span class="pcf-cat-count">16 ITEMS</span></div>
+                    <div class="pcf-cat-bar"></div>
+                </a>
+
+                <a href="/product-category/cooling/" class="pcf-cat pcf-anim">
+                    <div class="pcf-cat-top"><span class="pcf-cat-num">07</span><span class="pcf-cat-tag">Thermal</span></div>
+                    <div class="pcf-schematic"><div class="sch-cool"><div class="blades"><div class="blade"></div><div class="blade"></div><div class="blade"></div><div class="blade"></div></div><div class="hub"></div></div></div>
+                    <div class="pcf-cat-content">
+                        <h3 class="pcf-cat-title">Cooling</h3>
+                        <div class="pcf-cat-specs">
+                            <div class="spec-item"><span class="spec-key">RPM</span><span class="spec-val blink">2200</span></div>
+                            <div class="spec-item"><span class="spec-key">Noise</span><span class="spec-val">28 dBA</span></div>
+                        </div>
+                    </div>
+                    <div class="pcf-cat-bottom"><span class="pcf-cat-explore">Explore <span class="arrow">→</span></span><span class="pcf-cat-count">20 ITEMS</span></div>
+                    <div class="pcf-cat-bar"></div>
+                </a>
+
+                <a href="/product-category/case/" class="pcf-cat pcf-anim">
+                    <div class="pcf-cat-top"><span class="pcf-cat-num">08</span><span class="pcf-cat-tag">Chassis</span></div>
+                    <div class="pcf-schematic"><div class="sch-case"><div class="mb"></div><div class="gpu-inside"></div><div class="front"></div></div></div>
+                    <div class="pcf-cat-content">
+                        <h3 class="pcf-cat-title">Cases</h3>
+                        <div class="pcf-cat-specs">
+                            <div class="spec-item"><span class="spec-key">Form</span><span class="spec-val blink">Mid-Tower</span></div>
+                            <div class="spec-item"><span class="spec-key">Glass</span><span class="spec-val">Tempered</span></div>
+                        </div>
+                    </div>
+                    <div class="pcf-cat-bottom"><span class="pcf-cat-explore">Explore <span class="arrow">→</span></span><span class="pcf-cat-count">15 ITEMS</span></div>
+                    <div class="pcf-cat-bar"></div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         5. BENCHMARK
+         ============================================================ -->
+    <section class="pcf-bench" id="pcfBench">
+        <div class="pcf-bench-inner">
+            <div class="pcf-bench-header">
+                <div class="pcf-bench-eyebrow">Live Benchmark</div>
+                <h2 class="pcf-bench-title">RUN REAL-TIME <span class="mint">DIAGNOSTICS.</span></h2>
+                <p class="pcf-bench-sub">
+                    Simulate performance benchmark of your current build. Watch FPS, temperature, and power metrics update live — just like real diagnostic software.
+                </p>
+            </div>
+
+            <div class="pcf-bench-terminal">
+                <div class="pcf-bench-bar">
+                    <div class="pcf-bench-dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+                    <div class="pcf-bench-name">forge@pcforge:~/benchmark-simulator</div>
+                    <div class="pcf-bench-status" id="benchStatus">IDLE</div>
+                </div>
+
+                <div class="pcf-bench-grid">
+                    <div class="pcf-bench-left">
+                        <div class="pcf-bench-panel-title">Current Build</div>
+                        <div class="pcf-bench-spec"><div class="pcf-bench-spec-icon">C</div><div class="pcf-bench-spec-info"><span class="pcf-bench-spec-label">CPU</span><span class="pcf-bench-spec-value">Ryzen 7 7800X3D</span></div></div>
+                        <div class="pcf-bench-spec"><div class="pcf-bench-spec-icon">G</div><div class="pcf-bench-spec-info"><span class="pcf-bench-spec-label">GPU</span><span class="pcf-bench-spec-value">RTX 5090 OC</span></div></div>
+                        <div class="pcf-bench-spec"><div class="pcf-bench-spec-icon">R</div><div class="pcf-bench-spec-info"><span class="pcf-bench-spec-label">RAM</span><span class="pcf-bench-spec-value">32GB DDR5 6000</span></div></div>
+                        <div class="pcf-bench-spec"><div class="pcf-bench-spec-icon">S</div><div class="pcf-bench-spec-info"><span class="pcf-bench-spec-label">Storage</span><span class="pcf-bench-spec-value">2TB NVMe Gen4</span></div></div>
+
+                        <div class="pcf-bench-start-wrap">
+                            <button class="pcf-bench-start" id="benchStartBtn">▶ Start Benchmark</button>
+                            <div class="pcf-bench-progress" id="benchProgress"><div class="pcf-bench-progress-fill" id="benchProgressFill"></div></div>
+                            <div class="pcf-bench-progress-text" id="benchProgressText">0% — Analyzing...</div>
+                        </div>
+                    </div>
+
+                    <div class="pcf-bench-right">
+                        <div class="pcf-chart-card" id="chartFps">
+                            <div class="pcf-chart-head"><div class="pcf-chart-title">FPS</div><div class="pcf-chart-value mint"><span id="fpsValue">0</span><small>FPS</small></div></div>
+                            <canvas class="pcf-chart-canvas" id="fpsCanvas"></canvas>
+                        </div>
+                        <div class="pcf-chart-card" id="chartTemp">
+                            <div class="pcf-chart-head"><div class="pcf-chart-title">CPU TEMPERATURE</div><div class="pcf-chart-value mint"><span id="tempValue">0</span><small>°C</small></div></div>
+                            <canvas class="pcf-chart-canvas" id="tempCanvas"></canvas>
+                        </div>
+                        <div class="pcf-chart-card" id="chartPower">
+                            <div class="pcf-chart-head"><div class="pcf-chart-title">POWER DRAW</div><div class="pcf-chart-value warn"><span id="powerValue">0</span><small>W</small></div></div>
+                            <canvas class="pcf-chart-canvas" id="powerCanvas"></canvas>
+                        </div>
+                        <div class="pcf-chart-card" id="chartFrame">
+                            <div class="pcf-chart-head"><div class="pcf-chart-title">FRAME TIME</div><div class="pcf-chart-value mint"><span id="frameValue">0</span><small>ms</small></div></div>
+                            <canvas class="pcf-chart-canvas" id="frameCanvas"></canvas>
+                        </div>
+
+                        <div class="pcf-bench-results" id="benchResults">
+                            <div class="pcf-bench-result"><span class="pcf-bench-result-value" id="resultScore">0</span><span class="pcf-bench-result-label">Score</span></div>
+                            <div class="pcf-bench-result"><span class="pcf-bench-result-value" id="resultAvgFps">0</span><span class="pcf-bench-result-label">Avg FPS</span></div>
+                            <div class="pcf-bench-result"><span class="pcf-bench-result-value" id="resultPeakTemp">0<small>°C</small></span><span class="pcf-bench-result-label">Peak Temp</span></div>
+                            <div class="pcf-bench-result"><span class="pcf-bench-result-value" id="resultRating">—</span><span class="pcf-bench-result-label">Rating</span></div>
+                        </div>
+
+                        <div class="pcf-bench-score" id="benchScore">BENCHMARK COMPLETE</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         6. NEWSLETTER (What Will You Build)
+         ============================================================ -->
+    <section class="pcf-cta" id="pcfCta">
+        <div class="pcf-circuit">
+            <svg viewBox="0 0 1200 800" preserveAspectRatio="none">
+                <path d="M 0,400 L 200,400 L 250,350 L 400,350"/>
+                <path d="M 1200,400 L 1000,400 L 950,450 L 800,450"/>
+                <path d="M 400,200 L 600,200 L 650,250 L 800,250"/>
+                <path d="M 800,600 L 600,600 L 550,550 L 400,550"/>
+            </svg>
+        </div>
+        <canvas class="pcf-cta-particles" id="pcfCtaParticles"></canvas>
+
+        <div class="pcf-cta-inner">
+            <div class="pcf-cta-eyebrow pcf-cta-reveal" id="pcfEyebrow">Join the Forge</div>
+            <h2 class="pcf-cta-title pcf-cta-reveal" id="pcfTitle">
+                WHAT WILL<br><span class="mint" id="pcfTitleMint">YOU BUILD?</span>
+            </h2>
+            <p class="pcf-cta-sub pcf-cta-reveal" id="pcfSub">
+                Join thousands of builders. Get build guides, exclusive deals, and component price alerts — straight to your inbox.
+            </p>
+
+            <div class="pcf-stage-wrap">
+                <div class="pcf-stage" id="stage1">
+                    <div class="pcf-field-wrap pcf-cta-reveal" id="emailFormWrap">
+                        <div class="pcf-field-head">
+                            <span class="pcf-field-head-left">SUBSCRIBE.SYS</span>
+                            <span class="status" id="pcfStatus">AWAITING INPUT</span>
+                        </div>
+                        <form class="pcf-field" id="pcfForm" novalidate>
+                            <span class="pcf-prompt">$</span>
+                            <input type="email" class="pcf-input" id="pcfEmail" placeholder="Enter your email address" autocomplete="email" spellcheck="false">
+                            <div class="pcf-validate" id="pcfValidate">
+                                <svg viewBox="0 0 24 24" class="icon-empty"><circle cx="12" cy="12" r="8"/></svg>
+                                <svg viewBox="0 0 24 24" class="icon-check"><polyline points="5 12 10 17 19 8"/></svg>
+                                <svg viewBox="0 0 24 24" class="icon-error"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+                            </div>
+                            <button type="submit" class="pcf-submit" id="pcfSubmit">
+                                <span class="btn-text">Subscribe</span>
+                                <span class="arrow">→</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="pcf-stage hidden" id="stage2">
+                    <div class="pcf-otp-wrap">
+                        <div class="pcf-sent-banner">
+                            <div class="check-icon"><svg viewBox="0 0 24 24"><polyline points="5 12 10 17 19 8"/></svg></div>
+                            <span>Code sent to <span class="email-highlight" id="sentEmail">user@example.com</span></span>
+                        </div>
+                        <div class="pcf-otp-instruction">Enter the 6-digit verification code</div>
+                        <div class="pcf-otp-row" id="otpRow">
+                            <input type="text" class="pcf-otp-box" maxlength="1" inputmode="numeric" data-index="0">
+                            <input type="text" class="pcf-otp-box" maxlength="1" inputmode="numeric" data-index="1">
+                            <input type="text" class="pcf-otp-box" maxlength="1" inputmode="numeric" data-index="2">
+                            <input type="text" class="pcf-otp-box" maxlength="1" inputmode="numeric" data-index="3">
+                            <input type="text" class="pcf-otp-box" maxlength="1" inputmode="numeric" data-index="4">
+                            <input type="text" class="pcf-otp-box" maxlength="1" inputmode="numeric" data-index="5">
+                        </div>
+                        <div class="pcf-otp-actions">
+                            <button type="button" class="pcf-otp-back" id="otpBack">← Back</button>
+                            <button type="button" class="pcf-otp-submit" id="otpSubmit" disabled>Verify & Subscribe</button>
+                        </div>
+                        <div class="pcf-resend">Didn't receive code? <button type="button" id="resendBtn">Resend in <span id="resendTimer">30</span>s</button></div>
+                    </div>
+                </div>
+
+                <div class="pcf-stage hidden" id="stage3">
+                    <div class="pcf-final-success">
+                        <div class="pcf-final-icon"><svg viewBox="0 0 24 24"><polyline points="5 12 10 17 19 8"/></svg></div>
+                        <h3 class="pcf-final-title">You're <span class="mint">Inside the Forge.</span></h3>
+                        <p class="pcf-final-msg">Welcome transmission confirmed.<br>Your build guides will arrive at <strong id="finalEmail">your email</strong></p>
+                        <button type="button" class="pcf-success-reset" id="pcfSuccessReset">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7M21 3v6h-6"/></svg>
+                            Change Email
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pcf-cta-info pcf-cta-reveal" id="ctaInfo">
+                <div class="pcf-cta-info-item"><span class="dot"></span>15,000+ SUBSCRIBERS</div>
+                <div class="pcf-cta-info-item"><span class="dot"></span>WEEKLY BUILDS</div>
+                <div class="pcf-cta-info-item"><span class="dot"></span>NO SPAM</div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+(function() {
+    'use strict';
+
+    /* ============================================================
+       HERO — PARTICLES + CURSOR + PARALLAX
+       ============================================================ */
+    var canvas = document.getElementById('pcfParticles');
+    if (canvas) {
+        var ctx = canvas.getContext('2d');
+        var hero = canvas.parentElement;
+        var particles = [], w, h, frameCount = 0;
+        function resize() { w = canvas.width = hero.offsetWidth; h = canvas.height = hero.offsetHeight; }
+        resize();
+        var resizeTimer;
+        window.addEventListener('resize', function () { clearTimeout(resizeTimer); resizeTimer = setTimeout(resize, 200); });
+        function P() {
+            this.x = Math.random() * w; this.y = Math.random() * h;
+            this.size = Math.random() * 1.5 + 0.4;
+            this.vx = (Math.random() - 0.5) * 0.3; this.vy = (Math.random() - 0.5) * 0.3;
+            this.alpha = Math.random() * 0.4 + 0.1;
+            this.pulse = Math.random() * Math.PI * 2;
+            this.isCursor = false; this.age = 0;
+        }
+        P.prototype.update = function () {
+            this.x += this.vx; this.y += this.vy; this.pulse += 0.02;
+            if (!this.isCursor) { if (this.x < 0 || this.x > w) this.vx *= -1; if (this.y < 0 || this.y > h) this.vy *= -1; }
+        };
+        P.prototype.draw = function () {
+            var a = this.isCursor ? this.alpha * Math.max(0, 1 - this.age / 1500) : this.alpha * (0.5 + 0.5 * Math.sin(this.pulse));
+            ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(85,230,181,' + a + ')'; ctx.fill();
+        };
+        var count = Math.min(40, Math.floor((w * h) / 25000));
+        for (var i = 0; i < count; i++) particles.push(new P());
+        function animate() {
+            frameCount++;
+            ctx.clearRect(0, 0, w, h);
+            if (frameCount % 3 === 0) {
+                for (var i = 0; i < particles.length; i++) {
+                    if (particles[i].isCursor) continue;
+                    for (var j = i + 1; j < particles.length; j++) {
+                        if (particles[j].isCursor) continue;
+                        var dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y, d = dx*dx + dy*dy;
+                        if (d < 15000) {
+                            ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.strokeStyle = 'rgba(85,230,181,' + (0.1 * (1 - d/15000)) + ')'; ctx.lineWidth = 0.5; ctx.stroke();
+                        }
+                    }
+                }
+            }
+            for (var i = 0; i < particles.length; i++) {
+                particles[i].update(); particles[i].draw();
+                if (particles[i].isCursor) particles[i].age += 16;
+            }
+            particles = particles.filter(function (p) { return !p.isCursor || p.age < 1500; });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        var cursorGlow = document.getElementById('pcfCursorGlow');
+        var cursorRing = document.getElementById('pcfCursorRing');
+        var mx = 0, my = 0, gx = 0, gy = 0, rx = 0, ry = 0, mouseActive = false, lastSpawn = 0;
+        document.addEventListener('mousemove', function (e) {
+            mx = e.clientX; my = e.clientY;
+            if (!mouseActive) {
+                mouseActive = true; gx = mx; gy = my; rx = mx; ry = my;
+                if (cursorGlow) cursorGlow.style.opacity = '1';
+                if (cursorRing) cursorRing.style.opacity = '1';
+            }
+        }, { passive: true });
+        document.addEventListener('mouseleave', function () {
+            mouseActive = false;
+            if (cursorGlow) cursorGlow.style.opacity = '0';
+            if (cursorRing) cursorRing.style.opacity = '0';
+        });
+        function animateCursor() {
+            if (mouseActive) {
+                gx += (mx - gx) * 0.08; gy += (my - gy) * 0.08;
+                rx += (mx - rx) * 0.2; ry += (my - ry) * 0.2;
+                if (cursorGlow) cursorGlow.style.transform = 'translate3d(' + gx + 'px,' + gy + 'px,0)';
+                if (cursorRing) cursorRing.style.transform = 'translate3d(' + rx + 'px,' + ry + 'px,0)';
+            }
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        if (window.matchMedia('(min-width: 900px)').matches) {
+            document.addEventListener('mousemove', function (e) {
+                var now = Date.now();
+                if (now - lastSpawn < 200) return;
+                if (particles.length > 60) return;
+                lastSpawn = now;
+                var rect = hero.getBoundingClientRect();
+                var x = e.clientX - rect.left, y = e.clientY - rect.top;
+                if (x < 0 || x > w || y < 0 || y > h) return;
+                var p = new P(); p.x = x; p.y = y;
+                p.size = Math.random() * 1.5 + 1; p.alpha = 0.9;
+                p.vx = (Math.random() - 0.5) * 1; p.vy = (Math.random() - 0.5) * 1 - 0.3;
+                p.isCursor = true; p.age = 0; particles.push(p);
+            }, { passive: true });
+        }
+
+        var pcfCase = document.getElementById('pcfCase');
+        var visual = document.getElementById('pcfVisual');
+        var parallaxRAF = null;
+        if (pcfCase && visual && window.matchMedia('(min-width: 900px)').matches) {
+            visual.addEventListener('mousemove', function (e) {
+                if (parallaxRAF) return;
+                parallaxRAF = requestAnimationFrame(function () {
+                    var rect = visual.getBoundingClientRect();
+                    var x = (e.clientX - rect.left) / rect.width - 0.5;
+                    var y = (e.clientY - rect.top) / rect.height - 0.5;
+                    pcfCase.style.transform = 'perspective(1200px) rotateY(' + (x * 18) + 'deg) rotateX(' + (-y * 18) + 'deg) translateZ(20px)';
+                    parallaxRAF = null;
+                });
+            }, { passive: true });
+            visual.addEventListener('mouseleave', function () { pcfCase.style.transform = ''; });
+        }
+
+        var labels = document.querySelectorAll('.pcf-label');
+        var labelRAF = null;
+        if (labels.length > 0 && window.matchMedia('(min-width: 900px)').matches) {
+            hero.addEventListener('mousemove', function (e) {
+                if (labelRAF) return;
+                labelRAF = requestAnimationFrame(function () {
+                    var heroRect = hero.getBoundingClientRect();
+                    var x = e.clientX - heroRect.left, y = e.clientY - heroRect.top;
+                    labels.forEach(function (label) {
+                        var rect = label.getBoundingClientRect();
+                        var labelX = rect.left - heroRect.left + rect.width / 2;
+                        var labelY = rect.top - heroRect.top + rect.height / 2;
+                        var dx = x - labelX, dy = y - labelY;
+                        var dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 200) {
+                            var force = (1 - dist / 200);
+                            label.style.transform = 'translate(' + (dx * force * 0.25) + 'px,' + (dy * force * 0.25) + 'px)';
+                        } else { label.style.transform = ''; }
+                    });
+                    labelRAF = null;
+                });
+            }, { passive: true });
+            hero.addEventListener('mouseleave', function () { labels.forEach(function (l) { l.style.transform = ''; }); });
+        }
+
+        var halo = document.querySelector('.pcf-halo');
+        var ring = document.querySelector('.pcf-ring');
+        var haloRAF = null;
+        if (halo && window.matchMedia('(min-width: 900px)').matches) {
+            hero.addEventListener('mousemove', function (e) {
+                if (haloRAF) return;
+                haloRAF = requestAnimationFrame(function () {
+                    var rect = hero.getBoundingClientRect();
+                    var x = (e.clientX - rect.left) / rect.width - 0.5;
+                    var y = (e.clientY - rect.top) / rect.height - 0.5;
+                    halo.style.transform = 'translate(' + (x * 20) + 'px,' + (y * 20) + 'px)';
+                    if (ring) ring.style.transform = 'translateX(-50%) translate(' + (x * 10) + 'px,' + (y * 10) + 'px)';
+                    haloRAF = null;
+                });
+            }, { passive: true });
+        }
+    }
+
+    /* ============================================================
+       WHY PCFORGE
+       ============================================================ */
+    var whySection = document.getElementById('pcfWhy');
+    if (whySection) {
+        var whyGlow = document.getElementById('pcfWhyGlow');
+        whySection.addEventListener('mousemove', function (e) {
+            var rect = whySection.getBoundingClientRect();
+            if (whyGlow) { whyGlow.style.left = (e.clientX - rect.left) + 'px'; whyGlow.style.top = (e.clientY - rect.top) + 'px'; }
+        });
+        var cards = whySection.querySelectorAll('.pcf-card');
+        cards.forEach(function (card) {
+            card.addEventListener('mousemove', function (e) {
+                var rect = card.getBoundingClientRect();
+                var x = e.clientX - rect.left, y = e.clientY - rect.top;
+                var cx = rect.width / 2, cy = rect.height / 2;
+                var rotX = ((y - cy) / cy) * -8, rotY = ((x - cx) / cx) * 8;
+                card.style.transform = 'perspective(1000px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) translateY(-6px) translateZ(20px)';
+                card.style.setProperty('--mx', x + 'px');
+                card.style.setProperty('--my', y + 'px');
+            });
+            card.addEventListener('mouseleave', function () {
+                card.style.transform = '';
+                card.style.setProperty('--mx', '50%');
+                card.style.setProperty('--my', '50%');
+            });
+        });
+        var anims = whySection.querySelectorAll('.pcf-anim, .pcf-anim-scale');
+        if ('IntersectionObserver' in window) {
+            var obs = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry, i) {
+                    if (entry.isIntersecting) {
+                        setTimeout(function () { entry.target.classList.add('pcf-in'); }, i * 130);
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -80px 0px' });
+            anims.forEach(function (el) { obs.observe(el); });
+            setTimeout(function () {
+                anims.forEach(function (el) {
+                    if (el.getBoundingClientRect().top < window.innerHeight && !el.classList.contains('pcf-in')) el.classList.add('pcf-in');
+                });
+            }, 2500);
+        } else { anims.forEach(function (el) { el.classList.add('pcf-in'); }); }
+    }
+
+    /* ============================================================
+       FORGE CONSOLE
+       ============================================================ */
+    var consoleSection = document.getElementById('pcfConsole');
+    if (consoleSection) {
+        var WOO_IDS = { 'Ryzen 5 7600X':144,'Ryzen 7 7800X3D':145,'RTX 4060':146,'RTX 5090 OC':147,'16GB DDR5 5200':148,'32GB DDR5 6000':149,'MSI B650 Tomahawk WiFi':150,'ASUS ROG Strix X670E':151,'1TB NVMe Gen4':152,'2TB NVMe Gen4':153,'850W Gold Modular':154,'1000W Platinum':155,'Noctua NH-D15':156,'NZXT Kraken 240 AIO':157,'NZXT H7 Flow':158,'Lian Li O11 Dynamic':159 };
+        var CATALOG = {
+            CPU: [{name:'Ryzen 5 7600X',price:45000},{name:'Ryzen 7 7800X3D',price:72000}],
+            GPU: [{name:'RTX 4060',price:85000},{name:'RTX 5090 OC',price:245000}],
+            RAM: [{name:'16GB DDR5 5200',price:12500},{name:'32GB DDR5 6000',price:22500}],
+            SSD: [{name:'1TB NVMe Gen4',price:14500},{name:'2TB NVMe Gen4',price:18900}],
+            PSU: [{name:'850W Gold Modular',price:24000},{name:'1000W Platinum',price:45000}],
+            CASE: [{name:'NZXT H7 Flow',price:15500},{name:'Lian Li O11 Dynamic',price:32000}]
+        };
+        var DEFAULT = { CPU:'Ryzen 7 7800X3D', GPU:'RTX 5090 OC', RAM:'32GB DDR5 6000', SSD:'2TB NVMe Gen4', PSU:'850W Gold Modular', CASE:'NZXT H7 Flow' };
+        var SLOT_ICONS = { CPU:'C', GPU:'G', RAM:'R', SSD:'S', PSU:'P', CASE:'◘' };
+        var state = Object.assign({}, DEFAULT);
+        function getPrice(cat, name) { var items = CATALOG[cat] || []; for (var i=0;i<items.length;i++) if (items[i].name===name) return items[i].price; return 0; }
+        var toast = document.getElementById('pcfToast');
+        var toastLabel = document.getElementById('pcfToastLabel');
+        var toastVal = document.getElementById('pcfToastVal');
+        var toastTimer;
+        function showToast(label, val) {
+            toastLabel.textContent = label; toastVal.textContent = val;
+            toast.classList.add('show'); clearTimeout(toastTimer);
+            toastTimer = setTimeout(function () { toast.classList.remove('show'); }, 2600);
+        }
+        var activeDd = null;
+        function closeDd() { if (activeDd) { activeDd.remove(); activeDd = null; } }
+        function openDd(cat, slotEl) {
+            closeDd();
+            var rect = slotEl.getBoundingClientRect();
+            var items = CATALOG[cat] || [];
+            var cur = state[cat];
+            var dd = document.createElement('div'); dd.className = 'pcf-dd';
+            items.forEach(function (item) {
+                var opt = document.createElement('div');
+                opt.className = 'pcf-dd-opt' + (item.name === cur ? ' selected' : '');
+                opt.innerHTML = '<span class="name">' + item.name + '</span><span class="price">₨ ' + item.price.toLocaleString() + '</span>';
+                opt.addEventListener('click', function (e) { e.stopPropagation(); selectProduct(cat, item.name); closeDd(); });
+                dd.appendChild(opt);
+            });
+            document.body.appendChild(dd);
+            var ddH = dd.offsetHeight;
+            var spaceBelow = window.innerHeight - rect.bottom;
+            var spaceAbove = rect.top;
+            var width = Math.max(rect.width, 260);
+            dd.style.width = width + 'px';
+            dd.style.left = Math.max(10, Math.min(rect.left, window.innerWidth - width - 10)) + 'px';
+            if (spaceBelow >= ddH + 20 || spaceBelow > spaceAbove) { dd.style.top = (rect.bottom + 6) + 'px'; }
+            else { dd.classList.add('up'); dd.style.bottom = (window.innerHeight - rect.top + 6) + 'px'; }
+            activeDd = dd;
+            setTimeout(function () { document.addEventListener('click', closeDd, { once: true }); }, 10);
+        }
+        var slotsEl = document.getElementById('pcfSlots');
+        function renderSlots(changedCat) {
+            slotsEl.innerHTML = '';
+            Object.keys(DEFAULT).forEach(function (cat) {
+                var name = state[cat];
+                var price = getPrice(cat, name);
+                var slot = document.createElement('div');
+                slot.className = 'pcf-slot' + (changedCat === cat ? ' changed' : '');
+                slot.innerHTML = '<div class="pcf-slot-icon">' + SLOT_ICONS[cat] + '</div><div class="pcf-slot-info"><span class="pcf-slot-label">' + cat + '</span><span class="pcf-slot-value">' + name + '</span></div><div class="pcf-slot-price">₨ ' + price.toLocaleString() + '</div><div class="pcf-slot-arrow">▸</div>';
+                slot.addEventListener('click', function (e) { e.stopPropagation(); openDd(cat, slot); });
+                slotsEl.appendChild(slot);
+            });
+        }
+        function selectProduct(cat, name) {
+            if (state[cat] === name) return;
+            state[cat] = name; renderSlots(cat);
+            var sec = document.querySelector('.pcf-bp-sec[data-sec="' + cat + '"]');
+            if (sec) { sec.classList.add('active'); sec.classList.remove('pulse'); void sec.offsetWidth; sec.classList.add('pulse'); }
+            recalculate();
+            showToast(cat + ' UPDATED', name);
+            logTerminal('> swap ' + cat.toLowerCase() + ' -> "' + name + '"');
+        }
+        function updateDiag(key, val, cls, width) {
+            var vEl = document.getElementById('pcfVal' + key);
+            var fEl = document.getElementById('pcfFill' + key);
+            var iEl = document.getElementById('pcfDiag' + key);
+            if (vEl) { vEl.textContent = val; vEl.className = 'pcf-diag-val ' + cls; }
+            if (fEl) { fEl.className = 'pcf-diag-fill ' + cls; fEl.style.width = Math.min(width, 100) + '%'; }
+            if (iEl) { iEl.classList.remove('pulse'); void iEl.offsetWidth; iEl.classList.add('pulse'); }
+        }
+        function animateNum(el, target, duration) {
+            if (!el) return;
+            var start = parseInt(el.textContent.replace(/,/g, '')) || 0;
+            var st = performance.now();
+            function tick(now) {
+                var p = Math.min((now - st) / duration, 1);
+                var e = 1 - Math.pow(1 - p, 3);
+                el.textContent = Math.floor(start + (target - start) * e).toLocaleString();
+                if (p < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+        }
+        function recalculate() {
+            var total = 0;
+            Object.keys(state).forEach(function (cat) { total += getPrice(cat, state[cat]); });
+            animateNum(document.getElementById('pcfTotalPrice'), total, 600);
+            var tv = document.getElementById('pcfTotalValue');
+            tv.classList.remove('pulse'); void tv.offsetWidth; tv.classList.add('pulse');
+
+            var compat = 70;
+            if (state.CPU.indexOf('Ryzen 7') !== -1 || state.CPU.indexOf('Ryzen 9') !== -1) compat += 10;
+            if (state.GPU.indexOf('5090') !== -1) compat += 10;
+            if (state.RAM.indexOf('32GB') !== -1) compat += 5;
+            if (state.PSU.indexOf('850') !== -1 || state.PSU.indexOf('1000') !== -1) compat += 5;
+            compat = Math.min(compat, 100);
+            updateDiag('Compat', compat + '%', compat >= 85 ? 'good' : (compat >= 70 ? 'warn' : 'bad'), compat);
+
+            var perf = 50;
+            if (state.GPU.indexOf('5090') !== -1) perf += 35; else if (state.GPU.indexOf('4060') !== -1) perf += 10;
+            if (state.CPU.indexOf('Ryzen 7') !== -1) perf += 8;
+            perf = Math.min(perf, 100);
+            updateDiag('Perf', perf + '/100', perf >= 80 ? 'good' : (perf >= 60 ? 'warn' : 'bad'), perf);
+
+            var power = 200;
+            if (state.GPU.indexOf('5090') !== -1) power += 450; else if (state.GPU.indexOf('4060') !== -1) power += 130;
+            if (state.CPU.indexOf('Ryzen 7') !== -1) power += 95; else if (state.CPU.indexOf('Ryzen 5') !== -1) power += 85;
+            var psuW = parseInt((state.PSU.match(/(\d+)W/) || [0,0])[1]);
+            var headroom = psuW - power;
+            var pClass = headroom < 0 ? 'bad' : (headroom < 100 ? 'warn' : 'good');
+            updateDiag('Power', power + 'W', pClass, Math.min((power / psuW) * 100, 100));
+
+            var therm = 42; if (state.GPU.indexOf('5090') !== -1) therm += 8;
+            updateDiag('Therm', therm + '°C', therm < 55 ? 'good' : 'warn', Math.min(therm * 1.5, 100));
+
+            var stream = document.getElementById('pcfStream');
+            var socket = state.CPU.indexOf('Ryzen') !== -1 ? 'AM5' : 'LGA1700';
+            stream.innerHTML = '<div class="pcf-stream-line">[OK] socket.match <strong>' + socket + '</strong></div><div class="pcf-stream-line">[OK] ram.ddr5 <strong>compatible</strong></div><div class="pcf-stream-line ' + (headroom < 0 ? 'bad' : '') + '">[' + (headroom < 0 ? 'ERR' : 'OK') + '] psu.headroom <strong>' + (headroom > 0 ? '+' : '') + headroom + 'W</strong></div>';
+
+            var fps = 60;
+            if (state.GPU.indexOf('5090') !== -1) fps = 240; else if (state.GPU.indexOf('4060') !== -1) fps = 95;
+            animateNum(document.getElementById('pcfFps'), fps, 600);
+            document.querySelectorAll('.pcf-bp-sec').forEach(function (s) { s.classList.add('active'); });
+        }
+        var termInput = document.getElementById('pcfTermInput');
+        var commands = ['forge build --budget=250000 --use=gaming','forge scan --compatibility','forge optimize --target=fps','forge export --format=cart'];
+        var cmdIdx = 0, charIdx = 0, typing = true, typingTimer;
+        function typeCmd() {
+            if (!termInput) return;
+            var cmd = commands[cmdIdx];
+            if (typing) {
+                if (charIdx < cmd.length) { termInput.textContent += cmd[charIdx++]; typingTimer = setTimeout(typeCmd, 60 + Math.random() * 40); }
+                else { typing = false; typingTimer = setTimeout(typeCmd, 1800); }
+            } else {
+                if (charIdx > 0) { termInput.textContent = cmd.substring(0, --charIdx); typingTimer = setTimeout(typeCmd, 25); }
+                else { typing = true; cmdIdx = (cmdIdx + 1) % commands.length; typingTimer = setTimeout(typeCmd, 400); }
+            }
+        }
+        function logTerminal(msg) {
+            if (!termInput) return;
+            clearTimeout(typingTimer); termInput.textContent = msg; charIdx = msg.length; typing = false;
+            typingTimer = setTimeout(function () { charIdx = 0; typing = true; typeCmd(); }, 2200);
+        }
+        document.getElementById('pcfSaveBtn').addEventListener('click', function () {
+            localStorage.setItem('pcf_saved_build', JSON.stringify(state));
+            var orig = this.textContent; this.textContent = '✓ SAVED';
+            showToast('BUILD SAVED', 'Stored locally');
+            setTimeout(function () { this.textContent = orig; }.bind(this), 1800);
+        });
+        var cartBtn = document.getElementById('pcfCartBtn');
+        cartBtn.addEventListener('click', async function () {
+            var ids = [];
+            Object.keys(state).forEach(function (cat) { var id = WOO_IDS[state[cat]]; if (id) ids.push(id); });
+            if (ids.length === 0) { showToast('NO PRODUCTS', 'Cart mapping missing'); return; }
+            var orig = cartBtn.textContent;
+            cartBtn.textContent = 'Adding ' + ids.length + '...'; cartBtn.disabled = true;
+            var added = 0;
+            for (var i = 0; i < ids.length; i++) {
+                try {
+                    var res = await fetch('/?wc-ajax=add_to_cart&product_id=' + ids[i] + '&quantity=1', { credentials: 'same-origin' });
+                    var data = await res.json();
+                    if (data && data.fragments) added++;
+                } catch (err) {}
+                await new Promise(function (r) { setTimeout(r, 150); });
+            }
+            cartBtn.textContent = orig; cartBtn.disabled = false;
+            showToast('BUILD ADDED', added + '/' + ids.length + ' components');
+            setTimeout(function () { window.location.href = '/cart/'; }, 800);
+        });
+        renderSlots(); recalculate(); setTimeout(typeCmd, 1500);
+        window.addEventListener('resize', closeDd);
+        window.addEventListener('scroll', closeDd, true);
+    }
+
+    /* ============================================================
+       CATEGORIES
+       ============================================================ */
+    var catsSection = document.getElementById('pcfCats');
+    if (catsSection) {
+        var catAnims = catsSection.querySelectorAll('.pcf-anim');
+        if ('IntersectionObserver' in window) {
+            var catObs = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry, i) {
+                    if (entry.isIntersecting) {
+                        setTimeout(function () { entry.target.classList.add('pcf-in'); }, i * 80);
+                        catObs.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+            catAnims.forEach(function (el) { catObs.observe(el); });
+            setTimeout(function () {
+                catAnims.forEach(function (el) {
+                    if (el.getBoundingClientRect().top < window.innerHeight && !el.classList.contains('pcf-in')) el.classList.add('pcf-in');
+                });
+            }, 2500);
+        } else { catAnims.forEach(function (el) { el.classList.add('pcf-in'); }); }
+    }
+
+    /* ============================================================
+       BENCHMARK
+       ============================================================ */
+    var benchSection = document.getElementById('pcfBench');
+    if (benchSection) {
+        var startBtn = document.getElementById('benchStartBtn');
+        var progressBar = document.getElementById('benchProgress');
+        var progressFill = document.getElementById('benchProgressFill');
+        var progressText = document.getElementById('benchProgressText');
+        var statusEl = document.getElementById('benchStatus');
+        var resultsEl = document.getElementById('benchResults');
+        var scoreEl = document.getElementById('benchScore');
+        var fpsValue = document.getElementById('fpsValue');
+        var tempValue = document.getElementById('tempValue');
+        var powerValue = document.getElementById('powerValue');
+        var frameValue = document.getElementById('frameValue');
+        var fpsCanvas = document.getElementById('fpsCanvas');
+        var tempCanvas = document.getElementById('tempCanvas');
+        var powerCanvas = document.getElementById('powerCanvas');
+        var frameCanvas = document.getElementById('frameCanvas');
+        var chartFps = document.getElementById('chartFps');
+        var chartTemp = document.getElementById('chartTemp');
+        var chartPower = document.getElementById('chartPower');
+        var chartFrame = document.getElementById('chartFrame');
+        function createChart(canvas, options) {
+            var ctx = canvas.getContext('2d');
+            var data = [], targetData = [], maxPoints = 60;
+            function resize() {
+                var rect = canvas.getBoundingClientRect();
+                var dpr = window.devicePixelRatio || 1;
+                canvas.width = rect.width * dpr; canvas.height = rect.height * dpr;
+                ctx.scale(dpr, dpr);
+                canvas.style.width = rect.width + 'px'; canvas.style.height = rect.height + 'px';
+            }
+            resize();
+            window.addEventListener('resize', resize);
+            function setTarget(t) { targetData = t; }
+            function tick() {
+                if (data.length < targetData.length) { while (data.length < targetData.length) data.push(targetData[data.length]); }
+                if (data.length > maxPoints) data = data.slice(data.length - maxPoints);
+                draw();
+            }
+            function draw() {
+                var rect = canvas.getBoundingClientRect(); var w = rect.width, h = rect.height;
+                ctx.clearRect(0, 0, w, h);
+                ctx.strokeStyle = 'rgba(85,230,181,0.08)'; ctx.lineWidth = 1;
+                for (var i = 1; i < 4; i++) { ctx.beginPath(); ctx.moveTo(0, (h/4)*i); ctx.lineTo(w, (h/4)*i); ctx.stroke(); }
+                if (data.length < 2) return;
+                ctx.beginPath(); ctx.strokeStyle = options.color; ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+                ctx.shadowColor = options.color; ctx.shadowBlur = 8;
+                var step = w / (maxPoints - 1); var range = options.max - options.min;
+                data.forEach(function (v, i) { var x = i * step; var y = h - ((v - options.min) / range) * h; if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); });
+                ctx.stroke(); ctx.shadowBlur = 0;
+                ctx.lineTo((data.length - 1) * step, h); ctx.lineTo(0, h); ctx.closePath();
+                var grad = ctx.createLinearGradient(0, 0, 0, h);
+                grad.addColorStop(0, options.fillTop); grad.addColorStop(1, 'rgba(85,230,181,0)');
+                ctx.fillStyle = grad; ctx.fill();
+                if (data.length > 0) {
+                    var lastX = (data.length - 1) * step; var lastY = h - ((data[data.length-1] - options.min) / range) * h;
+                    ctx.beginPath(); ctx.arc(lastX, lastY, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = options.color; ctx.shadowColor = options.color; ctx.shadowBlur = 15; ctx.fill(); ctx.shadowBlur = 0;
+                }
+            }
+            return { setTarget: setTarget, tick: tick, draw: draw };
+        }
+        var fpsChart = createChart(fpsCanvas, { color: '#55E6B5', fillTop: 'rgba(85,230,181,0.2)', min: 0, max: 300 });
+        var tempChart = createChart(tempCanvas, { color: '#E5C76B', fillTop: 'rgba(229,199,107,0.2)', min: 30, max: 90 });
+        var powerChart = createChart(powerCanvas, { color: '#EF6B6B', fillTop: 'rgba(239,107,107,0.2)', min: 300, max: 800 });
+        var frameChart = createChart(frameCanvas, { color: '#A8FFE3', fillTop: 'rgba(168,255,227,0.2)', min: 0, max: 20 });
+        var running = false;
+        var dataBuffer = { fps: [], temp: [], power: [], frame: [] };
+        function resetCharts() {
+            dataBuffer = { fps: [], temp: [], power: [], frame: [] };
+            fpsValue.textContent = '0'; tempValue.textContent = '0'; powerValue.textContent = '0'; frameValue.textContent = '0';
+            [chartFps, chartTemp, chartPower, chartFrame].forEach(function (c) { c.classList.remove('active', 'done'); });
+            resultsEl.classList.remove('done');
+            resultsEl.querySelectorAll('.pcf-bench-result').forEach(function (r) { r.classList.remove('done'); });
+            scoreEl.classList.remove('show');
+            document.getElementById('resultScore').textContent = '0';
+            document.getElementById('resultAvgFps').textContent = '0';
+            document.getElementById('resultPeakTemp').innerHTML = '0<small>°C</small>';
+            document.getElementById('resultRating').textContent = '—';
+        }
+        function runBenchmark() {
+            if (running) return;
+            running = true;
+            startBtn.disabled = true; startBtn.textContent = '● Running...';
+            statusEl.textContent = 'BENCHMARKING'; statusEl.style.color = '#E5C76B';
+            resetCharts();
+            progressBar.classList.add('active'); progressText.classList.add('active');
+            var duration = 8000, startTime = Date.now();
+            var targetFps = 220 + Math.random() * 40;
+            var targetTemp = 68 + Math.random() * 8;
+            var targetPower = 620 + Math.random() * 60;
+            var targetFrame = 5.5 + Math.random() * 2;
+            setTimeout(function () { chartFps.classList.add('active'); }, 200);
+            setTimeout(function () { chartTemp.classList.add('active'); }, 2000);
+            setTimeout(function () { chartPower.classList.add('active'); }, 4000);
+            setTimeout(function () { chartFrame.classList.add('active'); }, 6000);
+            function updateProgress() {
+                var elapsed = Date.now() - startTime;
+                var progress = Math.min(elapsed / duration, 1);
+                var pct = Math.floor(progress * 100);
+                progressFill.style.width = pct + '%';
+                progressText.textContent = pct + '% — ' + getStageText(pct);
+                var t = progress;
+                var fpsBase = targetFps * Math.min(t * 2, 1);
+                var fpsNoise = (Math.random() - 0.5) * 30 * Math.min(t * 2, 1);
+                var fps = Math.max(0, fpsBase + fpsNoise);
+                dataBuffer.fps.push(fps); fpsChart.setTarget(dataBuffer.fps.slice()); fpsValue.textContent = Math.floor(fps);
+                if (t > 0.2) {
+                    var tempBase = 42 + (targetTemp - 42) * ((t - 0.2) / 0.8);
+                    var temp = tempBase + (Math.random() - 0.5) * 3;
+                    dataBuffer.temp.push(temp); tempChart.setTarget(dataBuffer.temp.slice()); tempValue.textContent = Math.floor(temp);
+                }
+                if (t > 0.4) {
+                    var pBase = 350 + (targetPower - 350) * ((t - 0.4) / 0.6);
+                    var p = pBase + (Math.random() - 0.5) * 30;
+                    dataBuffer.power.push(p); powerChart.setTarget(dataBuffer.power.slice()); powerValue.textContent = Math.floor(p);
+                }
+                if (t > 0.6) {
+                    var fBase = targetFrame + (Math.random() - 0.5) * 1.5;
+                    dataBuffer.frame.push(fBase); frameChart.setTarget(dataBuffer.frame.slice()); frameValue.textContent = fBase.toFixed(1);
+                }
+                fpsChart.tick();
+                if (t > 0.2) tempChart.tick();
+                if (t > 0.4) powerChart.tick();
+                if (t > 0.6) frameChart.tick();
+                if (progress < 1) requestAnimationFrame(updateProgress);
+                else finishBenchmark(targetFps, targetTemp, targetPower, targetFrame);
+            }
+            requestAnimationFrame(updateProgress);
+        }
+        function getStageText(pct) {
+            if (pct < 25) return 'Analyzing CPU...';
+            if (pct < 50) return 'Testing GPU load...';
+            if (pct < 75) return 'Measuring thermals...';
+            if (pct < 95) return 'Finalizing results...';
+            return 'Complete';
+        }
+        function finishBenchmark(fps, temp, power, frame) {
+            running = false;
+            startBtn.disabled = false; startBtn.textContent = '↻ Run Again';
+            statusEl.textContent = 'COMPLETE'; statusEl.style.color = '#55E6B5';
+            [chartFps, chartTemp, chartPower, chartFrame].forEach(function (c) { c.classList.remove('active'); c.classList.add('done'); });
+            resultsEl.classList.add('done');
+            resultsEl.querySelectorAll('.pcf-bench-result').forEach(function (r) { r.classList.add('done'); });
+            var score = Math.min(100, Math.floor((fps / 300) * 100 * 0.7 + (100 - (temp - 40)) * 0.3));
+            var rating = score >= 90 ? 'S' : score >= 80 ? 'A' : score >= 70 ? 'B' : 'C';
+            animateNumber('resultScore', score, 800);
+            animateNumber('resultAvgFps', Math.floor(fps), 800);
+            setTimeout(function () { document.getElementById('resultPeakTemp').innerHTML = Math.floor(temp) + '<small>°C</small>'; }, 200);
+            setTimeout(function () { var ratingEl = document.getElementById('resultRating'); ratingEl.textContent = rating; ratingEl.className = 'pcf-bench-result-value mint'; }, 400);
+            scoreEl.classList.add('show');
+            scoreEl.textContent = '◆ BENCHMARK COMPLETE — ' + rating + '-TIER';
+        }
+        function animateNumber(id, target, duration) {
+            var el = document.getElementById(id);
+            if (!el) return;
+            var startTime = performance.now();
+            function tick(now) {
+                var p = Math.min((now - startTime) / duration, 1);
+                var e = 1 - Math.pow(1 - p, 3);
+                el.textContent = Math.floor(0 + (target - 0) * e);
+                if (p < 1) requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+        }
+        startBtn.addEventListener('click', runBenchmark);
+        var resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function () { fpsChart.draw(); tempChart.draw(); powerChart.draw(); frameChart.draw(); }, 200);
+        });
+    }
+
+    /* ============================================================
+       NEWSLETTER — REAL AJAX (SMTP)
+       ============================================================ */
+    var ctaSection = document.getElementById('pcfCta');
+    if (ctaSection) {
+        var PF_SUB_KEY = 'pcf_subscribed_email';
+        function getSubscribedEmail() { try { return localStorage.getItem(PF_SUB_KEY) || null; } catch (e) { return null; } }
+        function setSubscribedEmail(email) { try { localStorage.setItem(PF_SUB_KEY, email); } catch (e) {} }
+        function clearSubscribedEmail() { try { localStorage.removeItem(PF_SUB_KEY); } catch (e) {} }
+
+        var reveals = ctaSection.querySelectorAll('.pcf-cta-reveal');
+        function revealAll() { reveals.forEach(function (el, i) { setTimeout(function () { el.classList.add('show'); }, i * 150); }); }
+        if ('IntersectionObserver' in window) {
+            var ctaObs = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) { if (entry.isIntersecting) { revealAll(); ctaObs.disconnect(); } });
+            }, { threshold: 0.15 });
+            ctaObs.observe(ctaSection);
+            setTimeout(function () { if (ctaSection.getBoundingClientRect().top < window.innerHeight) revealAll(); }, 2500);
+        } else { revealAll(); }
+
+        var ctaCanvas = document.getElementById('pcfCtaParticles');
+        if (ctaCanvas) {
+            var cctx = ctaCanvas.getContext('2d');
+            var cw, ch, cparticles = [];
+            function cResize() { cw = ctaCanvas.width = ctaSection.offsetWidth; ch = ctaCanvas.height = ctaSection.offsetHeight; }
+            cResize();
+            window.addEventListener('resize', cResize);
+            function CP() { this.reset(); this.y = Math.random() * ch; }
+            CP.prototype.reset = function () {
+                this.x = Math.random() * cw; this.y = ch + 10;
+                this.size = Math.random() * 1.8 + 0.4;
+                this.vy = -(Math.random() * 0.5 + 0.2); this.vx = (Math.random() - 0.5) * 0.3;
+                this.alpha = Math.random() * 0.5 + 0.1; this.pulse = Math.random() * Math.PI * 2;
+            };
+            CP.prototype.update = function () {
+                this.x += this.vx; this.y += this.vy; this.pulse += 0.02;
+                if (this.y < -10) this.reset();
+            };
+            CP.prototype.draw = function () {
+                var a = this.alpha * (0.5 + 0.5 * Math.sin(this.pulse));
+                cctx.beginPath(); cctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                cctx.fillStyle = 'rgba(85,230,181,' + a + ')'; cctx.shadowColor = 'rgba(85,230,181,' + a + ')';
+                cctx.shadowBlur = 10; cctx.fill(); cctx.shadowBlur = 0;
+            };
+            var cCount = Math.min(40, Math.floor((cw * ch) / 25000));
+            for (var ci = 0; ci < cCount; ci++) cparticles.push(new CP());
+            function cAnimate() {
+                cctx.clearRect(0, 0, cw, ch);
+                cparticles.forEach(function (p) { p.update(); p.draw(); });
+                requestAnimationFrame(cAnimate);
+            }
+            cAnimate();
+        }
+
+        var stage1 = document.getElementById('stage1');
+        var stage2 = document.getElementById('stage2');
+        var stage3 = document.getElementById('stage3');
+        var form = document.getElementById('pcfForm');
+        var emailInput = document.getElementById('pcfEmail');
+        var validate = document.getElementById('pcfValidate');
+        var status = document.getElementById('pcfStatus');
+        var submitBtn = document.getElementById('pcfSubmit');
+        var title = document.getElementById('pcfTitle');
+        var titleMint = document.getElementById('pcfTitleMint');
+        var subtitle = document.getElementById('pcfSub');
+        var ctaInfo = document.getElementById('ctaInfo');
+        var sentEmail = document.getElementById('sentEmail');
+        var finalEmail = document.getElementById('finalEmail');
+        var otpRow = document.getElementById('otpRow');
+        var otpSubmit = document.getElementById('otpSubmit');
+        var otpBack = document.getElementById('otpBack');
+        var resendBtn = document.getElementById('resendBtn');
+        var successReset = document.getElementById('pcfSuccessReset');
+        var currentEmail = '';
+        var resendInterval = null;
+        var attemptsLeft = 3;
+        function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
+
+        var existing = getSubscribedEmail();
+        if (existing) {
+            finalEmail.textContent = existing; sentEmail.textContent = existing;
+            title.classList.add('shrink'); titleMint.textContent = 'SUBSCRIBED.';
+            subtitle.classList.add('shrink'); ctaInfo.classList.add('hide');
+            stage1.classList.add('hidden'); stage2.classList.add('hidden');
+            stage3.classList.remove('hidden'); stage3.classList.add('entering');
+        }
+
+        emailInput.addEventListener('input', function () {
+            var v = emailInput.value.trim();
+            validate.classList.remove('valid', 'invalid');
+            if (v.length === 0) { status.textContent = 'AWAITING INPUT'; status.className = 'status'; }
+            else if (isValidEmail(v)) { validate.classList.add('valid'); status.textContent = 'EMAIL VALID'; status.className = 'status'; }
+            else { validate.classList.add('invalid'); status.textContent = 'INVALID FORMAT'; status.className = 'status error'; }
+        });
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+            var v = emailInput.value.trim();
+            if (!isValidEmail(v)) {
+                validate.classList.remove('valid'); validate.classList.add('invalid');
+                status.textContent = 'INVALID EMAIL'; status.className = 'status error'; emailInput.focus(); return;
+            }
+            currentEmail = v; attemptsLeft = 3;
+            status.textContent = 'TRANSMITTING...'; status.className = 'status';
+            submitBtn.disabled = true;
+
+            var rect = emailInput.getBoundingClientRect();
+            var flyer = document.createElement('div');
+            flyer.className = 'pcf-flyer'; flyer.textContent = v;
+            flyer.style.left = (rect.left + rect.width / 2) + 'px'; flyer.style.top = (rect.top + rect.height / 2) + 'px';
+            document.body.appendChild(flyer); setTimeout(function () { flyer.classList.add('active'); }, 50);
+            var ripple = document.createElement('div');
+            ripple.className = 'pcf-ripple'; ripple.style.left = '50%'; ripple.style.top = '50%';
+            form.style.position = 'relative'; form.appendChild(ripple);
+            setTimeout(function () { ripple.classList.add('active'); }, 100);
+
+            try {
+                var formData = new FormData();
+                formData.append('action', 'pcf_send_otp'); formData.append('email', v);
+                var res = await fetch('/wp-admin/admin-ajax.php', { method: 'POST', body: formData, credentials: 'same-origin' });
+                var data = await res.json();
+                submitBtn.disabled = false;
+                if (!data.success) {
+                    status.textContent = (data.data && data.data.message) || 'FAILED';
+                    status.className = 'status error';
+                    validate.classList.remove('valid'); validate.classList.add('invalid');
+                    setTimeout(function () { flyer.remove(); ripple.remove(); }, 1600); return;
+                }
+                setTimeout(function () {
+                    flyer.remove(); ripple.remove();
+                    title.classList.add('shrink'); titleMint.textContent = 'VERIFY.';
+                    subtitle.classList.add('shrink'); ctaInfo.classList.add('hide');
+                    stage1.classList.add('hidden');
+                    sentEmail.textContent = currentEmail; finalEmail.textContent = currentEmail;
+                    setTimeout(function () {
+                        stage2.classList.remove('hidden'); stage2.classList.add('entering');
+                        setTimeout(function () { otpRow.querySelector('.pcf-otp-box').focus(); }, 400);
+                        startResendTimer();
+                    }, 300);
+                }, 1400);
+            } catch (err) {
+                submitBtn.disabled = false;
+                status.textContent = 'NETWORK ERROR'; status.className = 'status error';
+                setTimeout(function () { flyer.remove(); ripple.remove(); }, 1600);
+            }
+        });
+
+        var otpBoxes = otpRow.querySelectorAll('.pcf-otp-box');
+        otpBoxes.forEach(function (box, i) {
+            box.addEventListener('input', function (e) {
+                var v = e.target.value.replace(/\D/g, '');
+                e.target.value = v.slice(0, 1); e.target.classList.remove('error');
+                e.target.style.borderColor = ''; e.target.style.boxShadow = '';
+                if (v) {
+                    e.target.classList.add('filled');
+                    if (i < otpBoxes.length - 1) otpBoxes[i + 1].focus();
+                    else { checkOtpComplete(); e.target.classList.add('pulse'); setTimeout(function () { e.target.classList.remove('pulse'); }, 600); }
+                } else { e.target.classList.remove('filled'); }
+                checkOtpComplete();
+            });
+            box.addEventListener('keydown', function (e) {
+                if (e.key === 'Backspace' && !e.target.value && i > 0) { otpBoxes[i - 1].focus(); otpBoxes[i - 1].value = ''; otpBoxes[i - 1].classList.remove('filled'); checkOtpComplete(); }
+                if (e.key === 'ArrowLeft' && i > 0) otpBoxes[i - 1].focus();
+                if (e.key === 'ArrowRight' && i < otpBoxes.length - 1) otpBoxes[i + 1].focus();
+            });
+            box.addEventListener('paste', function (e) {
+                e.preventDefault();
+                var pasted = (e.clipboardData.getData('text') || '').replace(/\D/g, '').slice(0, 6);
+                if (pasted.length > 0) {
+                    otpBoxes.forEach(function (b, idx) { if (idx < pasted.length) { b.value = pasted[idx]; b.classList.add('filled'); } });
+                    if (pasted.length < 6) otpBoxes[pasted.length].focus(); else otpBoxes[5].focus();
+                    checkOtpComplete();
+                }
+            });
+            box.addEventListener('focus', function () { box.select(); });
+        });
+        function checkOtpComplete() {
+            var allFilled = Array.from(otpBoxes).every(function (b) { return b.value.length === 1; });
+            otpSubmit.disabled = !allFilled;
+            if (allFilled) otpSubmit.classList.add('ready'); else otpSubmit.classList.remove('ready');
+        }
+        otpSubmit.addEventListener('click', async function () {
+            if (otpSubmit.disabled) return;
+            var entered = Array.from(otpBoxes).map(function (b) { return b.value; }).join('');
+            otpSubmit.textContent = 'Verifying...'; otpSubmit.disabled = true;
+            try {
+                var formData = new FormData();
+                formData.append('action', 'pcf_verify_otp'); formData.append('email', currentEmail); formData.append('otp', entered);
+                var res = await fetch('/wp-admin/admin-ajax.php', { method: 'POST', body: formData, credentials: 'same-origin' });
+                var data = await res.json();
+                if (data.success) {
+                    setSubscribedEmail(currentEmail);
+                    stage2.classList.add('hidden'); titleMint.textContent = 'SUBSCRIBED.';
+                    setTimeout(function () { stage3.classList.remove('hidden'); stage3.classList.add('entering'); spawnConfetti(); }, 300);
+                } else {
+                    attemptsLeft--;
+                    otpBoxes.forEach(function (b) {
+                        b.classList.add('error'); b.style.borderColor = '#EF6B6B'; b.style.boxShadow = '0 0 20px rgba(239,107,107,0.5)';
+                        setTimeout(function () { b.classList.remove('error'); b.style.borderColor = ''; b.style.boxShadow = ''; }, 800);
+                    });
+                    if (attemptsLeft <= 0) {
+                        otpSubmit.textContent = 'Too many attempts';
+                        setTimeout(function () {
+                            stage2.classList.add('hidden'); title.classList.remove('shrink');
+                            titleMint.textContent = 'YOU BUILD?'; subtitle.classList.remove('shrink'); ctaInfo.classList.remove('hide');
+                            otpBoxes.forEach(function (b) { b.value = ''; b.classList.remove('filled'); }); checkOtpComplete();
+                            stage1.classList.remove('hidden'); stage1.classList.add('entering');
+                            otpSubmit.textContent = 'Verify & Subscribe'; otpSubmit.disabled = false;
+                        }, 1200);
+                    } else {
+                        otpSubmit.textContent = 'Wrong code · ' + attemptsLeft + ' left';
+                        setTimeout(function () { otpSubmit.textContent = 'Verify & Subscribe'; otpSubmit.disabled = false; }, 1800);
+                    }
+                }
+            } catch (err) {
+                otpSubmit.textContent = 'Network error';
+                setTimeout(function () { otpSubmit.textContent = 'Verify & Subscribe'; otpSubmit.disabled = false; }, 1500);
+            }
+        });
+        otpBack.addEventListener('click', function () {
+            stage2.classList.add('hidden'); title.classList.remove('shrink');
+            titleMint.textContent = 'YOU BUILD?'; subtitle.classList.remove('shrink'); ctaInfo.classList.remove('hide');
+            otpBoxes.forEach(function (b) { b.value = ''; b.classList.remove('filled'); }); checkOtpComplete();
+            clearInterval(resendInterval);
+            setTimeout(function () { stage1.classList.remove('hidden'); stage1.classList.add('entering'); }, 300);
+        });
+        function startResendTimer() {
+            var sec = 30; resendBtn.disabled = true;
+            resendBtn.style.pointerEvents = 'none'; resendBtn.style.opacity = '0.5';
+            resendBtn.innerHTML = 'Resend in <span id="resendTimer">30</span>s';
+            clearInterval(resendInterval);
+            resendInterval = setInterval(function () {
+                sec--; var t = document.getElementById('resendTimer'); if (t) t.textContent = sec;
+                if (sec <= 0) { clearInterval(resendInterval); resendBtn.disabled = false; resendBtn.style.pointerEvents = 'auto'; resendBtn.style.opacity = '1'; resendBtn.innerHTML = 'Resend Code'; }
+            }, 1000);
+        }
+        resendBtn.addEventListener('click', function () {
+            if (resendBtn.disabled) return;
+            resendBtn.disabled = true; resendBtn.textContent = 'Sending...';
+            var formData = new FormData(); formData.append('action', 'pcf_send_otp'); formData.append('email', currentEmail);
+            fetch('/wp-admin/admin-ajax.php', { method: 'POST', body: formData, credentials: 'same-origin' })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data.success) {
+                        otpBoxes.forEach(function (b, i) {
+                            setTimeout(function () {
+                                b.style.borderColor = '#A8FFE3'; b.style.boxShadow = '0 0 40px rgba(85,230,181,0.8)';
+                                setTimeout(function () { b.style.borderColor = ''; b.style.boxShadow = ''; }, 300);
+                            }, i * 80);
+                        });
+                        startResendTimer();
+                    } else { resendBtn.textContent = 'Failed — try again'; resendBtn.disabled = false; }
+                })
+                .catch(function () { resendBtn.textContent = 'Error — try again'; resendBtn.disabled = false; });
+        });
+        if (successReset) {
+            successReset.addEventListener('click', function () {
+                clearSubscribedEmail(); emailInput.value = '';
+                status.textContent = 'AWAITING INPUT'; status.className = 'status';
+                validate.classList.remove('valid', 'invalid');
+                title.classList.remove('shrink'); titleMint.textContent = 'YOU BUILD?';
+                subtitle.classList.remove('shrink'); ctaInfo.classList.remove('hide');
+                stage3.classList.add('hidden'); stage2.classList.add('hidden');
+                stage1.classList.remove('hidden'); stage1.classList.add('entering');
+                setTimeout(function () { emailInput.focus(); }, 400);
+            });
+        }
+        function spawnConfetti() {
+            var colors = ['#55E6B5', '#A8FFE3', '#1C9C78', '#E8F0ED'];
+            var successEl = stage3.querySelector('.pcf-final-success'); if (!successEl) return;
+            var rect = successEl.getBoundingClientRect();
+            for (var i = 0; i < 60; i++) {
+                var c = document.createElement('div'); c.className = 'pcf-confetti';
+                c.style.background = colors[Math.floor(Math.random() * colors.length)];
+                c.style.left = (rect.left + rect.width / 2) + 'px'; c.style.top = (rect.top + rect.height / 2) + 'px';
+                c.style.position = 'fixed'; c.style.zIndex = '99999';
+                c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                document.body.appendChild(c);
+                var angle = (Math.PI * 2 * i) / 60 + Math.random() * 0.5;
+                var velocity = 200 + Math.random() * 300;
+                var vx = Math.cos(angle) * velocity; var vy = Math.sin(angle) * velocity - 200;
+                var rotation = Math.random() * 720 - 360;
+                c.animate([
+                    { transform: 'translate(0,0) rotate(0deg) scale(1)', opacity: 1 },
+                    { transform: 'translate(' + vx + 'px,' + vy + 'px) rotate(' + rotation + 'deg) scale(0.5)', opacity: 0 }
+                ], { duration: 1500 + Math.random() * 800, easing: 'cubic-bezier(0.22,1,0.36,1)', fill: 'forwards' });
+                setTimeout(function () { c.remove(); }, 2500);
+            }
+        }
+    }
+
+})();
+</script>

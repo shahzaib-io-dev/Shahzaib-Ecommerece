@@ -1,0 +1,905 @@
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+.pcf-contact, .pcf-contact * { box-sizing: border-box !important; margin: 0; padding: 0; }
+.pcf-contact {
+    position: relative; background: #050505;
+    min-height: 100vh; padding: 80px 30px 100px;
+    font-family: 'Inter', sans-serif;
+    color: #E8F0ED; overflow: hidden;
+    perspective: 1000px;
+}
+
+/* CRT scanlines */
+.pcf-scanlines {
+    position: fixed; inset: 0; z-index: 999; pointer-events: none;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.1) 3px);
+    opacity: 0.4;
+}
+
+/* Background layers */
+.pcf-bg-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.pcf-grid-bg {
+    position: absolute; inset: -100px;
+    background-image: linear-gradient(rgba(85, 230, 181, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(85, 230, 181, 0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    will-change: transform;
+}
+.pcf-orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.25; }
+.pcf-orb-1 { width: 700px; height: 700px; background: radial-gradient(circle, #55E6B5, transparent 70%); top: -250px; left: -150px; animation: pcfOrbFloat1 25s ease-in-out infinite; }
+.pcf-orb-2 { width: 600px; height: 600px; background: radial-gradient(circle, #1C9C78, transparent 70%); bottom: -200px; right: -150px; animation: pcfOrbFloat2 30s ease-in-out infinite; }
+@keyframes pcfOrbFloat1 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(150px, 100px) scale(1.2); } }
+@keyframes pcfOrbFloat2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-100px, -120px) scale(1.15); } }
+
+#pcfNetworkCanvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.8; }
+
+.pcf-cursor-glow {
+    position: fixed; width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(85, 230, 181, 0.12), transparent 60%);
+    pointer-events: none; z-index: 1;
+    transform: translate(-50%, -50%);
+    opacity: 0; mix-blend-mode: screen;
+}
+
+.pcf-contact-inner { max-width: 1300px; margin: 0 auto; position: relative; z-index: 2; transform-style: preserve-3d; }
+
+/* Header */
+.pcf-contact-header { text-align: center; margin-bottom: 80px; position: relative; }
+.pcf-contact-label {
+    display: inline-flex; align-items: center; gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 4px;
+    color: #9DAAA6; text-transform: uppercase;
+    margin-bottom: 24px; padding: 8px 20px;
+    border: 1px solid rgba(85, 230, 181, 0.3);
+    border-radius: 30px; background: rgba(85, 230, 181, 0.05);
+    backdrop-filter: blur(10px);
+}
+.pcf-contact-label::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%;
+    background: #55E6B5; box-shadow: 0 0 15px #55E6B5;
+    animation: pcfBlink 1.5s ease-in-out infinite;
+}
+@keyframes pcfBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.pcf-contact-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 110px; font-weight: 800; letter-spacing: -5px;
+    line-height: 0.9; color: #E8F0ED;
+    margin: 0 0 24px; min-height: 110px;
+}
+.pcf-contact-title .mint {
+    color: #55E6B5; text-shadow: 0 0 60px rgba(85, 230, 181, 0.6);
+    position: relative; display: inline-block;
+}
+.pcf-contact-title .mint::after {
+    content: ''; position: absolute; bottom: 4px; left: 0; right: 0;
+    height: 6px; background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    box-shadow: 0 0 30px #55E6B5;
+    animation: pcfLinePulse 2.5s ease-in-out infinite;
+}
+.pcf-type-cursor { color: #55E6B5; animation: pcfCursorBlink 0.8s step-end infinite; font-weight: 400; }
+@keyframes pcfCursorBlink { 50% { opacity: 0; } }
+@keyframes pcfLinePulse { 0%, 100% { opacity: 1; transform: scaleX(1); } 50% { opacity: 0.4; transform: scaleX(0.85); } }
+.pcf-contact-sub { font-size: 18px; color: #9DAAA6; max-width: 600px; margin: 0 auto; line-height: 1.7; font-weight: 300; }
+
+/* Main grid */
+.pcf-contact-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 40px; align-items: start; perspective: 1500px; }
+.pcf-tilt-card { transform-style: preserve-3d; transition: transform 0.1s ease-out, box-shadow 0.3s ease; will-change: transform; }
+
+/* Left panel - diagnostics */
+.pcf-data-panel { display: flex; flex-direction: column; gap: 20px; }
+
+.pcf-diag-panel {
+    background: linear-gradient(145deg, rgba(18, 24, 27, 0.95), rgba(14, 18, 18, 0.95));
+    border: 1px solid #1F2626; border-radius: 16px;
+    padding: 28px; backdrop-filter: blur(20px);
+    position: relative; overflow: hidden;
+}
+.pcf-diag-panel::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+    opacity: 0.6;
+}
+.pcf-diag-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3px;
+    color: #55E6B5; text-transform: uppercase;
+    margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
+}
+.pcf-diag-title::before { content: '▶'; font-size: 8px; }
+.pcf-diag-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(85, 230, 181, 0.1);
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+}
+.pcf-diag-row:last-child { border-bottom: none; }
+.pcf-diag-key { color: #6A7570; }
+.pcf-diag-val { color: #55E6B5; font-weight: 700; text-shadow: 0 0 10px rgba(85, 230, 181, 0.5); }
+.pcf-diag-val.warn { color: #E5C76B; text-shadow: 0 0 10px rgba(229, 199, 107, 0.5); }
+.pcf-diag-bar { width: 60px; height: 4px; background: rgba(85, 230, 181, 0.1); border-radius: 2px; overflow: hidden; }
+.pcf-diag-bar-fill { height: 100%; background: #55E6B5; width: 0%; transition: width 0.5s ease; box-shadow: 0 0 10px #55E6B5; }
+
+/* Node cards */
+.pcf-node {
+    display: flex; align-items: center; gap: 20px;
+    padding: 24px;
+    background: linear-gradient(145deg, rgba(18, 24, 27, 0.95), rgba(14, 18, 18, 0.95));
+    border: 1px solid #1F2626; border-radius: 14px;
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative; overflow: hidden;
+    text-decoration: none !important; color: inherit;
+    transform-style: preserve-3d;
+}
+.pcf-node::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: #55E6B5;
+    transform: scaleY(0); transform-origin: bottom;
+    transition: transform 0.4s ease;
+}
+.pcf-node:hover::before { transform: scaleY(1); transform-origin: top; }
+.pcf-node:hover {
+    transform: translateX(8px) translateZ(20px);
+    border-color: rgba(85, 230, 181, 0.4);
+    box-shadow: -10px 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(85, 230, 181, 0.2);
+}
+.pcf-node-icon {
+    width: 52px; height: 52px; border-radius: 12px;
+    background: rgba(85, 230, 181, 0.1);
+    border: 1px solid rgba(85, 230, 181, 0.3);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.4s ease;
+    transform: translateZ(30px);
+}
+.pcf-node:hover .pcf-node-icon {
+    background: #55E6B5; border-color: #55E6B5;
+    box-shadow: 0 0 30px rgba(85, 230, 181, 0.6);
+    transform: scale(1.1) rotate(-8deg) translateZ(40px);
+}
+.pcf-node-icon svg {
+    width: 24px; height: 24px; stroke: #55E6B5; stroke-width: 1.8;
+    fill: none; stroke-linecap: round; stroke-linejoin: round;
+    transition: stroke 0.4s ease;
+}
+.pcf-node:hover .pcf-node-icon svg { stroke: #080A0A; }
+.pcf-node-info { flex: 1; transform: translateZ(20px); }
+.pcf-node-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 2px; color: #6A7570;
+    text-transform: uppercase; margin-bottom: 4px;
+}
+.pcf-node-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px; font-weight: 600;
+    color: #E8F0ED; transition: color 0.3s ease;
+}
+.pcf-node:hover .pcf-node-value { color: #55E6B5; }
+
+/* Form panel */
+.pcf-form-panel {
+    background: linear-gradient(145deg, rgba(18, 24, 27, 0.95), rgba(14, 18, 18, 0.95));
+    border: 1px solid #1F2626; border-radius: 20px;
+    padding: 50px; backdrop-filter: blur(20px);
+    position: relative; overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+    transform-style: preserve-3d;
+}
+.pcf-form-panel::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, #55E6B5, transparent);
+}
+.pcf-form-panel::after {
+    content: ''; position: absolute; bottom: 20px; right: 20px;
+    width: 60px; height: 60px;
+    border-right: 2px solid rgba(85, 230, 181, 0.2);
+    border-bottom: 2px solid rgba(85, 230, 181, 0.2);
+    border-radius: 0 0 10px 0;
+    transform: translateZ(10px);
+}
+
+.pcf-form-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 32px; font-weight: 700;
+    color: #E8F0ED; margin-bottom: 8px;
+    letter-spacing: -1px; transform: translateZ(30px);
+}
+.pcf-form-title .mint { color: #55E6B5; }
+.pcf-form-sub { font-size: 14px; color: #9DAAA6; margin-bottom: 36px; font-weight: 300; transform: translateZ(20px); }
+
+.pcf-input-group { position: relative; margin-bottom: 28px; transform: translateZ(15px); }
+.pcf-input-group label {
+    position: absolute; top: 18px; left: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; letter-spacing: 1px;
+    color: #6A7570; text-transform: uppercase;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    background: transparent; padding: 0 4px;
+}
+.pcf-input-group input,
+.pcf-input-group textarea,
+.pcf-input-group select {
+    width: 100%; padding: 18px 20px 18px 40px;
+    background: rgba(8, 10, 10, 0.8);
+    border: 1px solid #283130; border-radius: 10px;
+    color: #E8F0ED;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; outline: none;
+    transition: all 0.3s ease; appearance: none;
+}
+.pcf-input-group::before {
+    content: '>'; position: absolute;
+    left: 18px; top: 50%; transform: translateY(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    color: #55E6B5; opacity: 0.4;
+    transition: opacity 0.3s ease; z-index: 5;
+}
+.pcf-input-group:focus-within::before { opacity: 1; text-shadow: 0 0 10px #55E6B5; }
+.pcf-input-group textarea { min-height: 140px; resize: vertical; padding-top: 20px; }
+.pcf-input-group select { cursor: pointer; }
+.pcf-input-group select option { background: #0E1212; color: #E8F0ED; }
+
+.pcf-input-group input:focus,
+.pcf-input-group textarea:focus,
+.pcf-input-group select:focus {
+    border-color: #55E6B5;
+    box-shadow: 0 0 0 3px rgba(85, 230, 181, 0.1), 0 0 30px rgba(85, 230, 181, 0.2);
+    background: rgba(8, 10, 10, 1);
+}
+.pcf-input-group input:focus + label,
+.pcf-input-group textarea:focus + label,
+.pcf-input-group select:focus + label,
+.pcf-input-group input:not(:placeholder-shown) + label,
+.pcf-input-group textarea:not(:placeholder-shown) + label,
+.pcf-input-group select:valid + label {
+    top: -10px; left: 16px;
+    font-size: 10px; color: #55E6B5;
+    background: #0E1212; letter-spacing: 2px;
+}
+
+.pcf-form-btn {
+    width: 100%; padding: 20px; border: none; border-radius: 10px;
+    background: #55E6B5; color: #080A0A;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px; font-weight: 800;
+    letter-spacing: 3px; text-transform: uppercase;
+    cursor: pointer; transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    transform: translateZ(40px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+.pcf-form-btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+    transform: translateX(-100%) skewX(-20deg);
+    transition: transform 0.8s ease;
+}
+.pcf-form-btn:hover::before { transform: translateX(100%) skewX(-20deg); }
+.pcf-form-btn:hover {
+    background: #A8FFE3;
+    box-shadow: 0 20px 40px rgba(85, 230, 181, 0.5), 0 0 60px rgba(85, 230, 181, 0.3);
+    transform: translateZ(50px) translateY(-4px);
+}
+.pcf-form-btn:disabled { background: #283130; color: #6A7570; cursor: not-allowed; transform: translateZ(0); box-shadow: none; }
+.pcf-form-btn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; transition: transform 0.3s ease; }
+.pcf-form-btn:hover svg { transform: translateX(4px); }
+
+.pcf-terminal-loader { display: none; align-items: center; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.pcf-terminal-loader.active { display: flex; }
+.pcf-terminal-dots span { width: 6px; height: 6px; background: #080A0A; border-radius: 50%; display: inline-block; animation: pcfDotBounce 1.4s ease-in-out infinite; }
+.pcf-terminal-dots span:nth-child(2) { animation-delay: 0.2s; }
+.pcf-terminal-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes pcfDotBounce { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1); opacity: 1; } }
+
+.pcf-success-overlay {
+    position: absolute; inset: 0;
+    background: rgba(5, 5, 5, 0.98);
+    backdrop-filter: blur(30px);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 40px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.5s ease;
+    z-index: 10; border-radius: 20px;
+}
+.pcf-success-overlay.show { opacity: 1; pointer-events: auto; }
+.pcf-success-icon {
+    width: 100px; height: 100px; border-radius: 50%;
+    background: rgba(85, 230, 181, 0.1);
+    border: 2px solid #55E6B5;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 30px;
+    box-shadow: 0 0 60px rgba(85, 230, 181, 0.5);
+    animation: pcfSuccessPulse 2s ease-in-out infinite;
+}
+@keyframes pcfSuccessPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 60px rgba(85, 230, 181, 0.5); }
+    50% { transform: scale(1.1); box-shadow: 0 0 100px rgba(85, 230, 181, 0.8); }
+}
+.pcf-success-icon svg { width: 50px; height: 50px; stroke: #55E6B5; stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.pcf-success-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 36px; font-weight: 800;
+    color: #55E6B5; margin-bottom: 12px;
+    letter-spacing: -1px;
+    text-shadow: 0 0 40px rgba(85, 230, 181, 0.5);
+}
+.pcf-success-msg {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px; color: #9DAAA6;
+    letter-spacing: 2px; line-height: 1.8;
+    text-transform: uppercase;
+}
+.pcf-success-msg .mint { color: #55E6B5; }
+
+/* FAQ */
+.pcf-faq-section { margin-top: 140px; }
+.pcf-faq-title {
+    text-align: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 42px; font-weight: 800;
+    color: #E8F0ED; margin-bottom: 50px;
+    letter-spacing: -2px;
+}
+.pcf-faq-title .mint { color: #55E6B5; }
+.pcf-faq-grid { display: flex; flex-direction: column; gap: 12px; max-width: 900px; margin: 0 auto; }
+.pcf-faq-item {
+    background: linear-gradient(145deg, rgba(18, 24, 27, 0.95), rgba(14, 18, 18, 0.95));
+    border: 1px solid #1F2626; border-radius: 12px;
+    overflow: hidden; transition: all 0.4s ease;
+}
+.pcf-faq-item:hover { border-color: rgba(85, 230, 181, 0.3); }
+.pcf-faq-item.active { border-color: rgba(85, 230, 181, 0.5); }
+.pcf-faq-q {
+    padding: 24px 30px;
+    display: flex; align-items: center; gap: 16px;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px; font-weight: 600;
+    color: #E8F0ED; transition: color 0.3s ease;
+    user-select: none;
+}
+.pcf-faq-item.active .pcf-faq-q { color: #55E6B5; }
+.pcf-faq-q-prefix { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #6A7570; flex-shrink: 0; }
+.pcf-faq-icon {
+    margin-left: auto; width: 26px; height: 26px;
+    border-radius: 50%; border: 1.5px solid rgba(85, 230, 181, 0.4);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.4s ease; flex-shrink: 0;
+}
+.pcf-faq-icon svg { width: 12px; height: 12px; stroke: #55E6B5; stroke-width: 2; fill: none; transition: transform 0.4s ease; }
+.pcf-faq-item.active .pcf-faq-icon { background: #55E6B5; border-color: #55E6B5; }
+.pcf-faq-item.active .pcf-faq-icon svg { stroke: #080A0A; transform: rotate(180deg); }
+.pcf-faq-a {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.22, 1, 0.36, 1), padding 0.5s ease;
+    padding: 0 30px; color: #9DAAA6;
+    font-size: 14px; line-height: 1.75; font-weight: 300;
+}
+.pcf-faq-item.active .pcf-faq-a { max-height: 300px; padding: 0 30px 26px; }
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .pcf-contact-grid { grid-template-columns: 1fr; gap: 30px; }
+    .pcf-data-panel { order: 2; display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .pcf-form-panel { order: 1; }
+    .pcf-contact-title { font-size: 80px; }
+}
+@media (max-width: 768px) {
+    .pcf-contact { padding: 60px 16px 80px; }
+    .pcf-contact-title { font-size: 48px; letter-spacing: -2px; min-height: auto; }
+    .pcf-contact-sub { font-size: 15px; }
+    .pcf-form-panel { padding: 30px 22px; border-radius: 16px; }
+    .pcf-form-title { font-size: 24px; }
+    .pcf-data-panel { grid-template-columns: 1fr; }
+    .pcf-faq-title { font-size: 28px; }
+    .pcf-cursor-glow { display: none; }
+}
+</style>
+
+<div class="pcf-scanlines"></div>
+
+<div class="pcf-bg-layer">
+    <div class="pcf-orb pcf-orb-1"></div>
+    <div class="pcf-orb pcf-orb-2"></div>
+    <div class="pcf-grid-bg" id="pcfGridBg"></div>
+    <canvas id="pcfNetworkCanvas"></canvas>
+</div>
+<div class="pcf-cursor-glow" id="pcfCursorGlow"></div>
+
+<div class="pcf-contact">
+    <div class="pcf-contact-inner">
+
+        <div class="pcf-contact-header">
+            <div class="pcf-contact-label pcf-reveal">Establish Connection</div>
+            <h1 class="pcf-contact-title pcf-reveal pcf-d-1" id="pcfTypewriter">
+                <span class="mint" id="pcfTypeText"></span><span class="pcf-type-cursor">_</span>
+            </h1>
+            <p class="pcf-contact-sub pcf-reveal pcf-d-2">
+                Whether you need technical support, have a business inquiry, or just want to talk hardware — our team is ready to receive your transmission.
+            </p>
+        </div>
+
+        <div class="pcf-contact-grid">
+
+            <div class="pcf-data-panel pcf-reveal">
+
+                <div class="pcf-diag-panel pcf-tilt-card">
+                    <div class="pcf-diag-title">System Diagnostics</div>
+                    <div class="pcf-diag-row">
+                        <span class="pcf-diag-key">Signal</span>
+                        <span class="pcf-diag-val" id="pcfSignal">98%</span>
+                    </div>
+                    <div class="pcf-diag-row">
+                        <span class="pcf-diag-key">Response Time</span>
+                        <span class="pcf-diag-val">~2 Hours</span>
+                    </div>
+                    <div class="pcf-diag-row">
+                        <span class="pcf-diag-key">Network Status</span>
+                        <span class="pcf-diag-val warn" id="pcfNetworkStatus">STABLE</span>
+                    </div>
+                    <div class="pcf-diag-row">
+                        <span class="pcf-diag-key">Latency</span>
+                        <span class="pcf-diag-val" id="pcfLatency">24ms</span>
+                    </div>
+                    <div class="pcf-diag-row">
+                        <span class="pcf-diag-key">Uptime</span>
+                        <div class="pcf-diag-bar"><div class="pcf-diag-bar-fill" id="pcfUptimeBar" style="width: 99.9%;"></div></div>
+                    </div>
+                </div>
+
+                <a href="mailto:support@pcforge.com" class="pcf-node pcf-tilt-card">
+                    <div class="pcf-node-icon">
+                        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    </div>
+                    <div class="pcf-node-info">
+                        <div class="pcf-node-label">Email Node</div>
+                        <div class="pcf-node-value">support@pcforge.com</div>
+                    </div>
+                </a>
+
+                <a href="tel:03055544328" class="pcf-node pcf-tilt-card">
+                    <div class="pcf-node-icon">
+                        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    </div>
+                    <div class="pcf-node-info">
+                        <div class="pcf-node-label">Voice Node</div>
+                        <div class="pcf-node-value">03055544328</div>
+                    </div>
+                </a>
+
+                <a href="#" class="pcf-node pcf-tilt-card">
+                    <div class="pcf-node-icon">
+                        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </div>
+                    <div class="pcf-node-info">
+                        <div class="pcf-node-label">Physical Node</div>
+                        <div class="pcf-node-value">Lahore, Pakistan</div>
+                    </div>
+                </a>
+
+                <div class="pcf-node pcf-tilt-card">
+                    <div class="pcf-node-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div class="pcf-node-info">
+                        <div class="pcf-node-label">Operational Hours</div>
+                        <div class="pcf-node-value">Mon - Sat, 10AM - 10PM</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="pcf-form-panel pcf-reveal-scale pcf-tilt-card">
+                <h2 class="pcf-form-title">SEND A <span class="mint">TRANSMISSION</span></h2>
+                <p class="pcf-form-sub">All fields are encrypted and transmitted securely.</p>
+
+                <form id="pcfContactForm" novalidate>
+                    <div class="pcf-input-group">
+                        <input type="text" id="pcfName" placeholder=" " required>
+                        <label for="pcfName">Your Name</label>
+                    </div>
+                    <div class="pcf-input-group">
+                        <input type="email" id="pcfEmail" placeholder=" " required>
+                        <label for="pcfEmail">Email Address</label>
+                    </div>
+                    <div class="pcf-input-group">
+                        <select id="pcfSubject" required>
+                            <option value="" disabled selected hidden></option>
+                            <option value="Technical Support">Technical Support</option>
+                            <option value="Sales Inquiry">Sales Inquiry</option>
+                            <option value="Build Assistance">Build Assistance</option>
+                            <option value="Business / Partnership">Business / Partnership</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <label for="pcfSubject">Select Subject</label>
+                    </div>
+                    <div class="pcf-input-group">
+                        <textarea id="pcfMessage" placeholder=" " required></textarea>
+                        <label for="pcfMessage">Your Message</label>
+                    </div>
+
+                    <button type="submit" class="pcf-form-btn" id="pcfSubmitBtn">
+                        <span class="pcf-btn-text">Transmit Message</span>
+                        <div class="pcf-terminal-loader" id="pcfLoader">
+                            <span id="pcfLoaderText">TRANSMITTING</span>
+                            <span class="pcf-terminal-dots"><span></span><span></span><span></span></span>
+                        </div>
+                        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </button>
+                </form>
+
+                <div class="pcf-success-overlay" id="pcfSuccess">
+                    <div class="pcf-success-icon">
+                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    <h3 class="pcf-success-title" id="pcfSuccessTitle">DATA TRANSMITTED</h3>
+                    <p class="pcf-success-msg">
+                        Your message has been received.<br>
+                        <span class="mint">Response initiated within 2 hours.</span>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="pcf-faq-section">
+            <h2 class="pcf-faq-title pcf-reveal">SYSTEM <span class="mint">LOGS</span></h2>
+            <div class="pcf-faq-grid pcf-reveal">
+                <div class="pcf-faq-item">
+                    <div class="pcf-faq-q">
+                        <span class="pcf-faq-q-prefix">[LOG_01]</span>
+                        <span>How fast is the response time?</span>
+                        <div class="pcf-faq-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    </div>
+                    <div class="pcf-faq-a">Our average response time is under 2 hours during operational hours. For urgent technical support, please call us directly at our Voice Node.</div>
+                </div>
+                <div class="pcf-faq-item">
+                    <div class="pcf-faq-q">
+                        <span class="pcf-faq-q-prefix">[LOG_02]</span>
+                        <span>Do you offer build consultation?</span>
+                        <div class="pcf-faq-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    </div>
+                    <div class="pcf-faq-a">Yes! If you're unsure about component compatibility or need help optimizing your budget, our team can provide a custom build consultation. Just select "Build Assistance" in the subject line.</div>
+                </div>
+                <div class="pcf-faq-item">
+                    <div class="pcf-faq-q">
+                        <span class="pcf-faq-q-prefix">[LOG_03]</span>
+                        <span>Can I visit the physical location?</span>
+                        <div class="pcf-faq-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    </div>
+                    <div class="pcf-faq-a">Our physical node is currently operating as a warehouse and fulfillment center. For in-person consultation, please schedule an appointment via email first.</div>
+                </div>
+                <div class="pcf-faq-item">
+                    <div class="pcf-faq-q">
+                        <span class="pcf-faq-q-prefix">[LOG_04]</span>
+                        <span>What is the warranty policy?</span>
+                        <div class="pcf-faq-icon"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div>
+                    </div>
+                    <div class="pcf-faq-a">All components carry their respective manufacturer warranties. We provide full assistance with any RMA claims. Please reach out via the form above and select "Technical Support".</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+(function() {
+    'use strict';
+    var root = document.querySelector('.pcf-contact');
+    if (!root || root.dataset.init) return;
+    root.dataset.init = '1';
+
+    // Typewriter effect
+    var typeTarget = document.getElementById('pcfTypeText');
+    var typeText = "GET IN TOUCH.";
+    var typeIdx = 0;
+    function typeWriter() {
+        if (typeIdx < typeText.length) {
+            typeTarget.textContent += typeText.charAt(typeIdx);
+            typeIdx++;
+            setTimeout(typeWriter, 100);
+        }
+    }
+    setTimeout(typeWriter, 500);
+
+    // 3D tilt on cards
+    var tiltCards = root.querySelectorAll('.pcf-tilt-card');
+    tiltCards.forEach(function(card) {
+        card.addEventListener('mousemove', function(e) {
+            var rect = card.getBoundingClientRect();
+            var x = e.clientX - rect.left;
+            var y = e.clientY - rect.top;
+            var centerX = rect.width / 2;
+            var centerY = rect.height / 2;
+            var rotateX = ((y - centerY) / centerY) * -5;
+            var rotateY = ((x - centerX) / centerX) * 5;
+            card.style.transform = 'perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) scale3d(1.02, 1.02, 1.02)';
+        });
+        card.addEventListener('mouseleave', function() {
+            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+        });
+    });
+
+    // Scroll reveal
+    var revealEls = root.querySelectorAll('.pcf-reveal, .pcf-reveal-scale');
+    if ('IntersectionObserver' in window) {
+        var revealObs = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('pcf-in');
+                    revealObs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+        revealEls.forEach(function(el) { revealObs.observe(el); });
+    } else {
+        revealEls.forEach(function(el) { el.classList.add('pcf-in'); });
+    }
+
+    // Background parallax
+    var gridBg = document.getElementById('pcfGridBg');
+    var orb1 = document.querySelector('.pcf-orb-1');
+    var orb2 = document.querySelector('.pcf-orb-2');
+    var ticking = false;
+    var targetScrollY = 0;
+    var currentScrollY = 0;
+
+    window.addEventListener('scroll', function() {
+        targetScrollY = window.pageYOffset;
+        if (!ticking) { requestAnimationFrame(updateParallax); ticking = true; }
+    }, { passive: true });
+
+    function updateParallax() {
+        currentScrollY += (targetScrollY - currentScrollY) * 0.1;
+        if (gridBg) gridBg.style.transform = 'translateY(' + (currentScrollY * 0.1) + 'px)';
+        if (orb1) orb1.style.transform = 'translate(' + (currentScrollY * 0.06) + 'px, ' + (currentScrollY * 0.08) + 'px)';
+        if (orb2) orb2.style.transform = 'translate(' + (-currentScrollY * 0.05) + 'px, ' + (-currentScrollY * 0.06) + 'px)';
+        if (Math.abs(targetScrollY - currentScrollY) > 0.5) requestAnimationFrame(updateParallax);
+        else ticking = false;
+    }
+
+    // Network canvas
+    var canvas = document.getElementById('pcfNetworkCanvas');
+    if (canvas) {
+        var ctx = canvas.getContext('2d');
+        var nodes = [], w, h;
+        var mouse = { x: null, y: null, radius: 250 };
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+            initNodes();
+        }
+
+        function initNodes() {
+            var count = Math.min(Math.floor(w * h / 15000), 80);
+            nodes = [];
+            for (var i = 0; i < count; i++) {
+                nodes.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                    r: Math.random() * 2 + 1,
+                    pulse: Math.random() * Math.PI * 2
+                });
+            }
+        }
+
+        window.addEventListener('mousemove', function(e) { mouse.x = e.clientX; mouse.y = e.clientY; });
+        window.addEventListener('mouseleave', function() { mouse.x = null; mouse.y = null; });
+
+        function drawNetwork() {
+            ctx.clearRect(0, 0, w, h);
+
+            for (var i = 0; i < nodes.length; i++) {
+                for (var j = i + 1; j < nodes.length; j++) {
+                    var dx = nodes[i].x - nodes[j].x;
+                    var dy = nodes[i].y - nodes[j].y;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        var opacity = (1 - dist / 150) * 0.3;
+                        ctx.beginPath();
+                        ctx.moveTo(nodes[i].x, nodes[i].y);
+                        ctx.lineTo(nodes[j].x, nodes[j].y);
+                        ctx.strokeStyle = 'rgba(85, 230, 181, ' + opacity + ')';
+                        ctx.lineWidth = 0.8;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            nodes.forEach(function(n) {
+                n.pulse += 0.02;
+                var pulseSize = n.r + Math.sin(n.pulse) * 1.5;
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, pulseSize, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(85, 230, 181, 0.8)';
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = 'rgba(85, 230, 181, 0.8)';
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                if (mouse.x !== null) {
+                    var dx = n.x - mouse.x;
+                    var dy = n.y - mouse.y;
+                    var d = Math.sqrt(dx * dx + dy * dy);
+                    if (d < mouse.radius) {
+                        var force = (mouse.radius - d) / mouse.radius;
+                        n.x += (dx / d) * force * 3;
+                        n.y += (dy / d) * force * 3;
+                    }
+                }
+
+                n.x += n.vx;
+                n.y += n.vy;
+                if (n.x < 0 || n.x > w) n.vx *= -1;
+                if (n.y < 0 || n.y > h) n.vy *= -1;
+            });
+
+            requestAnimationFrame(drawNetwork);
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+        requestAnimationFrame(drawNetwork);
+    }
+
+    // Cursor glow
+    var glow = document.getElementById('pcfCursorGlow');
+    if (glow && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        var mouseX = 0, mouseY = 0, glowX = 0, glowY = 0;
+        document.addEventListener('mousemove', function(e) { mouseX = e.clientX; mouseY = e.clientY; glow.style.opacity = '1'; });
+        document.addEventListener('mouseleave', function() { glow.style.opacity = '0'; });
+        function animateGlow() {
+            glowX += (mouseX - glowX) * 0.1;
+            glowY += (mouseY - glowY) * 0.1;
+            glow.style.transform = 'translate(' + glowX + 'px, ' + glowY + 'px) translate(-50%, -50%)';
+            requestAnimationFrame(animateGlow);
+        }
+        requestAnimationFrame(animateGlow);
+    }
+
+    // Live diagnostics simulation
+    var signalEl = document.getElementById('pcfSignal');
+    var latencyEl = document.getElementById('pcfLatency');
+    var networkStatusEl = document.getElementById('pcfNetworkStatus');
+    if (signalEl && latencyEl && networkStatusEl) {
+        setInterval(function() {
+            signalEl.textContent = Math.floor(95 + Math.random() * 5) + '%';
+            latencyEl.textContent = Math.floor(18 + Math.random() * 15) + 'ms';
+            if (Math.random() > 0.85) {
+                networkStatusEl.textContent = 'SYNCING';
+                networkStatusEl.classList.add('warn');
+                setTimeout(function() {
+                    networkStatusEl.textContent = 'STABLE';
+                    networkStatusEl.classList.remove('warn');
+                }, 1500);
+            }
+        }, 2500);
+    }
+
+    // FAQ accordion
+    var faqItems = root.querySelectorAll('.pcf-faq-item');
+    faqItems.forEach(function(item) {
+        var q = item.querySelector('.pcf-faq-q');
+        q.addEventListener('click', function() {
+            var isActive = item.classList.contains('active');
+            faqItems.forEach(function(i) { i.classList.remove('active'); });
+            if (!isActive) item.classList.add('active');
+        });
+    });
+
+    // Contact form
+    var form = document.getElementById('pcfContactForm');
+    var submitBtn = document.getElementById('pcfSubmitBtn');
+    var btnText = submitBtn.querySelector('.pcf-btn-text');
+    var loader = document.getElementById('pcfLoader');
+    var loaderText = document.getElementById('pcfLoaderText');
+    var successOverlay = document.getElementById('pcfSuccess');
+    var successTitle = document.getElementById('pcfSuccessTitle');
+
+    function scrambleText(element, finalText, duration) {
+        duration = duration || 1500;
+        var chars = '!<>-_\\/[]{}—=+*^?#________';
+        var length = finalText.length;
+        var frame = 0;
+        var totalFrames = Math.floor(duration / 30);
+        var interval = setInterval(function() {
+            var output = '';
+            for (var i = 0; i < length; i++) {
+                if (frame > (i / length) * totalFrames) output += finalText[i];
+                else output += chars[Math.floor(Math.random() * chars.length)];
+            }
+            element.textContent = output;
+            frame++;
+            if (frame >= totalFrames) {
+                clearInterval(interval);
+                element.textContent = finalText;
+            }
+        }, 30);
+    }
+
+    if (form) {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            var name = document.getElementById('pcfName').value.trim();
+            var email = document.getElementById('pcfEmail').value.trim();
+            var subject = document.getElementById('pcfSubject').value;
+            var message = document.getElementById('pcfMessage').value.trim();
+
+            if (!name || !email || !subject || !message) {
+                form.style.animation = 'pcfBurstShake 0.4s ease';
+                setTimeout(function() { form.style.animation = ''; }, 400);
+                return;
+            }
+
+            submitBtn.disabled = true;
+            btnText.style.display = 'none';
+            loader.classList.add('active');
+
+            var steps = ['ENCRYPTING', 'ROUTING', 'TRANSMITTING', 'SECURING'];
+            var stepIndex = 0;
+            var stepInterval = setInterval(function() {
+                stepIndex++;
+                if (stepIndex < steps.length) loaderText.textContent = steps[stepIndex];
+            }, 600);
+
+            var formData = new FormData();
+            formData.append('action', 'pcf_send_contact');
+            formData.append('name', name);
+            formData.append('email', email);
+            formData.append('subject', subject);
+            formData.append('message', message);
+
+            try {
+                var response = await fetch('/wp-admin/admin-ajax.php', { method: 'POST', body: formData });
+                var data = await response.json();
+
+                clearInterval(stepInterval);
+                loader.classList.remove('active');
+                loaderText.textContent = 'TRANSMITTING';
+
+                if (data.success) {
+                    successOverlay.classList.add('show');
+                    scrambleText(successTitle, 'DATA TRANSMITTED', 1200);
+                    form.reset();
+
+                    setTimeout(function() {
+                        successOverlay.classList.remove('show');
+                        submitBtn.disabled = false;
+                        btnText.style.display = 'block';
+                    }, 4500);
+                } else {
+                    loaderText.textContent = 'FAILED';
+                    loaderText.style.color = '#EF6B6B';
+                    setTimeout(function() {
+                        loader.classList.remove('active');
+                        btnText.style.display = 'block';
+                        submitBtn.disabled = false;
+                        loaderText.style.color = '#080A0A';
+                    }, 2000);
+                }
+            } catch (error) {
+                clearInterval(stepInterval);
+                loaderText.textContent = 'NETWORK ERROR';
+                loaderText.style.color = '#EF6B6B';
+                setTimeout(function() {
+                    loader.classList.remove('active');
+                    btnText.style.display = 'block';
+                    submitBtn.disabled = false;
+                    loaderText.style.color = '#080A0A';
+                }, 2000);
+            }
+        });
+    }
+
+})();
+</script>
